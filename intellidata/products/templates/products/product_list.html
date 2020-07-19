@@ -1,0 +1,73 @@
+{% extends "products/product_base.html" %}
+
+{% load static %}
+{% load thumbnail %}
+
+{% block preproduct %}
+<div class="col-md-4">
+	<div class="content">
+		{% if user.is_authenticated %}
+		<h2>
+			Welcome
+			{{user.username }}
+
+		</h2>
+
+    {% endif %}
+		<h2>Products</h2>
+
+		{% if not object_list %}
+  			<p>No products available at this time! Go ahead and create a product if needed!</p>
+		{% else %}
+				<p>Welcome to the Products Page! Select a product that you want to work with!</p>
+		{% endif %}
+
+	</div>
+
+	{% if user.is_authenticated %}
+	<a href="{% url 'products:create' %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-plus-sign"></span> Create New Product!</a>
+	&nbsp;
+	<a href="{% url 'products:bulk' %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-plus-sign"></span> Uplaod Products!</a>
+	&nbsp;
+	{% if FileNotFound %}
+    <div id="some_flag" title="Some Flag">
+        <h2>File Does Not Exist!</h2>
+    </div>
+	{% endif %}
+
+	{% endif %}
+</div>
+{% endblock %}
+
+{% block product_content %}
+<div class="col-md-8">
+	<div class="list-group">
+		{% for product in object_list %}
+			<a class="list-group-item" href="{% url 'products:single' pk=product.pk %}">
+			     <h3 class="title list-group-item-heading">{{ product.name }}</h3>
+					 <br>
+
+					 {% block postproduct %}
+					 {% if product.photo %}
+						 {% thumbnail product.photo "300" crop="center" as im %}
+    		 				<img src="{{ product.photo.url }}" width="{{ im.width }}" height="{{ im.height }}">
+						 {% endthumbnail %}
+					 {% endif %}
+					 {% endblock %}
+
+					 <br>
+					 <br>
+					 <h4 class="title list-group-item-heading">Type: {{ product.type }}</h4>
+					 <h4 class="title list-group-item-heading">Coverage Limit: {{ product.coverage_limit }}</h4>
+					 <h4 class="title list-group-item-heading">Price_per_1000_Units: {{ product.price_per_1000_units }}</h4>
+					 <h4 class="title list-group-item-heading">Created On: {{ product.product_date }}</h4>
+					 <h4 class="title list-group-item-heading">Created By: {{ product.creator }}</h4>
+					 <br>
+			<div class="list-group-item-text container-fluid">
+				{{ product.description_html|safe }}
+			</div>
+		</a>
+		{% endfor %}
+	</div>
+</div>
+{% endblock %}

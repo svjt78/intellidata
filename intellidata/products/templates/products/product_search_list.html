@@ -1,0 +1,25 @@
+{% extends "products/product_base.html" %}
+{% load bootstrap3 %}
+
+{% block product_content %}
+<div class="col-md-8">
+	<div class="list-group">
+		{% for product in object_list %}
+			<a class="list-group-item" href="{% url 'products:single' pk=product.pk %}">
+			     <h3 class="title list-group-item-heading">{{ product.name }}</h3>
+					 <h4 class="title list-group-item-heading">Type: {{ product.type }}</h4>
+					 <h4 class="title list-group-item-heading">Created On: {{ product.product_date }}</h4>
+					 <h4 class="title list-group-item-heading">Created By: {{ product.creator }}</h4>
+					 <br>
+			<div class="list-group-item-text container-fluid">
+				{{ product.description_html|safe }}
+			</div>
+		</a>
+		{% endfor %}
+	</div>
+</div>
+{% endblock %}
+
+{% block postproduct %}
+	<input type="button" class="btn btn-primary btn-large" value="Go back!" onclick="history.back()">
+{% endblock %}

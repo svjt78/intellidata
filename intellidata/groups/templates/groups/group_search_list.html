@@ -1,0 +1,32 @@
+{% extends "groups/group_base.html" %}
+{% load bootstrap3 %}
+
+{% block group_content %}
+<div class="col-md-8">
+	<div class="list-group">
+		{% for group in object_list %}
+			<a class="list-group-item" href="{% url 'groups:single' pk=group.pk %}">
+			     <h3 class="title list-group-item-heading">{{ group.name }}</h3>
+					 <h4 class="title list-group-item-heading">Group ID: {{ group.groupid }}</h4>
+					  <h4 class="title list-group-item-heading">Purpose: {{ group.purpose }}</h4>
+						<br>
+						 <h4 class="title list-group-item-heading">Created On: {{ group.group_date }}</h4>
+						 <br>
+			<div class="list-group-item-text container-fluid">
+				{{ group.description_html|safe }}
+				<br>
+				<div class="row">
+					<div class="col-md-4">
+						<span class="badge">{{ group.member_set.count }}</span> member{{ group.member_set.count|pluralize }}
+					</div>
+				</div>
+			</div>
+		</a>
+		{% endfor %}
+	</div>
+</div>
+{% endblock %}
+
+{% block postgroup %}
+	<input type="button" class="btn btn-primary btn-large" value="Go back!" onclick="history.back()">
+{% endblock %}

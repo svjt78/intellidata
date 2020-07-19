@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container">
+  <div class="row">
+    {% block prebulkupload %}{% endblock %}
+    {% block bulkupload_content %}{% endblock %}
+    {% block postbulkupload %}{% endblock %}
+  </div>
+</div>
+
+{% endblock %}

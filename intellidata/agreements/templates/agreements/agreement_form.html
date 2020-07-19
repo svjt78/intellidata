@@ -1,0 +1,14 @@
+{% extends "agreements/agreement_base.html" %}
+{% load bootstrap3 %}
+
+{% block agreement_content %}
+<h4>Edit Agreement</h4>
+
+  <form method="POST">
+  	{% csrf_token %}
+  	{% bootstrap_form form %}
+  	<input type="submit" value="Save" class="btn btn-primary btn-large">
+    &nbsp;
+    <a href="{% url 'agreements:all'%}" class="btn btn-primary btn-large">Cancel</a>
+  </form>
+{% endblock %}

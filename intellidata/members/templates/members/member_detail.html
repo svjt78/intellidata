@@ -1,0 +1,32 @@
+{% extends "members/member_base.html" %}
+
+{% block premember %}
+
+<div class="dropdown">
+  <button class="dropbtn btn btn-primary btn-large">Manage Members</button>
+  <div class="dropdown-content">
+
+  <a href="{% url 'members:version' pk=member_details.pk %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-pencil"></span> Version Member</a>
+  &nbsp;
+  <a href="{% url 'members:update' pk=member_details.pk %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-pencil"></span> Update Member</a>
+  &nbsp;
+  <a href="{% url 'members:delete' pk=member_details.pk %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-remove-circle"></span> Delete Member</a>
+
+
+  </div>
+</div>
+
+&nbsp;
+<input type="button" class="btn btn-primary btn-large" value="Go back!" onclick="history.back()">
+&nbsp;
+
+<h1>{{member_details.name}}</h1>
+<h2>Member ID: {{member_details.memberid}}</h2>
+<h2>Age: {{member_details.age}}</h2>
+<h2>Email: {{member_details.email}}</h2>
+<h2>Phone: {{member_details.phone}}</h2>
+<h2>Group: {{member_details.group}}</h2>
+<h2>Created On: {{member_details.member_date}}</h2>
+<h2>Created By: {{member_details.creator}}</h2>
+
+{% endblock %}

@@ -1,0 +1,62 @@
+{% extends "agreements/agreement_base.html" %}
+
+{% block pre_agreement %}
+<div class="col-md-4">
+	<div class="content">
+		{% if user.is_authenticated %}
+		<h2>
+			Welcome
+			{{user.username }}
+
+		</h2>
+
+    {% endif %}
+		<h2>Agreements</h2>
+
+		{% if not object_list %}
+  			<p>No agreements available at this time! Go ahead and create an agreement if needed!</p>
+		{% else %}
+				<p>Welcome to the Agreements Page! Select a agreement that you want to work with!</p>
+		{% endif %}
+
+	</div>
+
+	<input type="button" class="btn btn-primary btn-large" value="Go back!" onclick="history.back()">
+
+</div>
+
+<br>
+
+{% endblock %}
+
+
+
+{% block agreement_content %}
+<div class="col-md-8">
+	<div class="list-group">
+		{% for agreement in object_list %}
+			<a class="list-group-item" href="{% url 'agreements:single' pk=agreement.pk %}">
+			     <h3 class="title list-group-item-heading">{{ agreement.name }}</h3>
+					 <h4 class="title list-group-item-heading">ID: {{ agreement.agreementid }}</h4>
+					 <h4 class="title list-group-item-heading">Group: {{ agreement.group }}</h4>
+					 <h4 class="title list-group-item-heading">Product: {{ agreement.product }}</h4>
+					 <h4 class="title list-group-item-heading">Price_per_1000_Units: {{ agreement.price_per_1000_units }}</h4>
+					 <h4 class="title list-group-item-heading">Coverage: {{ agreement.coverage }}</h4>
+					 <h4 class="title list-group-item-heading">Created On: {{ agreement.agreement_date }}</h4>
+					 <h4 class="title list-group-item-heading">Created By: {{ agreement.creator }}</h4>
+
+			<div class="list-group-item-text container-fluid">
+
+				<div class="row">
+					<div class="col-md-4">
+						<span class="badge">{{ agreement.contract_set.count }}</span> contract{{ agreement.contract_set.count|pluralize }}
+					</div>
+				</div>
+				<br>
+					{{ agreement.description_html|safe }}
+			</div>
+		</a>
+		{% endfor %}
+	</div>
+</div>
+{% endblock %}

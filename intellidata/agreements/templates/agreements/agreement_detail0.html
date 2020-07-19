@@ -1,0 +1,35 @@
+{% extends "agreements/agreement_base.html" %}
+
+{% block pre_agreement %}
+
+<div class="dropdown">
+  <button class="dropbtn btn btn-primary btn-large">Manage Agreements</button>
+  <div class="dropdown-content">
+
+    <a href="{% url 'contracts:create' pk=agreement_details.pk %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-plus-sign"></span> Create Contract</a>
+    &nbsp;
+    <a href="{% url 'agreements:update' pk=agreement_details.pk %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-pencil"></span> Update Agreement</a>
+    &nbsp;
+    <a href="{% url 'agreements:delete' pk=agreement_details.pk %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-remove-circle"></span> Delete Agreement</a>
+    &nbsp;
+    <a href="{% url 'agreements:show_contracts' pk=agreement_details.pk %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-ok-circle"></span> Show Contracts</a>
+
+  </div>
+</div>
+
+&nbsp;
+<input type="button" class="btn btn-primary btn-large" value="Go back!" onclick="history.back()">
+&nbsp;
+
+<h1>{{agreement_details.name}}</h1>
+<h2>ID: {{agreement_details.pk}}</h2>
+<h2>Purpose: {{agreement_details.agreement_date}}</h2>
+<h2>Purpose: {{agreement_details.coverage_limit}}</h2>
+<h2>Member Count: {{agreement_details.contract_set.count}}</h2>
+<div style="background-color: rgba(255, 255, 255, 0.8);" data-spy="scroll" data-target=".navbar">
+  <div class="list-group-item-text container-fluid">
+    <h4 style="color:black;">{{ agreement_details.description_html|safe }}</h4>
+  </div>
+</div>
+
+{% endblock %}

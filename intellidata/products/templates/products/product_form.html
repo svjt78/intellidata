@@ -1,0 +1,14 @@
+{% extends "products/product_base.html" %}
+{% load bootstrap3 %}
+
+{% block product_content %}
+<h4>Edit Product</h4>
+  <!-- <form method="POST" action="{% url 'groups:create' %}" id="groupForm"> -->
+  <form method="POST" enctype="multipart/form-data">
+  	{% csrf_token %}
+  	{% bootstrap_form form %}
+  	<input type="submit" value="Save" class="btn btn-primary btn-large">
+    &nbsp;
+    <a href="{% url 'products:all'%}" class="btn btn-primary btn-large">Cancel</a>
+  </form>
+{% endblock %}

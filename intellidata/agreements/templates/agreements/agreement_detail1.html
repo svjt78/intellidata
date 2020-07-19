@@ -1,0 +1,45 @@
+{% extends "agreements/agreement_base.html" %}
+
+{% block pre_agreement %}
+
+<div class="dropdown">
+  <button class="dropbtn btn btn-primary btn-large">Manage Agreements</button>
+  <div class="dropdown-content">
+
+    <a href="{% url 'agreements:version' pk=agreement_details.pk %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-pencil"></span> Version Agreement</a>
+    &nbsp;
+    <a href="{% url 'agreements:update' pk=agreement_details.pk %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-pencil"></span> Update Agreement</a>
+    &nbsp;
+    <a href="{% url 'agreements:delete' pk=agreement_details.pk %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-remove-circle"></span> Delete Agreement</a>
+    &nbsp;
+    <a href="{% url 'agreements:manage_products' pk=agreement_details.pk %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-remove-circle"></span> Manage Products</a>
+    &nbsp;
+
+  </div>
+</div>
+
+&nbsp;
+<input type="button" class="btn btn-primary btn-large" value="Go back!" onclick="history.back()">
+&nbsp;
+
+<h1>{{agreement_details.name}}</h1>
+
+<h2>Group: {{agreement_details.group}}</h2>
+
+
+<h2>Products:<br> {% for prod in agreement_details.product.all %}
+                    &nbsp;&nbsp;&nbsp;&nbsp;{{prod}}<br>
+                {% endfor %}
+</h2>
+
+<h2>Coverage Limit: ${{agreement_details.coverage_limit}}</h2>
+<h2>Created On: {{agreement_details.agreement_date}}</h2>
+<h2>Created By: {{agreement_details.creator}}</h2>
+
+<div style="background-color: rgba(255, 255, 255, 0.8);" data-spy="scroll" data-target=".navbar">
+  <div class="list-group-item-text container-fluid">
+    <h4 style="color:black;">{{ agreement_details.description_html|safe }}</h4>
+  </div>
+</div>
+
+{% endblock %}

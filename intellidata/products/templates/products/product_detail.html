@@ -1,0 +1,38 @@
+{% extends "products/product_base.html" %}
+{% load static %}
+{% block preproduct %}
+
+<div class="dropdown">
+  <button class="dropbtn btn btn-primary btn-large">Manage Products</button>
+  <div class="dropdown-content">
+
+  <a href="{% url 'products:version' pk=product_details.pk %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-pencil"></span> Version Product</a>
+  &nbsp;
+  <a href="{% url 'products:update' pk=product_details.pk %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-pencil"></span> Update Product</a>
+  &nbsp;
+  <a href="{% url 'products:delete' pk=product_details.pk %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-remove-circle"></span> Delete Product</a>
+
+  </div>
+</div>
+
+&nbsp;
+<input type="button" class="btn btn-primary btn-large" value="Go back!" onclick="history.back()">
+&nbsp;
+
+<h1>{{product_details.name}}</h1>
+<h2>Type: {{product_details.type}}</h2>
+<h2>Coverage Limit: {{product_details.coverage_limit}}</h2>
+<h2>Price_per_1000_Units: {{product_details.price_per_1000_units}}</h2>
+<h2>Created On: {{product_details.product_date}}</h2>
+<h2>Created By: {{product_details.creator}}</h2>
+<div style="background-color: rgba(255, 255, 255, 0.8);" data-spy="scroll" data-target=".navbar">
+  <div class="list-group-item-text container-fluid">
+    <h4 style="color:black;">{{ product_details.description_html|safe }}</h4>
+  </div>
+</div>
+
+{% if product_details.photo %}
+  <img src="{{ product_details.photo.url }}"/>
+{% endif %}
+
+{% endblock %}

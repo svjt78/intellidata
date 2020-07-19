@@ -1,0 +1,28 @@
+{% extends "agreements/agreement_base.html" %}
+{% load bootstrap3 %}
+
+{% block agreement_content %}
+<div class="col-md-8">
+	<div class="list-group">
+		{% for agreement in object_list %}
+			<a class="list-group-item" href="{% url 'agreements:single' pk=agreement.pk %}">
+			     <h3 class="title list-group-item-heading">{{ agreement.name }}</h3>
+					 <h4 class="title list-group-item-heading">ID: {{ agreement.agreementid }}</h4>
+					 <h4 class="title list-group-item-heading">Group: {{ agreement.group }}</h4>
+					 <h4 class="title list-group-item-heading">Products: {{ agreement.product }}</h4>
+					 <h4 class="title list-group-item-heading">Created On: {{ agreement.agreement_date }}</h4>
+			<div class="list-group-item-text container-fluid">
+
+				<div class="row">
+					<div class="col-md-4">
+						<span class="badge">{{ agreement.contract_set.count }}</span> contract{{ agreement.contract_set.count|pluralize }}
+					</div>
+				</div>
+				<br>
+					<h4> {{ agreement.description_html|safe }} </h4>
+			</div>
+		</a>
+		{% endfor %}
+	</div>
+</div>
+{% endblock %}
