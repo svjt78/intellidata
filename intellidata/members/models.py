@@ -31,6 +31,9 @@ class Member(models.Model):
     creator = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     member_date = models.DateTimeField(auto_now=True)
 
+    sms = models.CharField(max_length=256, null=True, blank=True)
+    emailer = models.CharField(max_length=256, null=True, blank=True)
+
     def __str__(self):
         return self.name
 

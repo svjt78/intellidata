@@ -14,5 +14,5 @@ urlpatterns = [
     url(r"^posts/in/(?P<pk>\d+)/$",views.SingleProduct.as_view(),name="single"),
     url(r"^update/(?P<pk>\d+)/$",views.UpdateProduct.as_view(),name="update"),
     url(r"^delete/(?P<pk>\d+)/$",views.DeleteProduct.as_view(),name="delete"),
-    url(r"^rest/$",views.ProductList, name="rest"),
+    url(r"^rest/productlist/$",views.ProductList, name="rest"),
 ]

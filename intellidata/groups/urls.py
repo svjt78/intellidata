@@ -18,5 +18,5 @@ urlpatterns = [
     url(r"^bulkupload/$",views.BulkUploadGroup,name="bulk"),
     url(r"join/(?P<slug>[-\w]+)/$",views.JoinGroup.as_view(),name="join"),
     url(r"leave/(?P<slug>[-\w]+)/$",views.LeaveGroup.as_view(),name="leave"),
-    url(r"^rest/$",views.GroupList, name="rest"),
+    url(r"^rest/grouplist/$",views.GroupList, name="rest"),
 ]

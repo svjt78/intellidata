@@ -179,12 +179,31 @@ class ShowAgreementsProduct(LoginRequiredMixin, generic.DetailView):
         context['product_details'] = agreement.product
         return context
 
-
+#rest API call
 @api_view(['GET', 'POST'])
 def AgreementList(request):
 
     if request.method == 'GET':
         contacts = Agreement.objects.all()
+        serializer = AgreementSerializer(contacts, many=True)
+        return Response(serializer.data)
+    elif request.method == 'POST':
+        serializer = AgreementSerializer(data=request.data)
+
+    if serializer.is_valid():
+        serializer.save()
+
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+#rest API call
+@api_view(['GET', 'POST'])
+def AgreementListByGroup(request, pk):
+
+    if request.method == 'GET':
+        contacts = Agreement.objects.filter(group_id = pk)
         serializer = AgreementSerializer(contacts, many=True)
         return Response(serializer.data)
     elif request.method == 'POST':

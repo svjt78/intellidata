@@ -14,5 +14,9 @@ urlpatterns = [
     url(r"^(?P<pk>\d+)/upload/$",views.BulkUploadMember, name='upload'),
     url(r"^update/(?P<pk>\d+)/$",views.UpdateMember.as_view(),name='update'),
     url(r"^delete/(?P<pk>\d+)/$",views.DeleteMember.as_view(),name='delete'),
-    url(r"^rest/$",views.MemberList, name="rest"),
+    url(r"^email/(?P<pk>\d+)/$",views.EmailMember, name='email'),
+    url(r"^subscribe/(?P<pk>\d+)/$",views.SubscribeMember, name='subscribe'),
+    url(r"^text/(?P<pk>\d+)/$",views.TextMember, name='text'),
+    url(r"^rest/memberlist/$",views.MemberList, name="rest"),
+    url(r"^(?P<pk>\d+)/rest/memberlist/$",views.MemberListByGroup, name="bygroup"),
 ]

@@ -38,5 +38,7 @@ class MemberForm(forms.ModelForm):
             'name': forms.TextInput(attrs={'class': 'textinputclass'}),
             'email_address': forms.EmailField(max_length = 200),
             'creator': forms.TextInput(attrs={'readonly':'readonly'}),
+            'sms': forms.TextInput(attrs={'readonly':'readonly'}),
+            'emailer': forms.TextInput(attrs={'readonly':'readonly'}),
 
         }

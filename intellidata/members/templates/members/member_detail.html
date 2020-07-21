@@ -2,31 +2,46 @@
 
 {% block premember %}
 
-<div class="dropdown">
-  <button class="dropbtn btn btn-primary btn-large">Manage Members</button>
-  <div class="dropdown-content">
+  <div class="dropdown">
+    <button class="dropbtn btn btn-primary btn-large">Manage Members</button>
+    <div class="dropdown-content">
 
-  <a href="{% url 'members:version' pk=member_details.pk %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-pencil"></span> Version Member</a>
-  &nbsp;
-  <a href="{% url 'members:update' pk=member_details.pk %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-pencil"></span> Update Member</a>
-  &nbsp;
-  <a href="{% url 'members:delete' pk=member_details.pk %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-remove-circle"></span> Delete Member</a>
+    <a href="{% url 'members:version' pk=member_details.pk %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-pencil"></span> Version Member</a>
+    &nbsp;
+    <a href="{% url 'members:update' pk=member_details.pk %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-pencil"></span> Update Member</a>
+    &nbsp;
+    <a href="{% url 'members:delete' pk=member_details.pk %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-remove-circle"></span> Delete Member</a>
+    &nbsp;
+    <a href="{% url 'members:email' pk=member_details.pk %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-envelope"></span> Email Member</a>
+    &nbsp;
+    <a href="{% url 'members:subscribe' pk=member_details.pk %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-phone"></span> Subscribe Member</a>
+    &nbsp;
+    <a href="{% url 'members:text' pk=member_details.pk %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-phone"></span> Text Member</a>
+    &nbsp;
 
-
+    </div>
   </div>
-</div>
 
-&nbsp;
-<input type="button" class="btn btn-primary btn-large" value="Go back!" onclick="history.back()">
-&nbsp;
+  &nbsp;
+  <input type="button" class="btn btn-primary btn-large" value="Go back!" onclick="history.back()">
+  &nbsp;
+{% endblock %}
 
-<h1>{{member_details.name}}</h1>
-<h2>Member ID: {{member_details.memberid}}</h2>
-<h2>Age: {{member_details.age}}</h2>
-<h2>Email: {{member_details.email}}</h2>
-<h2>Phone: {{member_details.phone}}</h2>
-<h2>Group: {{member_details.group}}</h2>
-<h2>Created On: {{member_details.member_date}}</h2>
-<h2>Created By: {{member_details.creator}}</h2>
 
+{% block postmember %}
+  <div class="container">
+    <h1>{{member_details.name}}</h1>
+    <h2>Member ID: {{member_details.memberid}}</h2>
+    <h2>Age: {{member_details.age}}</h2>
+    <h2>Email: {{member_details.email}}</h2>
+    <h2>Phone: {{member_details.phone}}</h2>
+  </div>
+
+  <div class="container">
+    <h2>Group: {{member_details.group}}</h2>
+    <h2>Created On: {{member_details.member_date}}</h2>
+    <h2>Created By: {{member_details.creator}}</h2>
+    <h2>SMS Sent: {{member_details.sms}}</h2>
+    <h2>EMAIL Sent: {{member_details.emailer}}</h2>
+  </div>
 {% endblock %}
