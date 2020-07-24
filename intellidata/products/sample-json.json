@@ -1,0 +1,11 @@
+{
+  "name": "Suvojit",
+  "gender": "male",
+  "null": null,
+  "id": 123,
+  "object": {
+    "a": "b",
+    "c": "d"
+  },
+  "string": "Hello World"
+}

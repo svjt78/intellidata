@@ -9,17 +9,22 @@ PRODUCT_CHOICES = (
     ('CI', 'Critical Illness'),
     )
 
+TRANSMISSION_CHOICES=[('Connected','Connected'),
+     ('Disconnected','Disconnected')
+     ]
+
 class ProductForm(forms.ModelForm):
 
     productid: forms.IntegerField()
     price_per_1000_units: forms.DecimalField()
     coverage_limit: forms.DecimalField()
     photo = forms.ImageField()
+    backend_SOR_connection = forms.ChoiceField(choices=TRANSMISSION_CHOICES, widget=forms.RadioSelect, label='Backend SOR Connection')
 
     class Meta:
         model = Product
 
-        fields = ('productid', 'name', 'type', 'description', 'price_per_1000_units', 'coverage_limit', 'photo')
+        fields = ('productid', 'name', 'type', 'description', 'price_per_1000_units', 'coverage_limit', 'photo', 'backend_SOR_connection')
 
         widgets = {
 
@@ -28,7 +33,5 @@ class ProductForm(forms.ModelForm):
             'description': forms.Textarea(attrs={'class': 'editable medium-editor-textarea postcontent'}),
 
             'photo': forms.ImageField(),
-
-
 
         }

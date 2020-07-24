@@ -8,6 +8,15 @@ from sorl.thumbnail import ImageField
 import misaka
 
 from django.contrib.auth import get_user_model
+
+# For Rest rest_framework
+from rest_framework import status
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from rest_framework import serializers
+#from products.serializers import ProductSerializer
+import requests
+
 User = get_user_model()
 
 # https://docs.djangoproject.com/en/1.11/howto/custom-template-tags/#inclusion-tags
@@ -44,6 +53,7 @@ class Product(models.Model):
     creator = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     product_date = models.DateTimeField(auto_now=True)
     photo = models.ImageField(blank=True, null=True)
+    backend_SOR_connection = models.CharField(max_length=255, default='Disconnected')
 
 
     def __str__(self):
@@ -52,8 +62,22 @@ class Product(models.Model):
     def save(self, *args, **kwargs):
         self.slug = slugify(self.name)
         self.description_html = misaka.html(self.description)
-
         super().save(*args, **kwargs)
+
+        #connect to backend
+        if self.backend_SOR_connection != "Disconnected":
+            #converty model object to json
+            serializer = ProductSerializer(self)
+            json_data = serializer.data
+            #post data to the API for backend connection
+            resp = requests.post('https://todolist.example.com/tasks/', json=json_data)
+            if resp.status_code != 201:
+                raise ApiError('POST /tasks/ {}'.format(resp.status_code))
+            print('Created task. ID: {}'.format(resp.json()["id"]))
+
+        else:
+            print("not connecting to backend!")
+
 
     def get_absolute_url(self):
         return reverse("products:single", kwargs={"pk": self.pk})
@@ -61,3 +85,10 @@ class Product(models.Model):
     class Meta:
         ordering = ["-product_date"]
         unique_together = ("name", "type", "product_date")
+
+
+class ProductSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Product
+        fields = '__all__'

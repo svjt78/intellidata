@@ -75,6 +75,8 @@ class CreateProduct(LoginRequiredMixin, PermissionRequiredMixin, generic.CreateV
             return super().form_valid(form)
 
 
+
+
 @permission_required("products.add_product")
 @login_required
 def VersionProduct(request, pk):
