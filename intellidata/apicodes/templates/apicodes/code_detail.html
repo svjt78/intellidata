@@ -16,13 +16,12 @@
 </div>
 
 &nbsp;
-<a href="{% url 'apicodes:backendpull' pk=code_details.pk %}" class="btn btn-primary btn-large"><span class="glyphicon glyphicon-cloud"></span> Pull from Backend</a>
-&nbsp;
 <input type="button" class="btn btn-primary btn-large" value="Go back!" onclick="history.back()">
 &nbsp;
 
 <h1>Error Category: {{code_details.http_error_category}}</h1>
 <h2>Response Code: {{code_details.http_response_code}}</h2>
 <h2>Response Message: {{code_details.http_response_message}}</h2>
+<h2>API Code Type: {{code_details.API_code_type}}</h2>
 
 {% endblock %}
