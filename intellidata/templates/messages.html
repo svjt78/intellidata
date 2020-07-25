@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block content %}
+
+            {% for message in messages %}
+
+                    <div class="alert alert-success">
+                        <a class="close" href="#" data-dismiss="alert">×</a>
+
+                        {{ message }}
+
+                    </div>
+            {% endfor %}
+
+            &nbsp;
+
+            <input type="button" class="btn btn-primary btn-large" value="Go back!" onclick="history.back()">
+
+{% endblock %}

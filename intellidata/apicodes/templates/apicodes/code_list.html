@@ -1,0 +1,54 @@
+{% extends "apicodes/code_base.html" %}
+
+{% load static %}
+{% load thumbnail %}
+
+{% block precode %}
+<div class="col-md-4">
+	<div class="content">
+		{% if user.is_authenticated %}
+		<h2>
+			Welcome
+			{{user.username }}
+
+		</h2>
+
+    {% endif %}
+		<h2>apicodes</h2>
+
+		{% if not object_list %}
+  			<p>No apicodes available at this time! Go ahead and create a code if needed!</p>
+		{% else %}
+				<p>Welcome to the apicodes Page! Select a code that you want to work with!</p>
+		{% endif %}
+
+	</div>
+
+	{% if user.is_authenticated %}
+	<a href="{% url 'apicodes:create' %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-plus-sign"></span> Create New code!</a>
+	&nbsp;
+	<a href="{% url 'apicodes:bulk' %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-plus-sign"></span> Uplaod apicodes!</a>
+	&nbsp;
+	{% if FileNotFound %}
+    <div id="some_flag" title="Some Flag">
+        <h2>File Does Not Exist!</h2>
+    </div>
+	{% endif %}
+
+	{% endif %}
+</div>
+{% endblock %}
+
+{% block code_content %}
+<div class="col-md-8">
+	<div class="list-group">
+		{% for code in object_list %}
+			<a class="list-group-item" href="{% url 'apicodes:single' pk=code.pk %}">
+					 <h4 class="title list-group-item-heading">Error Category: {{ code.http_error_category }}</h4>
+					 <h4 class="title list-group-item-heading">Response Code: {{ code.http_response_code }}</h4>
+					 <h4 class="title list-group-item-heading">Response Message: {{ code.http_response_message }}</h4>
+		</a>
+		{% endfor %}
+	</div>
+</div>
+{% endblock %}

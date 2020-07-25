@@ -35,6 +35,8 @@ from django.utils.text import slugify
 import misaka
 import uuid
 
+import boto3
+
 # For Rest rest_framework
 from rest_framework import status
 from rest_framework.decorators import api_view
@@ -71,6 +73,8 @@ class CreateProduct(LoginRequiredMixin, PermissionRequiredMixin, generic.CreateV
             form.instance.creator = self.request.user
 
             return super().form_valid(form)
+
+
 
 
 @permission_required("products.add_product")
@@ -168,13 +172,15 @@ def BulkUploadProduct(request):
     form = BulkUploadForm(request.POST, request.FILES)
 
     if form.is_valid():
-            form.instance.creator = request.user
-            form.save()
+                form.instance.creator = request.user
+                form.save()
 
-            if not path.exists('/Users/suvojitdutta/Documents/PYTHON/PROJECTS/Docs/products.csv'):
-                return render(request, "products/product_list.html", {'FileNotFound': True})
-            else:
-                with open('/Users/suvojitdutta/Documents/PYTHON/PROJECTS/Docs/products.csv', 'rt') as csv_file:
+                #s3_resource = boto3.resource('s3')
+                #s3_resource.Object("intellidatastatic", "media/products.csv").download_file(f'/tmp/{"products.csv"}') # Python 3.6+
+                s3 = boto3.client('s3')
+                s3.download_file('intellidatastatic', 'media/products.csv', 'products.csv')
+                #with open('/tmp/{"products.csv"}', 'rt') as csv_file:
+                with open('products.csv', 'rt') as csv_file:
                     bulk_mgr = BulkCreateManager(chunk_size=20)
                     for row in csv.reader(csv_file):
                         bulk_mgr.add(models.Product(productid=row[0],
@@ -189,7 +195,7 @@ def BulkUploadProduct(request):
                                                   ))
                     bulk_mgr.done()
 
-            return HttpResponseRedirect(reverse("products:all"))
+                return HttpResponseRedirect(reverse("products:all"))
     else:
             # add form dictionary to context
             context["form"] = form

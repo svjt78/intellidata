@@ -1,0 +1,28 @@
+{% extends "apicodes/code_base.html" %}
+{% load static %}
+{% block precode %}
+
+<div class="dropdown">
+  <button class="dropbtn btn btn-primary btn-large">Manage apicodes</button>
+  <div class="dropdown-content">
+
+  <a href="{% url 'apicodes:version' pk=code_details.pk %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-pencil"></span> Version code</a>
+  &nbsp;
+  <a href="{% url 'apicodes:update' pk=code_details.pk %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-pencil"></span> Update code</a>
+  &nbsp;
+  <a href="{% url 'apicodes:delete' pk=code_details.pk %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-remove-circle"></span> Delete code</a>
+
+  </div>
+</div>
+
+&nbsp;
+<a href="{% url 'apicodes:backendpull' pk=code_details.pk %}" class="btn btn-primary btn-large"><span class="glyphicon glyphicon-cloud"></span> Pull from Backend</a>
+&nbsp;
+<input type="button" class="btn btn-primary btn-large" value="Go back!" onclick="history.back()">
+&nbsp;
+
+<h1>Error Category: {{code_details.http_error_category}}</h1>
+<h2>Response Code: {{code_details.http_response_code}}</h2>
+<h2>Response Message: {{code_details.http_response_message}}</h2>
+
+{% endblock %}

@@ -16,6 +16,8 @@
 </div>
 
 &nbsp;
+<a href="{% url 'products:backendpull' pk=product_details.pk %}" class="btn btn-primary btn-large"><span class="glyphicon glyphicon-cloud"></span> Pull from Backend</a>
+&nbsp;
 <input type="button" class="btn btn-primary btn-large" value="Go back!" onclick="history.back()">
 &nbsp;
 
@@ -26,12 +28,23 @@
 <h2>Created On: {{product_details.product_date}}</h2>
 <h2>Created By: {{product_details.creator}}</h2>
 <h2>Backend/SOR Connection: {{product_details.backend_SOR_connection}}</h2>
+<h2>Transaction Status: {{product_details.transaction_status}}</h2>
 
 <div style="background-color: rgba(255, 255, 255, 0.8);" data-spy="scroll" data-target=".navbar">
   <div class="list-group-item-text container-fluid">
     <h4 style="color:black;">{{ product_details.description_html|safe }}</h4>
   </div>
 </div>
+
+{% for message in messages %}
+
+        <div class="alert alert-success">
+            <a class="close" href="#" data-dismiss="alert">×</a>
+
+            {{ message }}
+
+        </div>
+{% endfor %}
 
 {% if product_details.photo %}
   <img src="{{ product_details.photo.url }}"/>

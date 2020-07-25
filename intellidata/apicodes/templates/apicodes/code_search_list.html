@@ -1,0 +1,20 @@
+{% extends "apicodes/code_base.html" %}
+{% load bootstrap3 %}
+
+{% block code_content %}
+<div class="col-md-8">
+	<div class="list-group">
+		{% for code in object_list %}
+			<a class="list-group-item" href="{% url 'apicodes:single' pk=code.pk %}">
+					 <h4 class="title list-group-item-heading">Error Category: {{ code.http_error_category }}</h4>
+					 <h4 class="title list-group-item-heading">Response Code: {{ code.http_response_code }}</h4>
+					 <h4 class="title list-group-item-heading">Response Message: {{ code.http_response_message }}</h4>
+		</a>
+		{% endfor %}
+	</div>
+</div>
+{% endblock %}
+
+{% block postcode %}
+	<input type="button" class="btn btn-primary btn-large" value="Go back!" onclick="history.back()">
+{% endblock %}

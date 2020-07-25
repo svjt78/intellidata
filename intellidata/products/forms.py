@@ -24,7 +24,7 @@ class ProductForm(forms.ModelForm):
     class Meta:
         model = Product
 
-        fields = ('productid', 'name', 'type', 'description', 'price_per_1000_units', 'coverage_limit', 'photo', 'backend_SOR_connection')
+        fields = ('productid', 'name', 'type', 'description', 'price_per_1000_units', 'coverage_limit', 'photo', 'backend_SOR_connection', 'transaction_status')
 
         widgets = {
 
@@ -33,5 +33,7 @@ class ProductForm(forms.ModelForm):
             'description': forms.Textarea(attrs={'class': 'editable medium-editor-textarea postcontent'}),
 
             'photo': forms.ImageField(),
+
+            'transaction_status': forms.TextInput(attrs={'readonly':'readonly'})
 
         }

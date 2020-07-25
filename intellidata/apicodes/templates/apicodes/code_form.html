@@ -1,0 +1,15 @@
+{% extends "apicodes/code_base.html" %}
+{% load bootstrap3 %}
+
+{% block code_content %}
+<h2>API Code Maintenance Screen</h2>
+<h2>Please Do Not Use Unless Absolutely Necessary!</h2>
+  <!-- <form method="POST" action="{% url 'groups:create' %}" id="groupForm"> -->
+  <form method="POST">
+  	{% csrf_token %}
+  	{% bootstrap_form form %}
+  	<input type="submit" value="Save" class="btn btn-primary btn-large">
+    &nbsp;
+    <a href="{% url 'apicodes:all'%}" class="btn btn-primary btn-large">Cancel</a>
+  </form>
+{% endblock %}

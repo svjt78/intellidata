@@ -1,0 +1,13 @@
+{% extends "apicodes/code_base.html" %}
+
+{% block precode %}
+<h4>Search code</h4>
+  <!-- <form method="POST" action="{% url 'groups:create' %}" id="groupForm"> -->
+  <form action="{% url 'apicodes:search_results' %}" method="GET">
+  	{% csrf_token %}
+    <input name="q" type="text" placeholder="Search...">
+    &nbsp;
+    <button class="btn btn-primary btn-large" type="submit" >Search</button>
+  </form>
+
+{% endblock %}

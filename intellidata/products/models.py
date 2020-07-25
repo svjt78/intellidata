@@ -54,7 +54,7 @@ class Product(models.Model):
     product_date = models.DateTimeField(auto_now=True)
     photo = models.ImageField(blank=True, null=True)
     backend_SOR_connection = models.CharField(max_length=255, default='Disconnected')
-
+    transaction_status = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):
         return ("Name: "+self.name + "~" + "Type: "+self.type + "~" + "Coverage limit: "+ str(self.coverage_limit) + "~" + "Created on: "+self.product_date.strftime("%d-%b-%Y (%H:%M:%S.%f)"))
@@ -62,6 +62,7 @@ class Product(models.Model):
     def save(self, *args, **kwargs):
         self.slug = slugify(self.name)
         self.description_html = misaka.html(self.description)
+        self.transaction_status='Success'
         super().save(*args, **kwargs)
 
         #connect to backend
@@ -69,12 +70,15 @@ class Product(models.Model):
             #converty model object to json
             serializer = ProductSerializer(self)
             json_data = serializer.data
+            url='https://brnmd9qrbk.execute-api.us-east-1.amazonaws.com/prod/intellidataProductAPI/base1/nrt'
             #post data to the API for backend connection
-            resp = requests.post('https://todolist.example.com/tasks/', json=json_data)
+            resp = requests.post(url, json=json_data)
             if resp.status_code != 201:
-                raise ApiError('POST /tasks/ {}'.format(resp.status_code))
-            print('Created task. ID: {}'.format(resp.json()["id"]))
-
+                #raise APIError(resp.status_code)
+                self.transaction_status="Data posting failed with " + str(resp.status_code)
+            else:
+                self.transaction_status="Data posting successful with " + str(resp.status_code)
+            super().save(*args, **kwargs)
         else:
             print("not connecting to backend!")
 
@@ -92,3 +96,14 @@ class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = '__all__'
+
+
+#class for handling built-in API errors
+class APIError(Exception):
+    """An API Error Exception"""
+
+    def __init__(self, status):
+        self.status = status
+
+    def __str__(self):
+        return "APIError: status={}".format(self.status)

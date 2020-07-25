@@ -51,10 +51,12 @@ INSTALLED_APPS = [
     'products',
     'agreements',
     'bulkuploads',
+    'apicodes',
     'storages',
     'phonenumber_field',
     'rest_framework',
-    'sorl.thumbnail'
+    'sorl.thumbnail',
+    'six'
 ]
 
 CONTROLCENTER_DASHBOARDS = (

@@ -9,6 +9,7 @@ urlpatterns = [
     url(r"^new/$", views.CreateProduct.as_view(), name="create"),
     url(r"^bulkupload/$",views.BulkUploadProduct,name="bulk"),
     url(r"^version/(?P<pk>\d+)/$",views.VersionProduct, name="version"),
+    url(r"^backend/pull/(?P<pk>\d+)/$",views.BackendPull, name="backendpull"),
     url(r"^search/$", views.SearchProductsForm, name="search"),
     url(r"^search/results/$", views.SearchProductsList.as_view(), name="search_results"),
     url(r"^posts/in/(?P<pk>\d+)/$",views.SingleProduct.as_view(),name="single"),

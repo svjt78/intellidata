@@ -36,6 +36,7 @@ import misaka
 import uuid
 
 import boto3
+import requests
 
 # For Rest rest_framework
 from rest_framework import status
@@ -75,6 +76,25 @@ class CreateProduct(LoginRequiredMixin, PermissionRequiredMixin, generic.CreateV
             return super().form_valid(form)
 
 
+#Pull from  backend system of record(SOR)
+@login_required
+def BackendPull(request, pk):
+        # fetch the object related to passed id
+        mesg=[]
+        url = 'https://brnmd9qrbk.execute-api.us-east-1.amazonaws.com/prod/intellidataProductAPI/base1/nrt'
+        payload={'ident': pk}
+        resp = requests.get(url, params=payload)
+        if resp.status_code != 200:
+            # This means something went wrong.
+            #raise ApiError('GET /tasks/ {}'.format(resp.status_code))
+            #raise APIError(resp.status_code)
+            mesg.append("Message Retrieval failed with " + str(resp.status_code))
+            message={'messages':mesg}
+            return render(request, "messages.html", context=message)
+        else:
+            json_data = json.loads(resp.text)
+            product_detail_dict = {'product_details':json_data}
+            return render(request, "products/product_detail.html", context=product_detail_dict)
 
 
 @permission_required("products.add_product")
@@ -220,3 +240,14 @@ def ProductList(request):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+#class for handling built-in API errors
+class APIError(Exception):
+    """An API Error Exception"""
+
+    def __init__(self, status):
+        self.status = status
+
+    def __str__(self):
+        return "APIError: status={}".format(self.status)
