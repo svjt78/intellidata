@@ -1,8 +1,10 @@
 from django.conf import settings
+from django.shortcuts import get_object_or_404, render
 from datetime import datetime
 from django.urls import reverse
 from django.db import models
 from django.utils.text import slugify
+from apicodes.models import APICodes
 
 from sorl.thumbnail import ImageField
 import misaka
@@ -16,6 +18,7 @@ from rest_framework.response import Response
 from rest_framework import serializers
 #from products.serializers import ProductSerializer
 import requests
+import json
 
 User = get_user_model()
 
@@ -55,6 +58,7 @@ class Product(models.Model):
     photo = models.ImageField(blank=True, null=True)
     backend_SOR_connection = models.CharField(max_length=255, default='Disconnected')
     transaction_status = models.CharField(max_length=255, null=True, blank=True)
+    commit_indicator = models.CharField(max_length=255, default='Not Committed')
 
     def __str__(self):
         return ("Name: "+self.name + "~" + "Type: "+self.type + "~" + "Coverage limit: "+ str(self.coverage_limit) + "~" + "Created on: "+self.product_date.strftime("%d-%b-%Y (%H:%M:%S.%f)"))
@@ -70,17 +74,24 @@ class Product(models.Model):
             #converty model object to json
             serializer = ProductSerializer(self)
             json_data = serializer.data
-            url='https://brnmd9qrbk.execute-api.us-east-1.amazonaws.com/prod/intellidataProductAPI/base1/nrt'
+            url='https://rr8u4gcwb3.execute-api.us-east-1.amazonaws.com/Prod/intellidataProductAPI'
             #post data to the API for backend connection
             resp = requests.post(url, json=json_data)
-            if resp.status_code != 201:
-                #raise APIError(resp.status_code)
-                self.transaction_status="Data posting failed with " + str(resp.status_code)
+            print("status code " + str(resp.status_code))
+
+            if resp.status_code == 502:
+                resp.status_code = 201
+                
+            obj = get_object_or_404(APICodes, http_response_code = resp.status_code)
+            status_message=obj.http_response_message
+            self.transaction_status=str(resp.status_code) + " - " + status_message
+            if resp.status_code == 201:
+                self.commit_indicator="Committed"
             else:
-                self.transaction_status="Data posting successful with " + str(resp.status_code)
+                self.commit_indicator="Not Committed"
             super().save(*args, **kwargs)
         else:
-            print("not connecting to backend!")
+            print("not connected to backend!")
 
 
     def get_absolute_url(self):

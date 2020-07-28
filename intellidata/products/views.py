@@ -22,6 +22,7 @@ from django.db.models import Count
 from groups.models import Group
 from members.models import Member
 from bulkuploads.models import BulkUpload
+from apicodes.models import APICodes
 from products.models import Product
 from . import models
 from . import forms
@@ -37,6 +38,7 @@ import uuid
 
 import boto3
 import requests
+import json
 
 # For Rest rest_framework
 from rest_framework import status
@@ -80,21 +82,43 @@ class CreateProduct(LoginRequiredMixin, PermissionRequiredMixin, generic.CreateV
 @login_required
 def BackendPull(request, pk):
         # fetch the object related to passed id
-        mesg=[]
-        url = 'https://brnmd9qrbk.execute-api.us-east-1.amazonaws.com/prod/intellidataProductAPI/base1/nrt'
+        url = 'https://rr8u4gcwb3.execute-api.us-east-1.amazonaws.com/Prod/intellidataProductAPI'
         payload={'ident': pk}
         resp = requests.get(url, params=payload)
+        print(resp.text)
+        print(resp.status_code)
+        obj = get_object_or_404(APICodes, http_response_code = resp.status_code)
+        status_message=obj.http_response_message
+        mesg=str(resp.status_code) + " - " + status_message
         if resp.status_code != 200:
             # This means something went wrong.
             #raise ApiError('GET /tasks/ {}'.format(resp.status_code))
             #raise APIError(resp.status_code)
-            mesg.append("Message Retrieval failed with " + str(resp.status_code))
             message={'messages':mesg}
             return render(request, "messages.html", context=message)
         else:
             json_data = json.loads(resp.text)
-            product_detail_dict = {'product_details':json_data}
-            return render(request, "products/product_detail.html", context=product_detail_dict)
+
+            # fetch the object related to passed id
+            #obj = get_object_or_404(Product, pk = json_data["LOCAL_ID"])
+
+            # pass the object as instance in form
+            #form = ProductForm(request.POST or None, instance = obj)
+
+            #OVERRIDE THE OBJECT WITH API data
+            obj.pk = int(json_data["LOCAL_ID"])
+            obj.name = json_data["NAME"]
+            obj.type = json_data["TYPE"]
+            obj.coverage_limit = json_data["COVERAGE_LIMIT"]
+            obj.price_per_1000_units = json_data["RATE"]
+            obj.product_date = json_data["CREATE_DATE"]
+            obj.description = json_data["DESCRIPTION"]
+            obj.description_html = misaka.html(obj.description)
+            obj.photo = json_data["PHOTO"]
+
+            context = {'product_details':obj}
+
+            return render(request, "products/product_detail.html", context=context)
 
 
 @permission_required("products.add_product")

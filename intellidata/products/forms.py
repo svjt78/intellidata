@@ -34,6 +34,8 @@ class ProductForm(forms.ModelForm):
 
             'photo': forms.ImageField(),
 
-            'transaction_status': forms.TextInput(attrs={'readonly':'readonly'})
+            'transaction_status': forms.TextInput(attrs={'readonly':'readonly'}),
+
+            'commit_indicator': forms.TextInput(attrs={'readonly':'readonly'})
 
         }

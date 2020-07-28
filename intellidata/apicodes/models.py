@@ -21,7 +21,7 @@ class APICodes(models.Model):
     )
 
     http_error_category = models.TextField(blank=True, null=True)
-    http_response_code = models.TextField(blank=True, null=True)
+    http_response_code = models.TextField(unique=True)
     http_response_message = models.TextField(blank=True, null=True)
     API_code_type = models.CharField(max_length=100,
                                       choices=CODE_CHOICES,
