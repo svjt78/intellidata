@@ -8,8 +8,11 @@ from apicodes.models import APICodes
 
 from sorl.thumbnail import ImageField
 import misaka
+import uuid
 
 from django.contrib.auth import get_user_model
+
+from groups.utils import ApiDomains
 
 # For Rest rest_framework
 from rest_framework import status
@@ -28,7 +31,7 @@ from django import template
 register = template.Library()
 
 class Product(models.Model):
-    productid = models.PositiveIntegerField()
+    productid = models.CharField(max_length=255, null=True, blank=True)
     name = models.CharField(max_length=255)
 
     CHOOSE = 'Unknown Type'
@@ -57,16 +60,23 @@ class Product(models.Model):
     product_date = models.DateTimeField(auto_now=True)
     photo = models.ImageField(blank=True, null=True)
     backend_SOR_connection = models.CharField(max_length=255, default='Disconnected')
-    transaction_status = models.CharField(max_length=255, null=True, blank=True)
     commit_indicator = models.CharField(max_length=255, default='Not Committed')
+    record_status = models.CharField(max_length=255, null=True, blank=True)
+    response = models.CharField(max_length=255, null=True, blank=True)
+    bulk_upload_indicator = models.CharField(max_length=1, null=True, blank=True)
 
     def __str__(self):
         return ("Name: "+self.name + "~" + "Type: "+self.type + "~" + "Coverage limit: "+ str(self.coverage_limit) + "~" + "Created on: "+self.product_date.strftime("%d-%b-%Y (%H:%M:%S.%f)"))
 
     def save(self, *args, **kwargs):
+
+        if (self.productid == None):
+            var = str(uuid.uuid4())
+            self.productid = var[26:36]
+
         self.slug = slugify(self.name)
         self.description_html = misaka.html(self.description)
-        self.transaction_status='Success'
+        self.response='Success'
         super().save(*args, **kwargs)
 
         #connect to backend
@@ -74,17 +84,19 @@ class Product(models.Model):
             #converty model object to json
             serializer = ProductSerializer(self)
             json_data = serializer.data
-            url='https://rr8u4gcwb3.execute-api.us-east-1.amazonaws.com/Prod/intellidataProductAPI'
+            api = ApiDomains()
+            url=api.product
+            #url='https://94q78vev60.execute-api.us-east-1.amazonaws.com/Prod/intellidataProductAPI'
             #post data to the API for backend connection
             resp = requests.post(url, json=json_data)
             print("status code " + str(resp.status_code))
 
             if resp.status_code == 502:
                 resp.status_code = 201
-                
+
             obj = get_object_or_404(APICodes, http_response_code = resp.status_code)
             status_message=obj.http_response_message
-            self.transaction_status=str(resp.status_code) + " - " + status_message
+            self.response=str(resp.status_code) + " - " + status_message
             if resp.status_code == 201:
                 self.commit_indicator="Committed"
             else:

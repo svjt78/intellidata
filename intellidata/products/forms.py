@@ -15,7 +15,7 @@ TRANSMISSION_CHOICES=[('Connected','Connected'),
 
 class ProductForm(forms.ModelForm):
 
-    productid: forms.IntegerField()
+    productid: forms.TextInput(attrs={'readonly':'readonly'})
     price_per_1000_units: forms.DecimalField()
     coverage_limit: forms.DecimalField()
     photo = forms.ImageField()
@@ -24,9 +24,11 @@ class ProductForm(forms.ModelForm):
     class Meta:
         model = Product
 
-        fields = ('productid', 'name', 'type', 'description', 'price_per_1000_units', 'coverage_limit', 'photo', 'backend_SOR_connection', 'transaction_status')
+        fields = ('productid', 'name', 'type', 'description', 'price_per_1000_units', 'coverage_limit', 'photo', 'backend_SOR_connection', 'record_status', 'response')
 
         widgets = {
+
+            'productid': forms.TextInput(attrs={'readonly':'readonly'}),
 
             'name': forms.TextInput(attrs={'class': 'textinputclass'}),
 
@@ -34,8 +36,10 @@ class ProductForm(forms.ModelForm):
 
             'photo': forms.ImageField(),
 
-            'transaction_status': forms.TextInput(attrs={'readonly':'readonly'}),
+            'commit_indicator': forms.TextInput(attrs={'readonly':'readonly'}),
 
-            'commit_indicator': forms.TextInput(attrs={'readonly':'readonly'})
+            'record_status': forms.TextInput(attrs={'readonly':'readonly'}),
+
+            'response': forms.TextInput(attrs={'readonly':'readonly'}),
 
         }

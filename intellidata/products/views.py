@@ -21,6 +21,7 @@ from django.views import generic
 from django.db.models import Count
 from groups.models import Group
 from members.models import Member
+from django.contrib.auth.models import User
 from bulkuploads.models import BulkUpload
 from apicodes.models import APICodes
 from products.models import Product
@@ -30,11 +31,13 @@ from products.forms import ProductForm
 from bulkuploads.forms import BulkUploadForm
 import csv
 from groups.utils import BulkCreateManager
+from groups.utils import ApiDomains
 import os.path
 from os import path
 from django.utils.text import slugify
 import misaka
 import uuid
+from django.shortcuts import get_object_or_404
 
 import boto3
 import requests
@@ -74,16 +77,23 @@ class CreateProduct(LoginRequiredMixin, PermissionRequiredMixin, generic.CreateV
             raise HttpResponseForbidden()
         else:
             form.instance.creator = self.request.user
+            form.instance.record_status = "Created"
 
             return super().form_valid(form)
 
 
 #Pull from  backend system of record(SOR)
+@permission_required("products.add_product")
 @login_required
 def BackendPull(request, pk):
         # fetch the object related to passed id
-        url = 'https://rr8u4gcwb3.execute-api.us-east-1.amazonaws.com/Prod/intellidataProductAPI'
-        payload={'ident': pk}
+        #url = 'https://94q78vev60.execute-api.us-east-1.amazonaws.com/Prod/intellidataProductAPI/latest'
+
+        prod_obj = get_object_or_404(Product, pk = pk)
+
+        api = ApiDomains()
+        url = api.product + "/" + "latest"
+        payload={'ident': prod_obj.productid}
         resp = requests.get(url, params=payload)
         print(resp.text)
         print(resp.status_code)
@@ -107,6 +117,7 @@ def BackendPull(request, pk):
 
             #OVERRIDE THE OBJECT WITH API data
             obj.pk = int(json_data["LOCAL_ID"])
+            obj.productid = json_data["PRODUCT_ID"]
             obj.name = json_data["NAME"]
             obj.type = json_data["TYPE"]
             obj.coverage_limit = json_data["COVERAGE_LIMIT"]
@@ -115,8 +126,141 @@ def BackendPull(request, pk):
             obj.description = json_data["DESCRIPTION"]
             obj.description_html = misaka.html(obj.description)
             obj.photo = json_data["PHOTO"]
+            obj.creator = User.objects.get(pk=int(json_data["CREATOR"]))
+            #obj.crerator = get_object_or_404(User, pk=obj.creatorid)
+            obj.create_date = json_data["CREATE_DATE"]
+            obj.backend_SOR_connection = json_data["CONNECTION"]
+            obj.response = json_data["RESPONSE"]
+            obj.commit_indicator = json_data["COMMIT_INDICATOR"]
+            obj.record_status = json_data["RECORD_STATUS"]
 
             context = {'product_details':obj}
+
+            return render(request, "products/product_detail.html", context=context)
+
+
+
+#Pull from  backend system of record(SOR)
+@permission_required("products.add_product")
+@login_required
+def ListProductsHistory(request, pk):
+
+                context ={}
+
+                prod_obj = get_object_or_404(Product, pk = pk)
+
+                api = ApiDomains()
+                url = api.product + "/" + "history"
+                #url = 'https://94q78vev60.execute-api.us-east-1.amazonaws.com/Prod/intellidataProductAPI/history'
+                payload={'ident': prod_obj.productid}
+
+                resp = requests.get(url, params=payload)
+                print(resp.status_code)
+                obj = get_object_or_404(APICodes, http_response_code = resp.status_code)
+                status_message=obj.http_response_message
+                mesg=str(resp.status_code) + " - " + status_message
+
+                if resp.status_code != 200:
+                    # This means something went wrong.
+                    #raise ApiError('GET /tasks/ {}'.format(resp.status_code))
+                    #raise APIError(resp.status_code)
+                    message={'messages':mesg}
+                    return render(request, "messages.html", context=message)
+                else:
+                    json_data=[]
+                    dict_data=[]
+                    obj_data=[]
+                    json_data = resp.json()
+
+                    #print(json_data[0])
+                    #print(json_data[1])
+                    for ix in range(len(json_data)):
+                     obj = Product()
+                      #dict_data.append(json.loads(json_data[ix]))
+                     obj.pk = int(json_data[ix]["LOCAL_ID"])
+                     obj.productid = json_data[ix]["PRODUCT_ID"]
+                     obj.name = json_data[ix]["NAME"]
+                     obj.type = json_data[ix]["TYPE"]
+                     obj.coverage_limit = json_data[ix]["COVERAGE_LIMIT"]
+                     obj.price_per_1000_units = json_data[ix]["RATE"]
+                     obj.product_date = json_data[ix]["CREATE_DATE"]
+                     obj.description = json_data[ix]["DESCRIPTION"]
+                     obj.description_html = misaka.html(obj.description)
+                     #obj.photo = json_data[ix]["PHOTO"]
+                     obj.creator = User.objects.get(pk=int(json_data[ix]["CREATOR"]))
+                     obj.create_date = json_data[ix]["CREATE_DATE"]
+                     obj.backend_SOR_connection = json_data[ix]["CONNECTION"]
+                     obj.response = json_data[ix]["RESPONSE"]
+                     obj.record_status = json_data[ix]["RECORD_STATUS"]
+                     obj.commit_indicator = json_data[ix]["COMMIT_INDICATOR"]
+
+                     obj_data.append(obj)
+
+                    context = {'object_list':obj_data}
+
+                    return render(request, "products/product_list.html", context=context)
+
+                    #mesg_obj = get_object_or_404(APICodes, http_response_code = 1000)
+                    #status_message=mesg_obj.http_response_message
+                    #mesg="1000" + " - " + status_message
+                    # add form dictionary to context
+                    #message={'messages':mesg}
+                    #return render(request, "messages.html", context=message)
+
+
+@permission_required("products.add_product")
+@login_required
+def RefreshProduct(request, pk):
+        # fetch the object related to passed id
+        context ={}
+        prod_obj = get_object_or_404(Product, pk = pk)
+
+        api = ApiDomains()
+        url = api.product + "/" + "refresh"
+        #url = 'https://94q78vev60.execute-api.us-east-1.amazonaws.com/Prod/intellidataProductAPI/history'
+        payload={'ident': prod_obj.productid}
+
+        resp = requests.get(url, params=payload)
+        print(resp.status_code)
+
+        obj = get_object_or_404(APICodes, http_response_code = resp.status_code)
+        status_message=obj.http_response_message
+        mesg=str(resp.status_code) + " - " + status_message
+
+        if resp.status_code != 200:
+            # This means something went wrong.
+            #raise ApiError('GET /tasks/ {}'.format(resp.status_code))
+            #raise APIError(resp.status_code)
+            message={'messages':mesg}
+            return render(request, "messages.html", context=message)
+        else:
+            json_data=[]
+
+            json_data = resp.json()
+            obj1=Product()
+
+            #OVERRIDE THE OBJECT WITH API data
+            obj1.pk = int(json_data["LOCAL_ID"])
+            obj.productid = json_data["PRODUCT_ID"]
+            obj1.name = json_data["NAME"]
+            obj1.type = json_data["TYPE"]
+            obj1.coverage_limit = json_data["COVERAGE_LIMIT"]
+            obj1.price_per_1000_units = json_data["RATE"]
+            obj1.product_date = json_data["CREATE_DATE"]
+            obj1.description = json_data["DESCRIPTION"]
+            obj1.description_html = misaka.html(obj1.description)
+            #obj1.photo = json_data["PHOTO"]
+            obj1.creator = User.objects.get(pk=int(json_data["CREATOR"]))
+            #obj.crerator = get_object_or_404(User, pk=obj.creatorid)
+            obj1.create_date = json_data["CREATE_DATE"]
+            obj1.backend_SOR_connection = json_data["CONNECTION"]
+            obj1.response = json_data["RESPONSE"]
+            obj1.commit_indicator = json_data["COMMIT_INDICATOR"]
+            obj1.record_status = json_data["RECORD_STATUS"]
+
+            obj1.save()
+
+            context = {'product_details':obj1}
 
             return render(request, "products/product_detail.html", context=context)
 
@@ -143,6 +287,7 @@ def VersionProduct(request, pk):
             #form.photo = request.POST.get('photo', False)
             #form.photo = request.FILES['photo']
             form.instance.creator = request.user
+            form.instance.record_status = "Created"
             form.save()
             return HttpResponseRedirect(reverse("products:all"))
 
@@ -168,8 +313,8 @@ class UpdateProduct(LoginRequiredMixin, PermissionRequiredMixin, generic.UpdateV
             raise HttpResponseForbidden()
         else:
             form.instance.creator = self.request.user
+            form.instance.record_status = "Updated"
             return super().form_valid(form)
-
 
 
 class DeleteProduct(LoginRequiredMixin, PermissionRequiredMixin, generic.DeleteView):
@@ -181,7 +326,7 @@ class DeleteProduct(LoginRequiredMixin, PermissionRequiredMixin, generic.DeleteV
     success_url = reverse_lazy("products:all")
 
     def form_valid(self, form):
-
+        print("hello")
         if not self.request.user.has_perm('products.delete_product'):
             raise HttpResponseForbidden()
         else:
@@ -202,7 +347,7 @@ class SearchProductsList(LoginRequiredMixin, generic.ListView):
     def get_queryset(self, **kwargs): # new
         query = self.request.GET.get('q', None)
         object_list = Product.objects.filter(
-            Q(pk__icontains=query) | Q(name__icontains=query) | Q(type__icontains=query) | Q(description__icontains=query)
+            Q(pk__icontains=query) | Q(productid__icontains=query) | Q(name__icontains=query) | Q(type__icontains=query) | Q(description__icontains=query)
         )
         return object_list
 
@@ -235,7 +380,9 @@ def BulkUploadProduct(request):
                                                   description_html = misaka.html(row[1]),
                                                   coverage_limit=row[4],
                                                   price_per_1000_units=row[5],
-                                                  creator = request.user
+                                                  creator = request.user,
+                                                  record_status = "Created",
+                                                  bulk_upload_indicator = "Y"
                                                   ))
                     bulk_mgr.done()
 
@@ -245,6 +392,37 @@ def BulkUploadProduct(request):
             context["form"] = form
 
             return render(request, "bulkuploads/bulkupload_form.html", context)
+
+
+@permission_required("products.add_product")
+@login_required
+def BulkUploadSOR(request):
+
+    array = Product.objects.filter(bulk_upload_indicator='Y')
+    serializer = ProductSerializer(array, many=True)
+    json_array = serializer.data
+
+    api = ApiDomains()
+    url = api.product + "/" + "upload"
+    #url='https://94q78vev60.execute-api.us-east-1.amazonaws.com/Prod/intellidataProductAPI'
+    #post data to the API for backend connection
+    resp = requests.post(url, json=json_array)
+    print("status code " + str(resp.status_code))
+
+    if resp.status_code == 502:
+        resp.status_code = 201
+
+    obj = get_object_or_404(APICodes, http_response_code = resp.status_code)
+    status_message=obj.http_response_message
+    self.response=str(resp.status_code) + " - " + status_message
+
+    if resp.status_code != 201:
+        # This means something went wrong.
+        message={'messages':mesg}
+        return render(request, "messages.html", context=message)
+    else:
+        Product.objects.filter(bulk_upload_indicator='Y').update(bulk_upload_indicator="N")
+
 
 
 

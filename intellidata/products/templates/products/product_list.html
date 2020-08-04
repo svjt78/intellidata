@@ -25,10 +25,27 @@
 	</div>
 
 	{% if user.is_authenticated %}
+
+
+	<div class="dropdown">
+	  <button class="dropbtn btn btn-primary btn-large">Manage Products</button>
+	  <div class="dropdown-content">
+
+		<a href="{% url 'products:create' %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-plus-sign"></span> Create New Product!</a>
+		&nbsp;
+		<a href="{% url 'products:bulk' %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-plus-sign"></span> Upload Products!</a>
+		&nbsp;
+	  <a href="{% url 'products:bulksor' %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-plus-sign"></span> Upload To SOR!</a>
+
+	  </div>
+	</div>
+
+	<!--
 	<a href="{% url 'products:create' %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-plus-sign"></span> Create New Product!</a>
 	&nbsp;
-	<a href="{% url 'products:bulk' %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-plus-sign"></span> Uplaod Products!</a>
+	<a href="{% url 'products:bulk' %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-plus-sign"></span> Upload Products!</a>
 	&nbsp;
+-->
 	{% if FileNotFound %}
     <div id="some_flag" title="Some Flag">
         <h2>File Does Not Exist!</h2>
@@ -45,12 +62,15 @@
 		{% for product in object_list %}
 			<a class="list-group-item" href="{% url 'products:single' pk=product.pk %}">
 			     <h3 class="title list-group-item-heading">{{ product.name }}</h3>
+					 <h3 class="title list-group-item-heading">ID: {{ product.productid }}</h3>
 					 <br>
 
 					 {% block postproduct %}
 					 {% if product.photo %}
 						 {% thumbnail product.photo "300" crop="center" as im %}
+
     		 				<img src="{{ product.photo.url }}" width="{{ im.width }}" height="{{ im.height }}">
+
 						 {% endthumbnail %}
 					 {% endif %}
 					 {% endblock %}
@@ -63,6 +83,7 @@
 					 <h4 class="title list-group-item-heading">Created On: {{ product.product_date }}</h4>
 					 <h4 class="title list-group-item-heading">Created By: {{ product.creator }}</h4>
 					 <h4 class="title list-group-item-heading">Backend/SOR Connection: {{ product.backend_SOR_connection }}</h4>
+					 <h4 class="title list-group-item-heading">Record Status: {{ product.record_status }}</h4>
 					 <h4 class="title list-group-item-heading">Commit Indicator: {{ product.commit_indicator }}</h4>
 
 					 <br>

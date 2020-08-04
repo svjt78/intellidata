@@ -47,3 +47,8 @@ class BulkCreateManager(object):
         for model_name, objs in self._create_queues.items():
             if len(objs) > 0:
                 self._commit(apps.get_model(model_name))
+
+#class built to contain the different API domain names
+class ApiDomains:
+
+    product='https://qiwnvysdwf.execute-api.us-east-1.amazonaws.com/Prod/intellidataProductAPI'

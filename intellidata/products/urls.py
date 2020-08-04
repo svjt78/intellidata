@@ -6,8 +6,11 @@ app_name = 'products'
 
 urlpatterns = [
     url(r"^$", views.ListProducts.as_view(), name="all"),
+    url(r"^sor/history/(?P<pk>\d+)/$", views.ListProductsHistory, name="history"),
+    url(r"^sor/refresh/(?P<pk>\d+)/$", views.RefreshProduct, name="refresh"),
     url(r"^new/$", views.CreateProduct.as_view(), name="create"),
     url(r"^bulkupload/$",views.BulkUploadProduct,name="bulk"),
+    url(r"^bulkuploadsor/$",views.BulkUploadSOR,name="bulksor"),
     url(r"^version/(?P<pk>\d+)/$",views.VersionProduct, name="version"),
     url(r"^backend/pull/(?P<pk>\d+)/$",views.BackendPull, name="backendpull"),
     url(r"^search/$", views.SearchProductsForm, name="search"),

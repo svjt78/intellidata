@@ -54,7 +54,7 @@ class CreateCode(LoginRequiredMixin, PermissionRequiredMixin, generic.CreateView
 #    fields = ("name", "description")
     permission_required = 'apicodes.add_code'
     context_object_name = 'code_details'
-    redirect_field_name = 'apicodes/product_list.html'
+    redirect_field_name = 'apicodes/code_list.html'
     form_class = forms.APICodesForm
     model = models.APICodes
     template_name = 'apicodes/code_form.html'
