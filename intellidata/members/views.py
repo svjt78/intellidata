@@ -37,6 +37,14 @@ from os import path
 from django.utils.text import slugify
 import misaka
 import uuid
+from groups.utils import ApiDomains
+from apicodes.models import APICodes
+from groups.utils import Notification
+import requests
+from django.contrib.auth.models import User
+import re
+from botocore.exceptions import NoCredentialsError
+import io
 
 # For Rest rest_framework
 from rest_framework import status
@@ -91,7 +99,242 @@ class CreateMember(LoginRequiredMixin, PermissionRequiredMixin, generic.CreateVi
             """
             form.instance.group = self.group
             form.instance.creator = self.request.user
+            form.instance.record_status = "Created"
+
+            email_addr = form.instance.email
+            phone_num = form.instance.phone
+            print(phone_num)
+
+            #NOTIFY MEMBER
+            notification = Notification()
+            subscription_arn = notification.SubscribeMemberObj(phone_num)
+            notification.TextMemberObj(subscription_arn)
+
+            notification.EmailMemberObj(email_addr)
+
+            form.instance.sms = "Initial notification sent"
+            form.instance.emailer = "Initial notification sent"
+
             return super().form_valid(form)
+
+#Pull from  backend system of record(SOR)
+@permission_required("members.add_member")
+@login_required
+def BackendPull(request, pk):
+        # fetch the object related to passed id
+
+        member_obj = get_object_or_404(Member, pk = pk)
+
+        api = ApiDomains()
+        url = api.member + "/" + "latest"
+        payload={'ident': member_obj.memberid}
+        resp = requests.get(url, params=payload)
+        print(resp.text)
+        print(resp.status_code)
+        obj = get_object_or_404(APICodes, http_response_code = resp.status_code)
+        status_message=obj.http_response_message
+        mesg=str(resp.status_code) + " - " + status_message
+        if resp.status_code != 200:
+            # This means something went wrong.
+            #raise ApiError('GET /tasks/ {}'.format(resp.status_code))
+            #raise APIError(resp.status_code)
+            message={'messages':mesg}
+            return render(request, "messages.html", context=message)
+        else:
+            json_data = json.loads(resp.text)
+
+            # fetch the object related to passed id
+
+            #OVERRIDE THE OBJECT WITH API data
+            obj.pk = int(json_data["LOCAL_ID"])
+            obj.memberid = json_data["MEMBER_ID"]
+            obj.name = json_data["NAME"]
+            obj.name_html = misaka.html(obj.name)
+            obj.age = json_data["AGE"]
+
+            obj.address_line_1 = json_data["ADDRESS_LINE_1"]
+            obj.ADDRESS_LINE_2 = json_data["ADDRESS_LINE_2"]
+            obj.city = json_data["CITY"]
+            obj.state = json_data["STATE"]
+            obj.zipcode = json_data["ZIPCODE"]
+
+
+            obj.email = json_data["EMAIL"]
+            obj.phone = json_data["PHONE"]
+
+            group_id = json_data["GROUP"]
+            group_obj = get_object_or_404(Group, pk = group_id)
+            obj.group = group_obj.name
+
+            obj.creator = User.objects.get(pk=int(json_data["CREATOR"]))
+            obj.member_date = json_data["MEMBER_DATE"]
+
+            obj.sms = json_data["SMS"]
+            obj.emailer = json_data["EMAILER"]
+            obj.artefact = json_data["ARTEFACT"]
+
+            obj.backend_SOR_connection = json_data["CONNECTION"]
+            obj.response = json_data["RESPONSE"]
+            obj.commit_indicator = json_data["COMMIT_INDICATOR"]
+            obj.record_status = json_data["RECORD_STATUS"]
+
+            context = {'member_details':obj}
+
+            return render(request, "members/member_detail.html", context=context)
+
+
+
+#Pull from  backend system of record(SOR)
+@permission_required("members.add_member")
+@login_required
+def ListMembersHistory(request, pk):
+
+                context ={}
+
+                member_obj = get_object_or_404(Member, pk = pk)
+
+                api = ApiDomains()
+                url = api.member + "/" + "history"
+
+                payload={'ident': member_obj.memberid}
+
+                resp = requests.get(url, params=payload)
+                print(resp.status_code)
+                obj = get_object_or_404(APICodes, http_response_code = resp.status_code)
+                status_message=obj.http_response_message
+                mesg=str(resp.status_code) + " - " + status_message
+
+                if resp.status_code != 200:
+                    # This means something went wrong.
+                    #raise ApiError('GET /tasks/ {}'.format(resp.status_code))
+                    #raise APIError(resp.status_code)
+                    message={'messages':mesg}
+                    return render(request, "messages.html", context=message)
+                else:
+                    json_data=[]
+                    dict_data=[]
+                    obj_data=[]
+                    json_data = resp.json()
+
+                    #print(json_data[0])
+                    #print(json_data[1])
+                    for ix in range(len(json_data)):
+                     obj = Member()
+                      #dict_data.append(json.loads(json_data[ix]))
+                     obj.pk = int(json_data[ix]["LOCAL_ID"])
+                     obj.memberid = json_data[ix]["MEMBER_ID"]
+                     obj.name = json_data[ix]["NAME"]
+                     obj.name_html = misaka.html(obj.name)
+                     obj.age = json_data[ix]["AGE"]
+
+                     obj.address_line_1 = json_data[ix]["ADDRESS_LINE_1"]
+                     obj.ADDRESS_LINE_2 = json_data[ix]["ADDRESS_LINE_2"]
+                     obj.city = json_data[ix]["CITY"]
+                     obj.state = json_data[ix]["STATE"]
+                     obj.zipcode = json_data[ix]["ZIPCODE"]
+
+                     obj.email = json_data[ix]["EMAIL"]
+                     obj.phone = json_data[ix]["PHONE"]
+
+                     group_id = json_data[ix]["GROUP"]
+                     group_obj = get_object_or_404(Group, pk = group_id)
+                     obj.group = group_obj
+
+                     obj.creator = User.objects.get(pk=int(json_data[ix]["CREATOR"]))
+                     obj.member_date = json_data[ix]["MEMBER_DATE"]
+
+                     obj.sms = json_data[ix]["SMS"]
+                     obj.emailer = json_data[ix]["EMAILER"]
+                     obj.artefact = json_data[ix]["ARTEFACT"]
+
+                     obj.backend_SOR_connection = json_data[ix]["CONNECTION"]
+                     obj.response = json_data[ix]["RESPONSE"]
+                     obj.commit_indicator = json_data[ix]["COMMIT_INDICATOR"]
+                     obj.record_status = json_data[ix]["RECORD_STATUS"]
+
+                     obj_data.append(obj)
+
+                    context = {'object_list':obj_data}
+
+                    return render(request, "members/member_list.html", context=context)
+
+                    #mesg_obj = get_object_or_404(APICodes, http_response_code = 1000)
+                    #status_message=mesg_obj.http_response_message
+                    #mesg="1000" + " - " + status_message
+                    # add form dictionary to context
+                    #message={'messages':mesg}
+                    #return render(request, "messages.html", context=message)
+
+
+@permission_required("members.add_member")
+@login_required
+def RefreshMember(request, pk):
+        # fetch the object related to passed id
+        context ={}
+        member_obj = get_object_or_404(Member, pk = pk)
+
+        api = ApiDomains()
+        url = api.member + "/" + "refresh"
+
+        payload={'ident': member_obj.memberid}
+
+        resp = requests.get(url, params=payload)
+        print(resp.status_code)
+
+        obj = get_object_or_404(APICodes, http_response_code = resp.status_code)
+        status_message=obj.http_response_message
+        mesg=str(resp.status_code) + " - " + status_message
+
+        if resp.status_code != 200:
+            # This means something went wrong.
+            #raise ApiError('GET /tasks/ {}'.format(resp.status_code))
+            #raise APIError(resp.status_code)
+            message={'messages':mesg}
+            return render(request, "messages.html", context=message)
+        else:
+            json_data=[]
+
+            json_data = resp.json()
+            obj1=Member()
+
+            #OVERRIDE THE OBJECT WITH API data
+            obj1.pk = int(json_data["LOCAL_ID"])
+            obj1.memberid = json_data["MEMBER_ID"]
+            obj1.name = json_data["NAME"]
+            obj1.name_html = misaka.html(obj1.name)
+            obj1.age = json_data["AGE"]
+
+            obj1.address_line_1 = json_data["ADDRESS_LINE_1"]
+            obj1.address_line_2 = json_data["ADDRESS_LINE_2"]
+            obj1.city = json_data["CITY"]
+            obj1.state = json_data["STATE"]
+            obj1.zipcode = json_data["ZIPCODE"]
+
+            obj1.email = json_data["EMAIL"]
+            obj1.phone = json_data["PHONE"]
+
+            group_id = json_data["GROUP"]
+            group_obj = get_object_or_404(Group, pk = group_id)
+            obj1.group = group_obj
+
+            obj1.creator = User.objects.get(pk=int(json_data["CREATOR"]))
+            obj1.member_date = json_data["MEMBER_DATE"]
+
+            obj1.sms = json_data["SMS"]
+            obj1.emailer = json_data["EMAILER"]
+            obj1.artefact = json_data["ARTEFACT"]
+
+            obj1.backend_SOR_connection = json_data["CONNECTION"]
+            obj1.response = json_data["RESPONSE"]
+            obj1.commit_indicator = json_data["COMMIT_INDICATOR"]
+            obj1.record_status = json_data["RECORD_STATUS"]
+
+            obj1.save()
+
+            context = {'member_details':obj1}
+
+            return render(request, "members/member_detail.html", context=context)
+
 
 
 @login_required
@@ -138,6 +381,7 @@ class UpdateMember(LoginRequiredMixin, PermissionRequiredMixin, generic.UpdateVi
             raise HttpResponseForbidden()
         else:
             form.instance.creator = self.request.user
+            form.instance.record_status = "Updated"
             return super().form_valid(form)
 
 
@@ -176,7 +420,370 @@ class SearchMembersList(LoginRequiredMixin, generic.ListView):
         object_list = models.Member.objects.filter(
             Q(name__icontains=query) | Q(age__icontains=query)
         )
-        return object_list
+
+        #change start for remote SearchMembersForm
+        if not object_list:
+            api = ApiDomains()
+            url = api.member + "/" + "refresh"
+
+            payload={'ident': query}
+
+            resp = requests.get(url, params=payload)
+            print(resp.status_code)
+
+            obj = get_object_or_404(APICodes, http_response_code = resp.status_code)
+            status_message=obj.http_response_message
+            mesg=str(resp.status_code) + " - " + status_message
+
+            if resp.status_code != 200:
+                # This means something went wrong.
+                #raise ApiError('GET /tasks/ {}'.format(resp.status_code))
+                #raise APIError(resp.status_code)
+                #message={'messages':mesg}
+                #return render(self.request, "messages.html", context=message)
+                print("Status Code: " + str(resp.status_code))
+            else:
+                json_data=[]
+
+                json_data = resp.json()
+                obj_data=[]
+                obj1=Member()
+
+                #OVERRIDE THE OBJECT WITH API data
+                obj1.pk = int(json_data["LOCAL_ID"])
+                obj1.memberid = json_data["MEMBER_ID"]
+                obj1.name = json_data["NAME"]
+                obj1.name_html = misaka.html(obj.name)
+                obj1.age = json_data["AGE"]
+                obj1.email = json_data["EMAIL"]
+                obj1.phone = json_data["PHONE"]
+
+                obj1.address_line_1 = json_data["ADDRESS_LINE_1"]
+                obj1.ADDRESS_LINE_2 = json_data["ADDRESS_LINE_2"]
+                obj1.city = json_data["CITY"]
+                obj1.state = json_data["STATE"]
+                obj1.zipcode = json_data["ZIPCODE"]
+
+                obj1.group = json_data["GROUP"]
+                obj1.creator = User.objects.get(pk=int(json_data["CREATOR"]))
+                obj1.member_date = json_data["MEMBER_DATE"]
+
+                obj1.sms = json_data["SMS"]
+                obj1.emailer = json_data["EMAILER"]
+                obj1.artefact = json_data["ARTEFACT"]
+
+                obj1.backend_SOR_connection = json_data["CONNECTION"]
+                obj1.response = json_data["RESPONSE"]
+                obj1.commit_indicator = json_data["COMMIT_INDICATOR"]
+                obj1.record_status = json_data["RECORD_STATUS"]
+
+                obj1.save()
+
+                object_remote_list = Member.objects.filter(memberid=query)
+                print(object_remote_list)
+                return object_remote_list
+
+        else:
+        #change end for remote SearchMembersForm
+
+                return object_list
+
+
+@permission_required("members.add_member")
+@login_required
+def ValidateMemberFeed(request, pk, *args, **kwargs):
+
+        context ={}
+
+        form = BulkUploadForm(request.POST, request.FILES)
+
+        if form.is_valid():
+                    form.instance.creator = request.user
+                    form.save()
+
+                    s3 = boto3.client('s3')
+                    s3.download_file('intellidatastatic', 'media/members.csv', 'members.csv')
+
+                    with open('members.csv', 'rt') as csv_file:
+                        array_good =[]
+                        array_bad = []
+                        #array_bad =[]
+                        for row in csv.reader(csv_file):
+                                                      bad_ind = 0
+                                                      array1=[]
+                                                      array2=[]
+
+                                                      #populate serial number
+                                                      serial=row[0]
+                                                      array2.append(serial)
+
+                                                       #validate name
+                                                      name=row[1]
+                                                      if name == "":
+                                                          bad_ind = 1
+                                                          description = "Name is mandatory"
+                                                          array1.append(serial)
+                                                          array1.append(name)
+                                                          array1.append(description)
+                                                          array1.append(pk)
+                                                          array_bad.append(array1)
+
+                                                      else:
+                                                          array2.append(name)
+
+                                                      slug=slugify(row[1])
+                                                      #array2.append(slug)
+
+                                                      #validate age
+                                                      age=int(row[2])
+                                                      array1=[]
+                                                      if age == "":
+                                                          bad_ind=1
+                                                          description = "Age must be numeric "
+                                                          array1.append(serial)
+                                                          array1.append(age)
+                                                          array1.append(description)
+                                                          array1.append(pk)
+                                                          array_bad.append(array1)
+                                                      elif (age <= 0 or age >= 100):
+                                                          bad_ind=1
+                                                          description = "Age must be between 1 and 99 years "
+                                                          array1.append(serial)
+                                                          array1.append(age)
+                                                          array1.append(description)
+                                                          array1.append(pk)
+                                                          array_bad.append(array1)
+                                                      else:
+                                                           array2.append(age)
+
+                                                      #validate address line 1
+                                                      address_line_1=row[3]
+                                                      array1=[]
+                                                      if address_line_1 == "":
+                                                          bad_ind = 1
+                                                          description = "Address line 1 is mandatory"
+                                                          array1.append(serial)
+                                                          array1.append(address_line_1)
+                                                          array1.append(description)
+                                                          array1.append(pk)
+                                                          array_bad.append(array1)
+                                                      else:
+                                                          array2.append(address_line_1)
+
+
+                                                      #validate address line 2
+                                                      address_line_2=row[4]
+                                                      array2.append(address_line_2)
+
+                                                           #validate city
+                                                      city=row[5]
+                                                      array1=[]
+                                                      if city == "":
+                                                           bad_ind = 1
+                                                           description = "City is mandatory"
+                                                           array1.append(serial)
+                                                           array1.append(city)
+                                                           array1.append(description)
+                                                           array1.append(pk)
+                                                           array_bad.append(array1)
+                                                      else:
+                                                           array2.append(city)
+
+                                                           #validate state
+                                                      state=row[6]
+                                                      array1=[]
+                                                      if state == "":
+                                                           bad_ind = 1
+                                                           description = "State is mandatory"
+                                                           array1.append(serial)
+                                                           array1.append(state)
+                                                           array1.append(description)
+                                                           array1.append(pk)
+                                                           array_bad.append(array1)
+                                                      else:
+                                                          array2.append(state)
+
+                                                          #validate zipcode
+                                                      zipcode=row[7]
+                                                      array1=[]
+                                                      if zipcode == "":
+                                                            bad_ind = 1
+                                                            description = "Zipcode is mandatory"
+                                                            array1.append(serial)
+                                                            array1.append(zipcode)
+                                                            array1.append(description)
+                                                            array1.append(pk)
+                                                            array_bad.append(array1)
+                                                      else:
+                                                           array2.append(zipcode)
+
+                                                            #validate email
+                                                      email=row[8]
+                                                      array1=[]
+                                                      if email == "":
+                                                          bad_ind=1
+                                                          description = "Email is mandatory "
+                                                          array1.append(serial)
+                                                          array1.append(email)
+                                                          array1.append(description)
+                                                          array1.append(pk)
+                                                          array_bad.append(array1)
+                                                      elif not re.match(r"^[A-Za-z0-9\.\+_-]+@[A-Za-z0-9\._-]+\.[a-zA-Z]*$", email):
+                                                          bad_ind = 1
+                                                          description = "Invalid email"
+                                                          array1.append(serial)
+                                                          array1.append(email)
+                                                          array1.append(description)
+                                                          array1.append(pk)
+                                                          array_bad.append(array1)
+                                                      else:
+                                                          array2.append(email)
+
+                                                      #validate phone
+                                                      phone=row[9]
+                                                      array1=[]
+                                                      p=[]
+                                                      p = phone
+                                                      l=len(p)
+                                                      p1 = p[0]
+                                                      p2=p[1:l]
+                                                      if phone == "":
+                                                          bad_ind=1
+                                                          description = "Phone is mandatory "
+                                                          array1.append(serial)
+                                                          array1.append(phone)
+                                                          array1.append(description)
+                                                          array1.append(pk)
+                                                          array_bad.append(array1)
+                                                      #elif p1 != "+":
+                                                          #bad_ind=1
+                                                          #description = "Phone is not in right format "
+                                                          #array1.append(description)
+                                                      elif p.isnumeric() == False:
+                                                          bad_ind=1
+                                                          description = "Phone must be numbers "
+                                                          array1.append(serial)
+                                                          array1.append(phone)
+                                                          array1.append(description)
+                                                          array1.append(pk)
+                                                          array_bad.append(array1)
+                                                      elif len(p) != (10 and 11):
+                                                          print(len(p))
+                                                          bad_ind=1
+                                                          description = "Length of phone number is not correct "
+                                                          array1.append(serial)
+                                                          array1.append(phone)
+                                                          array1.append(description)
+                                                          array1.append(pk)
+                                                          array_bad.append(array1)
+                                                      else:
+                                                           array2.append(phone)
+
+
+                                                      if bad_ind == 0:
+                                                          array_good.append(array2)
+
+
+
+                        # create good file
+                    #with open('members1.csv', 'w', newline='') as clean_file:
+                    ##    writer = csv.writer(clean_file)
+                    #    writer.writerows(array_good)
+
+                    buff1 = io.StringIO()
+
+                    writer = csv.writer(buff1, dialect='excel', delimiter=',')
+                    writer.writerows(array_good)
+
+                    buff2 = io.BytesIO(buff1.getvalue().encode())
+
+                        # check if a version of the good file already exists
+                #    try:
+                #        s3.Object('my-bucket', 'dootdoot.jpg').load()
+                #    except botocore.exceptions.ClientError as e:
+                #        if e.response['Error']['Code'] == "404":
+                #            # The object does not exist.
+                #            ...
+                #        else:
+                #            # Something else has gone wrong.
+                #            raise
+                #    else:
+                #        # do something
+
+# create good file
+                    try:
+                        response = s3.delete_object(Bucket='intellidatastatic', Key='media/members1.csv')
+                        s3.upload_fileobj(buff2, 'intellidatastatic', 'media/members1.csv')
+                        print("Good File Upload Successful")
+
+                    except FileNotFoundError:
+                         print("The good file was not found")
+
+                    except NoCredentialsError:
+                         print("Credentials not available")
+
+
+                           # create bad file
+                    #with open('member_error.csv', 'w', newline='') as error_file:
+                    #       writer = csv.writer(error_file)
+                    #       writer.writerows(array1)
+
+                    buff3 = io.StringIO()
+
+                    writer = csv.writer(buff3, dialect='excel', delimiter=',')
+                    writer.writerows(array_bad)
+
+                    buff4 = io.BytesIO(buff3.getvalue().encode())
+
+
+                        # save bad file to S3
+                    try:
+                        response = s3.delete_object(Bucket='intellidatastatic', Key='media/members_error.csv')
+                        s3.upload_fileobj(buff4, 'intellidatastatic', 'media/members_error.csv')
+                        print("Bad File Upload Successful")
+
+                    except FileNotFoundError:
+                        print("The bad file was not found")
+
+                    except NoCredentialsError:
+                        print("Credentials not available")
+
+                    # load the member table
+                    s3.download_file('intellidatastatic', 'media/members1.csv', 'members1.csv')
+
+                    with open('members1.csv', 'rt') as csv_file:
+                        bulk_mgr = BulkCreateManager(chunk_size=20)
+                        for row in csv.reader(csv_file):
+                            bulk_mgr.add(models.Member(memberid = str(uuid.uuid4())[26:36],
+                                                      name=row[1],
+                                                      slug=slugify(row[1]),
+                                                      age=int(row[2]),
+                                                      address_line_1=row[3],
+                                                      address_line_2=row[4],
+                                                      city=row[5],
+                                                      state=row[6],
+                                                      zipcode=row[7],
+                                                      email=row[8],
+                                                      phone=row[9],
+                                                      group=get_object_or_404(models.Group, pk=pk),
+                                                      creator = request.user,
+                                                      record_status = "Created",
+                                                      bulk_upload_indicator = "Y"
+                                                      ))
+                        bulk_mgr.done()
+
+                    return HttpResponseRedirect(reverse("members:all"))
+
+
+
+                    #return HttpResponseRedirect(reverse("members:all"))
+
+        else:
+                            # add form dictionary to context
+                    context["form"] = form
+
+                    return render(request, "bulkuploads/bulkupload_form.html", context)
+
 
 
 @permission_required("members.add_member")
@@ -192,19 +799,26 @@ def BulkUploadMember(request, pk, *args, **kwargs):
                     form.save()
 
                     s3 = boto3.client('s3')
-                    s3.download_file('intellidatastatic', 'media/members.csv', 'members.csv')
+                    s3.download_file('intellidatastatic', 'media/members1.csv', 'members1.csv')
 
-                    with open('members.csv', 'rt') as csv_file:
+                    with open('members1.csv', 'rt') as csv_file:
                         bulk_mgr = BulkCreateManager(chunk_size=20)
                         for row in csv.reader(csv_file):
                             bulk_mgr.add(models.Member(memberid = str(uuid.uuid4())[26:36],
-                                                      name=row[0],
-                                                      slug=slugify(row[0]),
-                                                      age=int(row[1]),
-                                                      email=row[2],
-                                                      phone=row[3],
+                                                      name=row[1],
+                                                      slug=slugify(row[1]),
+                                                      age=int(row[2]),
+                                                      address_line_1=row[3],
+                                                      address_line_2=row[4],
+                                                      city=row[5],
+                                                      state=row[6],
+                                                      zipcode=row[7],
+                                                      email=row[8],
+                                                      phone=row[9],
                                                       group=get_object_or_404(models.Group, pk=pk),
-                                                      creator = request.user
+                                                      creator = request.user,
+                                                      record_status = "Created",
+                                                      bulk_upload_indicator = "Y"
                                                       ))
                         bulk_mgr.done()
 
@@ -215,6 +829,36 @@ def BulkUploadMember(request, pk, *args, **kwargs):
                     context["form"] = form
 
                     return render(request, "bulkuploads/bulkupload_form.html", context)
+
+
+@permission_required("members.add_member")
+@login_required
+def BulkUploadSOR(request):
+
+    array = Member.objects.filter(bulk_upload_indicator='Y')
+    serializer = MemberSerializer(array, many=True)
+    json_array = serializer.data
+
+    api = ApiDomains()
+    url = api.member + "/" + "upload"
+    #post data to the API for backend connection
+    resp = requests.post(url, json=json_array)
+    print("status code " + str(resp.status_code))
+
+    if resp.status_code == 502:
+        resp.status_code = 201
+
+    obj = get_object_or_404(APICodes, http_response_code = resp.status_code)
+    status_message=obj.http_response_message
+    mesg=str(resp.status_code) + " - " + status_message
+
+    if resp.status_code != 201:
+        # This means something went wrong.
+        message={'messages':mesg}
+        return render(request, "messages.html", context=message)
+    else:
+        Member.objects.filter(bulk_upload_indicator='Y').update(bulk_upload_indicator=" ")
+        return HttpResponseRedirect(reverse("members:all"))
 
 
 #Send for subscription
@@ -432,8 +1076,6 @@ def EmailMember(request, pk):
             return render(request, "members/member_form.html", context)
 
 
-
-
 #rest API call
 @api_view(['GET', 'POST'])
 def MemberList(request):
@@ -528,3 +1170,14 @@ def NotifyMember_deprecated(request, pk):
             context["form"] = form
 
             return render(request, "members/member_form.html", context)
+
+
+#class for handling built-in API errors
+class APIError(Exception):
+    """An API Error Exception"""
+
+    def __init__(self, status):
+        self.status = status
+
+    def __str__(self):
+        return "APIError: status={}".format(self.status)

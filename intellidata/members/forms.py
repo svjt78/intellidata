@@ -5,10 +5,20 @@ from members.models import *
 from .models import Member
 from phonenumber_field.formfields import PhoneNumberField
 
+TRANSMISSION_CHOICES=[('Connected','Connected'),
+     ('Disconnected','Disconnected')
+     ]
 
 class MemberForm(forms.ModelForm):
     age: forms.IntegerField()
     phone = PhoneNumberField()
+    backend_SOR_connection = forms.ChoiceField(choices=TRANSMISSION_CHOICES, widget=forms.RadioSelect, label='If connected to ODS')
+    sms = forms.CharField(required=False, label='SMS Notification', widget=forms.TextInput(attrs={'readonly':'readonly'}))
+    emailer = forms.CharField(required=False, label='Email Notification', widget=forms.TextInput(attrs={'readonly':'readonly'}))
+    artefact = forms.FileField(required=False)
+    commit_indicator = forms.CharField(required=False, label='If this member data is sync-ed up with ODS', widget=forms.TextInput(attrs={'readonly':'readonly'}))
+    record_status = forms.CharField(required=False, label='If this member data got Created or Updated', widget=forms.TextInput(attrs={'readonly':'readonly'}))
+    response = forms.CharField(required=False, label='Connection response from/to ODS', widget=forms.TextInput(attrs={'readonly':'readonly'}))
     # this function will be used for the validation
     def clean(self):
 
@@ -30,7 +40,7 @@ class MemberForm(forms.ModelForm):
 
     class Meta:
         model = Member
-        exclude = ('slug','creator')
+        exclude = ('slug','creator', 'bulk_upload_indicator')
         #fields = ('name', 'age')
         #fields = '__all__'
         widgets = {
@@ -38,7 +48,4 @@ class MemberForm(forms.ModelForm):
             'name': forms.TextInput(attrs={'class': 'textinputclass'}),
             'email_address': forms.EmailField(max_length = 200),
             'creator': forms.TextInput(attrs={'readonly':'readonly'}),
-            'sms': forms.TextInput(attrs={'readonly':'readonly'}),
-            'emailer': forms.TextInput(attrs={'readonly':'readonly'}),
-
         }

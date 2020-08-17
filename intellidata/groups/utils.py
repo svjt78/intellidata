@@ -1,6 +1,8 @@
 import random
 from collections import defaultdict
 from django.apps import apps
+import boto3
+import json
 
 
 
@@ -48,7 +50,185 @@ class BulkCreateManager(object):
             if len(objs) > 0:
                 self._commit(apps.get_model(model_name))
 
+class Notification:
+    #Send for subscription
+
+    def SubscribeMemberObj(self, phone_num):
+
+        context ={}
+
+        sns = boto3.client('sns')
+
+        topic_arn = 'arn:aws:sns:us-east-1:215632354817:intellidata_notify_topic'
+
+        #obj = get_object_or_404(Member, pk = pk)
+
+        number = str(phone_num).strip()
+        #number_array = number.split()
+        #print(number_array)
+        #number = number_array[3]
+        #number=number.split("=")[1]
+            #to_email_address=to_email_address.strip(")
+        #number=number.replace('"', '')
+        print("that is what I see " + number )
+            #emailaddr = str(form["email"])
+
+            # Add  Subscribers
+        try:
+                response = sns.subscribe(
+                            TopicArn=topic_arn,
+                            Protocol='SMS',
+                            Endpoint=number
+                           )
+            # Display an error if something goes wrong.
+        except ClientError as e:
+                print(e.response['Error']['Message'])
+        else:
+                print("Subscription done!")
+                subscription_arn = response["SubscriptionArn"]
+                return subscription_arn
+                #obj.sms = "Phone Number Subscribed On " + str(datetime.date.today())
+
+
+
+    def TextMemberObj(self, subscription_arn):
+
+        context = {}
+
+        sns = boto3.client('sns')
+
+        topic_arn = 'arn:aws:sns:us-east-1:215632354817:intellidata_notify_topic'
+
+        message = "Start Enrollment using http://www.google.com"
+        messageJSON = json.dumps({"message":message})
+
+        #obj = get_object_or_404(Member, pk = pk)
+
+        try:
+                response=sns.publish(
+                            TopicArn=topic_arn,
+                            Message=message
+                         )
+
+            # Display an error if something goes wrong.
+        except ClientError as e:
+                print(e.response['Error']['Message'])
+        else:
+                print("SMS sent!")
+                # Delete subscription
+                sns.unsubscribe(SubscriptionArn=subscription_arn)
+
+                #obj.sms = "SMS Notification Sent on " + str(datetime.date.today())
+
+
+
+    def EmailMemberObj(self, email_addr):
+
+        context = {}
+
+        message = "Start Enrollment"
+        messageJSON = json.dumps({"message":message})
+
+        #obj = get_object_or_404(Member, pk = pk)
+
+        to_email_address = str(email_addr).strip()
+        #print(to_email)
+        #to_email_array = to_email.split()
+        #to_email_value = to_email_array[3]
+        #to_email_address=to_email_value.split("=")[1]
+            #to_email_address=to_email_address.strip(")
+        #to_email_address=to_email_address.replace('"', '')
+            #to_email_address = "'{}'".format(to_email_address)
+
+            #print("what we see is " + to_email_address)
+            #to_email = 'svjt78@gmail.com'
+        from_email = 'suvojit.dt@gmail.com'
+                # Replace sender@example.com with your "From" address.
+            # This address must be verified with Amazon SES.
+
+        SENDER = from_email
+
+            # Replace recipient@example.com with a "To" address. If your account
+            # is still in the sandbox, this address must be verified.
+        RECIPIENT = to_email_address
+
+            # Specify a configuration set. If you do not want to use a configuration
+            # set, comment the following variable, and the
+            # ConfigurationSetName=CONFIGURATION_SET argument below.
+            #CONFIGURATION_SET = "ConfigSet"
+
+            # If necessary, replace us-west-2 with the AWS Region you're using for Amazon SES.
+        AWS_REGION = "us-east-1"
+
+            # The subject line for the email.
+        SUBJECT = "Enrollment"
+
+            # The email body for recipients with non-HTML email clients.
+        BODY_TEXT = ("Start Enrollment\r\n"
+                         "You are being requested to start "
+                         "Enrollemnt"
+                        )
+
+            # The HTML body of the email.
+        BODY_HTML = """<html>
+            <head></head>
+            <body>
+              <h1>Start Enrollment</h1>
+              <p>This email was sent with
+                <a href='https://aws.amazon.com/ses/'>Amazon SES</a> using the
+                <a href='https://aws.amazon.com/sdk-for-python/'>
+                  AWS SDK for Python (Boto)</a>.</p>
+            </body>
+            </html>
+                        """
+
+            # The character encoding for the email.
+        CHARSET = "UTF-8"
+
+            # Create a new SES resource and specify a region.
+        client = boto3.client('ses',region_name=AWS_REGION)
+
+            # Try to send the email.
+        try:
+                #Provide the contents of the email.
+                response = client.send_email(
+                    Destination={
+                        'ToAddresses': [
+                            RECIPIENT,
+                        ],
+                    },
+                    Message={
+                        'Body': {
+                            'Html': {
+                                'Charset': CHARSET,
+                                'Data': BODY_HTML,
+                            },
+                            'Text': {
+                                'Charset': CHARSET,
+                                'Data': BODY_TEXT,
+                            },
+                        },
+                        'Subject': {
+                            'Charset': CHARSET,
+                            'Data': SUBJECT,
+                        },
+                    },
+                    Source=SENDER,
+                    # If you are not using a configuration set, comment or delete the
+                    # following line
+                    #ConfigurationSetName=CONFIGURATION_SET,
+                )
+            # Display an error if something goes wrong.
+        except ClientError as e:
+                print(e.response['Error']['Message'])
+        else:
+                print("Email sent! Message ID:"),
+                print(response['MessageId'])
+                #obj.emailer = "Email Notification Sent on " + str(datetime.date.today())
+
+
 #class built to contain the different API domain names
 class ApiDomains:
 
-    product='https://qiwnvysdwf.execute-api.us-east-1.amazonaws.com/Prod/intellidataProductAPI'
+    product='https://7fibjg62q2.execute-api.us-east-1.amazonaws.com/Prod/intellidataProductAPI'
+    member='https://m298bcavac.execute-api.us-east-1.amazonaws.com/Prod/intellidataMemberAPI'

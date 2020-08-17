@@ -3,7 +3,7 @@
 {% block premember %}
 
   <div class="dropdown">
-    <button class="dropbtn btn btn-primary btn-large">Manage Members</button>
+    <button class="dropbtn btn btn-primary btn-large">Manage Member</button>
     <div class="dropdown-content">
 
     <a href="{% url 'members:version' pk=member_details.pk %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-pencil"></span> Version Member</a>
@@ -12,6 +12,15 @@
     &nbsp;
     <a href="{% url 'members:delete' pk=member_details.pk %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-remove-circle"></span> Delete Member</a>
     &nbsp;
+
+    </div>
+  </div>
+
+
+  <div class="dropdown">
+    <button class="dropbtn btn btn-primary btn-large">Notify Member</button>
+    <div class="dropdown-content">
+
     <a href="{% url 'members:email' pk=member_details.pk %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-envelope"></span> Email Member</a>
     &nbsp;
     <a href="{% url 'members:subscribe' pk=member_details.pk %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-phone"></span> Subscribe Member</a>
@@ -23,12 +32,20 @@
   </div>
 
   &nbsp;
+  <a href="{% url 'members:backendpull' pk=member_details.pk %}" class="btn btn-primary btn-large"><span class="glyphicon glyphicon-cloud"></span> Pull From Backend</a>
+  &nbsp;
+  <a href="{% url 'members:history' pk=member_details.pk %}" class="btn btn-primary btn-large"><span class="glyphicon glyphicon-cloud"></span> List History</a>
+  &nbsp;
+  <a href="{% url 'members:refresh' pk=member_details.pk %}" class="btn btn-primary btn-large"><span class="glyphicon glyphicon-cloud"></span> Refresh From Backend</a>
+  &nbsp;
   <input type="button" class="btn btn-primary btn-large" value="Go back!" onclick="history.back()">
   &nbsp;
+
 {% endblock %}
 
 
 {% block postmember %}
+
   <div class="container">
     <h1>{{member_details.name}}</h1>
     <h2>Member ID: {{member_details.memberid}}</h2>
@@ -36,12 +53,30 @@
     <h2>Email: {{member_details.email}}</h2>
     <h2>Phone: {{member_details.phone}}</h2>
   </div>
-
+  &nbsp;
+  <div class="container">
+    <h2>Address Line 1: {{member_details.address_line_1}}</h2>
+    <h2>Address Line 2: {{member_details.address_line_2}}</h2>
+    <h2>City: {{member_details.city}}</h2>
+    <h2>State: {{member_details.state}}</h2>
+    <h2>Zipcode: {{member_details.zipcode}}</h2>
+  </div>
+  &nbsp;
   <div class="container">
     <h2>Group: {{member_details.group}}</h2>
     <h2>Created On: {{member_details.member_date}}</h2>
     <h2>Created By: {{member_details.creator}}</h2>
     <h2>SMS Sent: {{member_details.sms}}</h2>
     <h2>EMAIL Sent: {{member_details.emailer}}</h2>
+
+    <h2>Artefacts: <a href={{member_details.artefact.url}}>View Document</a></h2>
   </div>
+    &nbsp;
+  <div class="container">
+    <h2>ODS Connection: {{member_details.backend_SOR_connection}}</h2>
+    <h2>Commit Indicator: {{member_details.commit_indicator}}</h2>
+    <h2>Record Status: {{member_details.record_status}}</h2>
+    <h2>Response: {{member_details.response}}</h2>
+  </div>
+
 {% endblock %}

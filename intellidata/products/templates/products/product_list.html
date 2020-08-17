@@ -35,7 +35,7 @@
 		&nbsp;
 		<a href="{% url 'products:bulk' %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-plus-sign"></span> Upload Products!</a>
 		&nbsp;
-	  <a href="{% url 'products:bulksor' %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-plus-sign"></span> Upload To SOR!</a>
+	  <a href="{% url 'products:bulksor' %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-plus-sign"></span> Upload To ODS!</a>
 
 	  </div>
 	</div>
@@ -82,7 +82,7 @@
 					 <h4 class="title list-group-item-heading">Rate: {{ product.price_per_1000_units }}</h4>
 					 <h4 class="title list-group-item-heading">Created On: {{ product.product_date }}</h4>
 					 <h4 class="title list-group-item-heading">Created By: {{ product.creator }}</h4>
-					 <h4 class="title list-group-item-heading">Backend/SOR Connection: {{ product.backend_SOR_connection }}</h4>
+					 <h4 class="title list-group-item-heading">ODS Connection: {{ product.backend_SOR_connection }}</h4>
 					 <h4 class="title list-group-item-heading">Record Status: {{ product.record_status }}</h4>
 					 <h4 class="title list-group-item-heading">Commit Indicator: {{ product.commit_indicator }}</h4>
 

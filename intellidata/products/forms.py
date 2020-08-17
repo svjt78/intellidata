@@ -19,7 +19,11 @@ class ProductForm(forms.ModelForm):
     price_per_1000_units: forms.DecimalField()
     coverage_limit: forms.DecimalField()
     photo = forms.ImageField()
-    backend_SOR_connection = forms.ChoiceField(choices=TRANSMISSION_CHOICES, widget=forms.RadioSelect, label='Backend SOR Connection')
+
+    backend_SOR_connection = forms.ChoiceField(choices=TRANSMISSION_CHOICES, widget=forms.RadioSelect, label='If connected to ODS')
+    commit_indicator = forms.CharField(required=False, label='If this member data is sync-ed up with ODS', widget=forms.TextInput(attrs={'readonly':'readonly'}))
+    record_status = forms.CharField(required=False, label='If this member data got Created or Updated', widget=forms.TextInput(attrs={'readonly':'readonly'}))
+    response = forms.CharField(required=False, label='Connection response from/to ODS', widget=forms.TextInput(attrs={'readonly':'readonly'}))
 
     class Meta:
         model = Product
@@ -35,11 +39,5 @@ class ProductForm(forms.ModelForm):
             'description': forms.Textarea(attrs={'class': 'editable medium-editor-textarea postcontent'}),
 
             'photo': forms.ImageField(),
-
-            'commit_indicator': forms.TextInput(attrs={'readonly':'readonly'}),
-
-            'record_status': forms.TextInput(attrs={'readonly':'readonly'}),
-
-            'response': forms.TextInput(attrs={'readonly':'readonly'}),
 
         }

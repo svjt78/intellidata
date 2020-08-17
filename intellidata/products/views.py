@@ -241,7 +241,7 @@ def RefreshProduct(request, pk):
 
             #OVERRIDE THE OBJECT WITH API data
             obj1.pk = int(json_data["LOCAL_ID"])
-            obj.productid = json_data["PRODUCT_ID"]
+            obj1.productid = json_data["PRODUCT_ID"]
             obj1.name = json_data["NAME"]
             obj1.type = json_data["TYPE"]
             obj1.coverage_limit = json_data["COVERAGE_LIMIT"]
@@ -253,7 +253,7 @@ def RefreshProduct(request, pk):
             obj1.creator = User.objects.get(pk=int(json_data["CREATOR"]))
             #obj.crerator = get_object_or_404(User, pk=obj.creatorid)
             obj1.create_date = json_data["CREATE_DATE"]
-            obj1.backend_SOR_connection = json_data["CONNECTION"]
+            obj1.backend_SOR_connection = "Disconnected"
             obj1.response = json_data["RESPONSE"]
             obj1.commit_indicator = json_data["COMMIT_INDICATOR"]
             obj1.record_status = json_data["RECORD_STATUS"]
@@ -349,7 +349,72 @@ class SearchProductsList(LoginRequiredMixin, generic.ListView):
         object_list = Product.objects.filter(
             Q(pk__icontains=query) | Q(productid__icontains=query) | Q(name__icontains=query) | Q(type__icontains=query) | Q(description__icontains=query)
         )
-        return object_list
+
+        #change start for remote SearchProductsForm
+        if not object_list:
+            api = ApiDomains()
+            url = api.product + "/" + "refresh"
+            #url = 'https://94q78vev60.execute-api.us-east-1.amazonaws.com/Prod/intellidataProductAPI/history'
+            payload={'ident': query}
+
+            resp = requests.get(url, params=payload)
+            print(resp.status_code)
+
+            obj = get_object_or_404(APICodes, http_response_code = resp.status_code)
+            status_message=obj.http_response_message
+            mesg=str(resp.status_code) + " - " + status_message
+
+            if resp.status_code != 200:
+                # This means something went wrong.
+                #raise ApiError('GET /tasks/ {}'.format(resp.status_code))
+                #raise APIError(resp.status_code)
+                #message={'messages':mesg}
+                #return render(self.request, "messages.html", context=message)
+                print("Status Code: " + str(resp.status_code))
+            else:
+                json_data=[]
+
+                json_data = resp.json()
+                obj_data=[]
+                obj1=Product()
+
+                #OVERRIDE THE OBJECT WITH API data
+                obj1.pk = int(json_data["LOCAL_ID"])
+                obj1.productid = json_data["PRODUCT_ID"]
+                obj1.name = json_data["NAME"]
+                obj1.type = json_data["TYPE"]
+                obj1.coverage_limit = json_data["COVERAGE_LIMIT"]
+                obj1.price_per_1000_units = json_data["RATE"]
+                obj1.product_date = json_data["CREATE_DATE"]
+                obj1.description = json_data["DESCRIPTION"]
+                obj1.description_html = misaka.html(obj1.description)
+                #obj1.photo = json_data["PHOTO"]
+                obj1.creator = User.objects.get(pk=int(json_data["CREATOR"]))
+                #obj.crerator = get_object_or_404(User, pk=obj.creatorid)
+                obj1.create_date = json_data["CREATE_DATE"]
+                obj1.backend_SOR_connection = "Disconnected"
+                obj1.response = "Pulled From Backend"
+                obj1.commit_indicator = json_data["COMMIT_INDICATOR"]
+                obj1.record_status = json_data["RECORD_STATUS"]
+
+                obj1.save()
+
+
+
+                #obj_data.append(obj1)
+                #print(obj_data)
+
+                #context = {'object_list':obj_data}
+
+                #return render(self.request, "products/product_search_list.html", context=context)
+                object_remote_list = Product.objects.filter(productid=query)
+                print(object_remote_list)
+                return object_remote_list
+
+        else:
+        #change end for remote SearchProductsForm
+
+            return object_list
 
 
 @permission_required("products.add_product")
@@ -368,18 +433,21 @@ def BulkUploadProduct(request):
                 #s3_resource.Object("intellidatastatic", "media/products.csv").download_file(f'/tmp/{"products.csv"}') # Python 3.6+
                 s3 = boto3.client('s3')
                 s3.download_file('intellidatastatic', 'media/products.csv', 'products.csv')
+
                 #with open('/tmp/{"products.csv"}', 'rt') as csv_file:
                 with open('products.csv', 'rt') as csv_file:
                     bulk_mgr = BulkCreateManager(chunk_size=20)
                     for row in csv.reader(csv_file):
-                        bulk_mgr.add(models.Product(productid=row[0],
-                                                  name=row[1],
-                                                  slug=slugify(row[1]),
-                                                  type=row[2],
-                                                  description=row[3],
-                                                  description_html = misaka.html(row[1]),
-                                                  coverage_limit=row[4],
-                                                  price_per_1000_units=row[5],
+                        bulk_mgr.add(models.Product(
+
+                                                  productid = str(uuid.uuid4())[26:36],
+                                                  name=row[0],
+                                                  slug=slugify(row[0]),
+                                                  type=row[1],
+                                                  description=row[2],
+                                                  description_html = misaka.html(row[2]),
+                                                  coverage_limit=row[3],
+                                                  price_per_1000_units=row[4],
                                                   creator = request.user,
                                                   record_status = "Created",
                                                   bulk_upload_indicator = "Y"
@@ -414,14 +482,15 @@ def BulkUploadSOR(request):
 
     obj = get_object_or_404(APICodes, http_response_code = resp.status_code)
     status_message=obj.http_response_message
-    self.response=str(resp.status_code) + " - " + status_message
+    mesg=str(resp.status_code) + " - " + status_message
 
     if resp.status_code != 201:
         # This means something went wrong.
         message={'messages':mesg}
         return render(request, "messages.html", context=message)
     else:
-        Product.objects.filter(bulk_upload_indicator='Y').update(bulk_upload_indicator="N")
+        Product.objects.filter(bulk_upload_indicator='Y').update(bulk_upload_indicator=" ")
+        return HttpResponseRedirect(reverse("products:all"))
 
 
 

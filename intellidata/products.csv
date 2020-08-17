@@ -1,7 +1,4 @@
-100,CI Prudential,CI,Description,2000000,0.01
-101,Life MetLife,Life,This is a CI product,2000001,0.02
-102,STD Aflac,STD,This is a Life product,2000002,0.03
-103,LTD Unum,LTD,This is a STD product,2000003,0.04
-104,LTC John Hancock,LTC,This is a LTD product,2000004,0.05
-105,Hospital Manulife,Hospital,This is a Hospital product,2000005,0.01
-106,Pet Insurance,Pet,This is Pet Insurance,150000,0.05
+CI Prudential,CI,Description,2000000,0.01
+Hardware Insurance,Life,This is a Hardware product,2000001,0.02
+Personal properties,STD,This is a personal property insurance,2000002,0.03
+Mobile home coverage,LTD,Mobile home,2000003,0.04
