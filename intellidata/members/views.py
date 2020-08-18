@@ -22,6 +22,8 @@ from django.shortcuts import get_object_or_404
 from django.views import generic
 from groups.models import Group
 from members.models import Member
+from members.models import MemberError
+from members.models import MemberErrorAggregate
 from . import models
 from . import forms
 from members.forms import MemberForm
@@ -45,6 +47,7 @@ from django.contrib.auth.models import User
 import re
 from botocore.exceptions import NoCredentialsError
 import io
+from django.db.models import Count
 
 # For Rest rest_framework
 from rest_framework import status
@@ -491,7 +494,7 @@ class SearchMembersList(LoginRequiredMixin, generic.ListView):
 
 @permission_required("members.add_member")
 @login_required
-def ValidateMemberFeed(request, pk, *args, **kwargs):
+def BulkUploadMember(request, pk, *args, **kwargs):
 
         context ={}
 
@@ -517,12 +520,16 @@ def ValidateMemberFeed(request, pk, *args, **kwargs):
                                                       serial=row[0]
                                                       array2.append(serial)
 
+                                                    #pass member:
+                                                      memberid=row[1]
+                                                      array2.append(memberid)
                                                        #validate name
-                                                      name=row[1]
+                                                      name=row[2]
                                                       if name == "":
                                                           bad_ind = 1
                                                           description = "Name is mandatory"
                                                           array1.append(serial)
+                                                          array1.append(name)
                                                           array1.append(name)
                                                           array1.append(description)
                                                           array1.append(pk)
@@ -531,16 +538,17 @@ def ValidateMemberFeed(request, pk, *args, **kwargs):
                                                       else:
                                                           array2.append(name)
 
-                                                      slug=slugify(row[1])
+                                                      slug=slugify(row[2])
                                                       #array2.append(slug)
 
                                                       #validate age
-                                                      age=int(row[2])
+                                                      age=int(row[3])
                                                       array1=[]
                                                       if age == "":
                                                           bad_ind=1
                                                           description = "Age must be numeric "
                                                           array1.append(serial)
+                                                          array1.append(name)
                                                           array1.append(age)
                                                           array1.append(description)
                                                           array1.append(pk)
@@ -549,6 +557,7 @@ def ValidateMemberFeed(request, pk, *args, **kwargs):
                                                           bad_ind=1
                                                           description = "Age must be between 1 and 99 years "
                                                           array1.append(serial)
+                                                          array1.append(name)
                                                           array1.append(age)
                                                           array1.append(description)
                                                           array1.append(pk)
@@ -557,12 +566,13 @@ def ValidateMemberFeed(request, pk, *args, **kwargs):
                                                            array2.append(age)
 
                                                       #validate address line 1
-                                                      address_line_1=row[3]
+                                                      address_line_1=row[4]
                                                       array1=[]
                                                       if address_line_1 == "":
                                                           bad_ind = 1
                                                           description = "Address line 1 is mandatory"
                                                           array1.append(serial)
+                                                          array1.append(name)
                                                           array1.append(address_line_1)
                                                           array1.append(description)
                                                           array1.append(pk)
@@ -572,16 +582,17 @@ def ValidateMemberFeed(request, pk, *args, **kwargs):
 
 
                                                       #validate address line 2
-                                                      address_line_2=row[4]
+                                                      address_line_2=row[5]
                                                       array2.append(address_line_2)
 
                                                            #validate city
-                                                      city=row[5]
+                                                      city=row[6]
                                                       array1=[]
                                                       if city == "":
                                                            bad_ind = 1
                                                            description = "City is mandatory"
                                                            array1.append(serial)
+                                                           array1.append(name)
                                                            array1.append(city)
                                                            array1.append(description)
                                                            array1.append(pk)
@@ -590,12 +601,13 @@ def ValidateMemberFeed(request, pk, *args, **kwargs):
                                                            array2.append(city)
 
                                                            #validate state
-                                                      state=row[6]
+                                                      state=row[7]
                                                       array1=[]
                                                       if state == "":
                                                            bad_ind = 1
                                                            description = "State is mandatory"
                                                            array1.append(serial)
+                                                           array1.append(name)
                                                            array1.append(state)
                                                            array1.append(description)
                                                            array1.append(pk)
@@ -604,12 +616,13 @@ def ValidateMemberFeed(request, pk, *args, **kwargs):
                                                           array2.append(state)
 
                                                           #validate zipcode
-                                                      zipcode=row[7]
+                                                      zipcode=row[8]
                                                       array1=[]
                                                       if zipcode == "":
                                                             bad_ind = 1
                                                             description = "Zipcode is mandatory"
                                                             array1.append(serial)
+                                                            array1.append(name)
                                                             array1.append(zipcode)
                                                             array1.append(description)
                                                             array1.append(pk)
@@ -618,12 +631,13 @@ def ValidateMemberFeed(request, pk, *args, **kwargs):
                                                            array2.append(zipcode)
 
                                                             #validate email
-                                                      email=row[8]
+                                                      email=row[9]
                                                       array1=[]
                                                       if email == "":
                                                           bad_ind=1
                                                           description = "Email is mandatory "
                                                           array1.append(serial)
+                                                          array1.append(name)
                                                           array1.append(email)
                                                           array1.append(description)
                                                           array1.append(pk)
@@ -632,6 +646,7 @@ def ValidateMemberFeed(request, pk, *args, **kwargs):
                                                           bad_ind = 1
                                                           description = "Invalid email"
                                                           array1.append(serial)
+                                                          array1.append(name)
                                                           array1.append(email)
                                                           array1.append(description)
                                                           array1.append(pk)
@@ -640,7 +655,7 @@ def ValidateMemberFeed(request, pk, *args, **kwargs):
                                                           array2.append(email)
 
                                                       #validate phone
-                                                      phone=row[9]
+                                                      phone=row[10]
                                                       array1=[]
                                                       p=[]
                                                       p = phone
@@ -651,6 +666,7 @@ def ValidateMemberFeed(request, pk, *args, **kwargs):
                                                           bad_ind=1
                                                           description = "Phone is mandatory "
                                                           array1.append(serial)
+                                                          array1.append(name)
                                                           array1.append(phone)
                                                           array1.append(description)
                                                           array1.append(pk)
@@ -663,6 +679,7 @@ def ValidateMemberFeed(request, pk, *args, **kwargs):
                                                           bad_ind=1
                                                           description = "Phone must be numbers "
                                                           array1.append(serial)
+                                                          array1.append(name)
                                                           array1.append(phone)
                                                           array1.append(description)
                                                           array1.append(pk)
@@ -672,6 +689,7 @@ def ValidateMemberFeed(request, pk, *args, **kwargs):
                                                           bad_ind=1
                                                           description = "Length of phone number is not correct "
                                                           array1.append(serial)
+                                                          array1.append(name)
                                                           array1.append(phone)
                                                           array1.append(description)
                                                           array1.append(pk)
@@ -753,24 +771,98 @@ def ValidateMemberFeed(request, pk, *args, **kwargs):
 
                     with open('members1.csv', 'rt') as csv_file:
                         bulk_mgr = BulkCreateManager(chunk_size=20)
+                        notification = Notification()
                         for row in csv.reader(csv_file):
-                            bulk_mgr.add(models.Member(memberid = str(uuid.uuid4())[26:36],
-                                                      name=row[1],
-                                                      slug=slugify(row[1]),
-                                                      age=int(row[2]),
-                                                      address_line_1=row[3],
-                                                      address_line_2=row[4],
-                                                      city=row[5],
-                                                      state=row[6],
-                                                      zipcode=row[7],
-                                                      email=row[8],
-                                                      phone=row[9],
-                                                      group=get_object_or_404(models.Group, pk=pk),
-                                                      creator = request.user,
-                                                      record_status = "Created",
-                                                      bulk_upload_indicator = "Y"
-                                                      ))
+                            if row[1] == "":
+                                bulk_mgr.add(models.Member(memberid = str(uuid.uuid4())[26:36],
+                                                          name=row[2],
+                                                          slug=slugify(row[2]),
+                                                          age=int(row[3]),
+                                                          address_line_1=row[4],
+                                                          address_line_2=row[5],
+                                                          city=row[6],
+                                                          state=row[7],
+                                                          zipcode=row[8],
+                                                          email=row[9],
+                                                          phone=row[10],
+                                                          group=get_object_or_404(models.Group, pk=pk),
+                                                          creator = request.user,
+                                                          sms="Initial notification sent",
+                                                          emailer="Initial notification sent",
+                                                          record_status = "Created",
+                                                          bulk_upload_indicator = "Y"
+                                                          ))
+                            else:
+                                bulk_mgr.add(models.Member(memberid = row[1],
+                                                          name=row[2],
+                                                          slug=slugify(row[2]),
+                                                          age=int(row[3]),
+                                                          address_line_1=row[4],
+                                                          address_line_2=row[5],
+                                                          city=row[6],
+                                                          state=row[7],
+                                                          zipcode=row[8],
+                                                          email=row[9],
+                                                          phone=row[10],
+                                                          group=get_object_or_404(models.Group, pk=pk),
+                                                          creator = request.user,
+                                                          sms="Initial notification sent",
+                                                          emailer="Initial notification sent",
+                                                          record_status = "Created",
+                                                          bulk_upload_indicator = "Y"
+                                                          ))
+
+                    with open('members1.csv', 'rt') as csv_file:
+                        for ix in csv.reader(csv_file):
+
+                                #NOTIFY MEMBER
+                                subscription_arn = notification.SubscribeMemberObj(ix[10])
+                                notification.TextMemberObj(subscription_arn)
+
+                                notification.EmailMemberObj(ix[9])
+
                         bulk_mgr.done()
+
+                        # load the member error table
+                        s3.download_file('intellidatastatic', 'media/members_error.csv', 'members_error.csv')
+
+                        #Refresh Error table for concerned group
+                        MemberError.objects.filter(group_id=pk).delete()
+
+                        with open('members_error.csv', 'rt') as csv_file:
+                            bulk_mgr = BulkCreateManager(chunk_size=20)
+                            for row1 in csv.reader(csv_file):
+                                bulk_mgr.add(models.MemberError(serial = row1[0],
+                                                          memberid=row1[1],
+                                                          name=row1[2],
+                                                          errorfield=row1[3],
+                                                          description=row1[4],
+                                                          group=get_object_or_404(models.Group, pk=pk),
+                                                          creator = request.user,
+                                                          source = ""
+                                                          ))
+                            bulk_mgr.done()
+
+
+                    error_report = MemberErrorAggregate()
+                    error_report.group = get_object_or_404(Group, pk=pk)
+
+                    error_report.clean=Member.objects.filter(group_id=pk).count()
+                    error_report.error=MemberError.objects.filter(group_id=pk).count()
+
+                    #distinct = MemberError.objects.filter(group_id=pk).values('serial').annotate(serial_count=Count('serial')).filter(serial_count=1)
+                    #records = MemberError.objects.filter(serial__in=[item['serial'] for item in distinct]).count()
+                    #error_report.error=records
+
+
+                    error_report.total=(error_report.clean + error_report.error)
+
+                    #Refresh Error aggregate table for concerned group
+                    MemberErrorAggregate.objects.filter(group_id=pk).delete()
+
+                    error_report.save()
+
+
 
                     return HttpResponseRedirect(reverse("members:all"))
 
@@ -788,7 +880,7 @@ def ValidateMemberFeed(request, pk, *args, **kwargs):
 
 @permission_required("members.add_member")
 @login_required
-def BulkUploadMember(request, pk, *args, **kwargs):
+def BulkUploadMember_deprecated(request, pk, *args, **kwargs):
 
         context ={}
 
@@ -859,6 +951,21 @@ def BulkUploadSOR(request):
     else:
         Member.objects.filter(bulk_upload_indicator='Y').update(bulk_upload_indicator=" ")
         return HttpResponseRedirect(reverse("members:all"))
+
+
+class ViewMemberErrorList(LoginRequiredMixin, generic.ListView):
+    context_object_name = 'member_error_list'
+    model = models.MemberError
+    template_name = 'members/member_error_list.html'
+
+    #form_class = forms.MemberForm
+
+    def get_queryset(self):
+    #    return Member.objects.filter(group=group_name)
+    #    return Member.objects.all
+        #return models.Member.objects.prefetch_related('group')
+        return models.MemberError.objects.filter(group_id=self.kwargs['pk'])
+
 
 
 #Send for subscription

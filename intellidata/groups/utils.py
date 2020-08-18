@@ -3,6 +3,7 @@ from collections import defaultdict
 from django.apps import apps
 import boto3
 import json
+from botocore.exceptions import ClientError
 
 
 
@@ -151,6 +152,7 @@ class Notification:
             # Replace recipient@example.com with a "To" address. If your account
             # is still in the sandbox, this address must be verified.
         RECIPIENT = to_email_address
+        print("email address In am seeing " +  to_email_address)
 
             # Specify a configuration set. If you do not want to use a configuration
             # set, comment the following variable, and the

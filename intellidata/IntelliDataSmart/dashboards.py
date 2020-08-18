@@ -6,7 +6,17 @@ from products.models import Product
 from groups.models import Group
 from agreements.models import Agreement
 from members.models import Member
+from members.models import MemberErrorAggregate
+
 #1
+
+class MemberFeedErrorAnalysis(widgets.ItemList):
+    # This widget displays a list of agreements ordered in the Group
+    title = 'Member feed error analysis by Group'
+    model = MemberErrorAggregate
+    list_display = ('group', 'total', 'clean', 'error', 'error_date')
+
+
 class CoverageLimitsProducts(widgets.SingleBarChart):
     # label and series
     title = 'Coverage limits by Products'
@@ -115,6 +125,7 @@ class AgreementList(widgets.ItemList):
 
 class MyDashboard(Dashboard):
     widgets = (
+        MemberFeedErrorAnalysis,
         CoverageLimitsProducts,
         RateByProducts,
         MemberByAge,

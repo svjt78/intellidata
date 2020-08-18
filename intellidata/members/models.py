@@ -160,6 +160,7 @@ class Member(models.Model):
     emailer = models.CharField(max_length=256, null=True, blank=True)
 
     artefact = models.FileField(blank=True, null=True, default='intellidatastatic.s3.amazonaws.com/media/default.png')
+    source = models.CharField(max_length=1, null=True, blank=True)
 
     backend_SOR_connection = models.CharField(max_length=255, default='Disconnected')
     commit_indicator = models.CharField(max_length=255)
@@ -209,12 +210,58 @@ class Member(models.Model):
     def get_absolute_url(self):
         return reverse("members:single", kwargs={"pk": self.pk})
 
-
     class Meta:
         ordering = ["-member_date"]
         #unique_together = ["name", "group"]
 
+class MemberError(models.Model):
+    serial = models.CharField(max_length=255, null=True, blank=True)
+    memberid = models.CharField(max_length=256, null=True, blank=True)
+    name = models.CharField(max_length=256, null=True, blank=True)
+    errorfield = models.CharField(max_length=256)
+    description = models.CharField(max_length=256)
+    group = models.ForeignKey(Group, on_delete=models.SET_NULL, null=True, blank=True, related_name="errored_members")
+    error_date = models.DateTimeField(auto_now=True)
+    creator = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    source = models.CharField(max_length=1, null=True, blank=True)
 
+    def __str__(self):
+        return self.description
+
+    def save(self, *args, **kwargs):
+
+        super().save(*args, **kwargs)
+
+    def get_absolute_url(self):
+        return reverse("members:single", kwargs={"pk": self.pk})
+
+
+    class Meta:
+        ordering = ["-error_date"]
+
+class MemberErrorAggregate(models.Model):
+    group = models.ForeignKey(Group, on_delete=models.SET_NULL, null=True, blank=True)
+    error_date = models.DateTimeField(auto_now=True)
+    total = models.CharField(max_length=256)
+    clean = models.CharField(max_length=256)
+    error = models.CharField(max_length=256)
+    source = models.CharField(max_length=1, null=True, blank=True)
+
+    def __str__(self):
+        return (self.total + " " + self.clean + " " + self.error)
+
+    def save(self, *args, **kwargs):
+
+        super().save(*args, **kwargs)
+
+    def get_absolute_url(self):
+        return reverse("members:single", kwargs={"pk": self.pk})
+
+
+    class Meta:
+        ordering = ["-error_date"]
+
+# Member serializer
 class MemberSerializer(serializers.ModelSerializer):
 
     class Meta:

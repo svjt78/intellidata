@@ -21,16 +21,17 @@
   <button class="dropbtn btn btn-primary btn-large">Manage Members</button>
   <div class="dropdown-content">
 
-    <a href="{% url 'members:create' pk=group_details.pk %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-plus-sign"></span>Add Members</a>
-    &nbsp;
-    <a href="{% url 'members:validate' pk=group_details.pk %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-plus-sign"></span>Bulk Upload</a>
-    &nbsp;
-    <a href="{% url 'members:upload' pk=group_details.pk %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-plus-sign"></span>Load To Tables</a>
-    &nbsp;
-    <a href="{% url 'members:bulksor' %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-plus-sign"></span>Load To ODS</a>
-    &nbsp;
     <a href="{% url 'groups:show_members' pk=group_details.pk %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-ok-circle"></span>Show Members</a>
     &nbsp;
+    <a href="{% url 'members:create' pk=group_details.pk %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-plus-sign"></span>Add Members</a>
+    &nbsp;
+    <a href="{% url 'members:upload' pk=group_details.pk %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-upload"></span>Upload Members</a>
+    &nbsp;
+    <a href="{% url 'members:bulksor' %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-upload"></span>Load To ODS</a>
+    &nbsp;
+    <a href="{% url 'members:feederrors' pk=group_details.pk %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-fire"></span>View Feed Errors</a>
+    &nbsp;
+
 
 
   </div>

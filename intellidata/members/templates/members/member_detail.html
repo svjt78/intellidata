@@ -36,7 +36,7 @@
   &nbsp;
   <a href="{% url 'members:history' pk=member_details.pk %}" class="btn btn-primary btn-large"><span class="glyphicon glyphicon-cloud"></span> List History</a>
   &nbsp;
-  <a href="{% url 'members:refresh' pk=member_details.pk %}" class="btn btn-primary btn-large"><span class="glyphicon glyphicon-cloud"></span> Refresh From Backend</a>
+  <a href="{% url 'members:refresh' pk=member_details.pk %}" class="btn btn-primary btn-large"><span class="glyphicon glyphicon-refresh"></span> Refresh From Backend</a>
   &nbsp;
   <input type="button" class="btn btn-primary btn-large" value="Go back!" onclick="history.back()">
   &nbsp;
@@ -73,6 +73,7 @@
   </div>
     &nbsp;
   <div class="container">
+    <h2>Orgin of Data Element: {{member_details.source}}</h2>
     <h2>ODS Connection: {{member_details.backend_SOR_connection}}</h2>
     <h2>Commit Indicator: {{member_details.commit_indicator}}</h2>
     <h2>Record Status: {{member_details.record_status}}</h2>

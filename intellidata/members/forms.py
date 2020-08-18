@@ -3,6 +3,7 @@ from django.core.exceptions import ValidationError
 from members.models import *
 
 from .models import Member
+from .models import MemberError
 from phonenumber_field.formfields import PhoneNumberField
 
 TRANSMISSION_CHOICES=[('Connected','Connected'),
@@ -19,6 +20,7 @@ class MemberForm(forms.ModelForm):
     commit_indicator = forms.CharField(required=False, label='If this member data is sync-ed up with ODS', widget=forms.TextInput(attrs={'readonly':'readonly'}))
     record_status = forms.CharField(required=False, label='If this member data got Created or Updated', widget=forms.TextInput(attrs={'readonly':'readonly'}))
     response = forms.CharField(required=False, label='Connection response from/to ODS', widget=forms.TextInput(attrs={'readonly':'readonly'}))
+    source = forms.CharField(required=False, label='Origin', widget=forms.TextInput(attrs={'readonly':'readonly'}))
     # this function will be used for the validation
     def clean(self):
 
@@ -47,5 +49,25 @@ class MemberForm(forms.ModelForm):
             'memberid': forms.TextInput(attrs={'readonly':'readonly'}),
             'name': forms.TextInput(attrs={'class': 'textinputclass'}),
             'email_address': forms.EmailField(max_length = 200),
+            'creator': forms.TextInput(attrs={'readonly':'readonly'}),
+        }
+
+class MemberErrorForm(forms.ModelForm):
+
+    serial = forms.CharField(required=False, label='Serial#', widget=forms.TextInput(attrs={'readonly':'readonly'}))
+    name = forms.CharField(required=False, label='Member Name', widget=forms.TextInput(attrs={'readonly':'readonly'}))
+    errorfield = forms.CharField(required=False, label='Field At Error', widget=forms.TextInput(attrs={'readonly':'readonly'}))
+    description = forms.CharField(required=False, label='Error description_html', widget=forms.TextInput(attrs={'readonly':'readonly'}))
+    group = forms.CharField(required=False, label='Group', widget=forms.TextInput(attrs={'readonly':'readonly'}))
+    source = forms.CharField(required=False, label='Origin', widget=forms.TextInput(attrs={'readonly':'readonly'}))
+    #error_date = forms.DateTimeField(required=False, label='Feed Date', widget=forms.TextInput(attrs={'readonly':'readonly'}))
+
+    class Meta:
+        model = MemberError
+
+        #fields = ('serial', 'name', 'errorfield', 'description', 'group', 'error_date')
+        exclude = ()
+
+        widgets = {
             'creator': forms.TextInput(attrs={'readonly':'readonly'}),
         }

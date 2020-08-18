@@ -8,3 +8,5 @@ from . import models
 
 
 admin.site.register(models.Member)
+admin.site.register(models.MemberError)
+admin.site.register(models.MemberErrorAggregate)
