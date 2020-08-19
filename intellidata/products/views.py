@@ -25,6 +25,8 @@ from django.contrib.auth.models import User
 from bulkuploads.models import BulkUpload
 from apicodes.models import APICodes
 from products.models import Product
+from products.models import ProductError
+from products.models import ProductErrorAggregate
 from . import models
 from . import forms
 from products.forms import ProductForm
@@ -42,6 +44,11 @@ from django.shortcuts import get_object_or_404
 import boto3
 import requests
 import json
+import re
+from botocore.exceptions import NoCredentialsError
+import io
+from django.db.models import Count
+
 
 # For Rest rest_framework
 from rest_framework import status
@@ -417,9 +424,223 @@ class SearchProductsList(LoginRequiredMixin, generic.ListView):
             return object_list
 
 
+
 @permission_required("products.add_product")
 @login_required
 def BulkUploadProduct(request):
+
+        context ={}
+
+        form = BulkUploadForm(request.POST, request.FILES)
+
+        if form.is_valid():
+                    form.instance.creator = request.user
+                    form.save()
+
+                    s3 = boto3.client('s3')
+                    s3.download_file('intellidatastatic', 'media/products.csv', 'products.csv')
+
+                    with open('products.csv', 'rt') as csv_file:
+                        array_good =[]
+                        array_bad = []
+                        #array_bad =[]
+                        for row in csv.reader(csv_file):
+                                                      bad_ind = 0
+                                                      array1=[]
+                                                      array2=[]
+
+                                                      #populate serial number
+                                                      serial=row[0]
+                                                      array2.append(serial)
+
+                                                    #pass product:
+                                                      productid=row[1]
+                                                      array2.append(productid)
+                                                       #validate name
+                                                      name=row[2]
+                                                      if name == "":
+                                                          bad_ind = 1
+                                                          description = "Name is mandatory"
+                                                          array1.append(serial)
+                                                          array1.append(productid)
+                                                          array1.append(name)
+                                                          array1.append(name)
+                                                          array1.append(description)
+                                                          array_bad.append(array1)
+
+                                                      else:
+                                                          array2.append(name)
+
+                                                      slug=slugify(row[2])
+                                                      #array2.append(slug)
+
+                                                      type=row[3]
+                                                      array2.append(type)
+
+                                                      description=row[4]
+                                                      array2.append(description)
+
+                                                      coverage_limit=row[5]
+                                                      array2.append(coverage_limit)
+
+                                                      price_per_1000_units=row[6]
+                                                      array2.append(price_per_1000_units)
+
+                                                      if bad_ind == 0:
+                                                          array_good.append(array2)
+
+
+
+                        # create good file
+                    #with open('products1.csv', 'w', newline='') as clean_file:
+                    ##    writer = csv.writer(clean_file)
+                    #    writer.writerows(array_good)
+
+                    buff1 = io.StringIO()
+
+                    writer = csv.writer(buff1, dialect='excel', delimiter=',')
+                    writer.writerows(array_good)
+
+                    buff2 = io.BytesIO(buff1.getvalue().encode())
+
+                        # check if a version of the good file already exists
+                #    try:
+                #        s3.Object('my-bucket', 'dootdoot.jpg').load()
+                #    except botocore.exceptions.ClientError as e:
+                #        if e.response['Error']['Code'] == "404":
+                #            # The object does not exist.
+                #            ...
+                #        else:
+                #            # Something else has gone wrong.
+                #            raise
+                #    else:
+                #        # do something
+
+# create good file
+                    try:
+                        response = s3.delete_object(Bucket='intellidatastatic', Key='media/products1.csv')
+                        s3.upload_fileobj(buff2, 'intellidatastatic', 'media/products1.csv')
+                        print("Good File Upload Successful")
+
+                    except FileNotFoundError:
+                         print("The good file was not found")
+
+                    except NoCredentialsError:
+                         print("Credentials not available")
+
+
+                           # create bad file
+                    #with open('product_error.csv', 'w', newline='') as error_file:
+                    #       writer = csv.writer(error_file)
+                    #       writer.writerows(array1)
+
+                    buff3 = io.StringIO()
+
+                    writer = csv.writer(buff3, dialect='excel', delimiter=',')
+                    writer.writerows(array_bad)
+
+                    buff4 = io.BytesIO(buff3.getvalue().encode())
+
+
+                        # save bad file to S3
+                    try:
+                        response = s3.delete_object(Bucket='intellidatastatic', Key='media/products_error.csv')
+                        s3.upload_fileobj(buff4, 'intellidatastatic', 'media/products_error.csv')
+                        print("Bad File Upload Successful")
+
+                    except FileNotFoundError:
+                        print("The bad file was not found")
+
+                    except NoCredentialsError:
+                        print("Credentials not available")
+
+                    # load the product table
+                    s3.download_file('intellidatastatic', 'media/products1.csv', 'products1.csv')
+
+                    with open('products1.csv', 'rt') as csv_file:
+                        bulk_mgr = BulkCreateManager(chunk_size=20)
+
+                        for row in csv.reader(csv_file):
+                            if row[1] == "":
+                                bulk_mgr.add(models.Product(productid = str(uuid.uuid4())[26:36],
+                                                          name=row[2],
+                                                          slug=slugify(row[2]),
+                                                          type=row[3],
+                                                          description=row[4],
+                                                          description_html = misaka.html(row[4]),
+                                                          coverage_limit=row[5],
+                                                          price_per_1000_units=row[6],
+                                                          creator = request.user,
+                                                          record_status = "Created",
+                                                          bulk_upload_indicator = "Y"
+                                                          ))
+                            else:
+                                bulk_mgr.add(models.Product(productid = row[1],
+                                                           name=row[2],
+                                                           slug=slugify(row[2]),
+                                                           type=row[3],
+                                                           description=row[4],
+                                                           description_html = misaka.html(row[4]),
+                                                           coverage_limit=row[5],
+                                                           price_per_1000_units=row[6],
+                                                           creator = request.user,
+                                                           record_status = "Created",
+                                                           bulk_upload_indicator = "Y"
+
+                                                          ))
+
+                        bulk_mgr.done()
+
+                        # load the product error table
+                        s3.download_file('intellidatastatic', 'media/products_error.csv', 'products_error.csv')
+
+                        #Refresh Error table for concerned group
+                        ProductError.objects.all().delete()
+
+                        with open('products_error.csv', 'rt') as csv_file:
+                            bulk_mgr = BulkCreateManager(chunk_size=20)
+                            for row1 in csv.reader(csv_file):
+                                bulk_mgr.add(models.ProductError(serial = row1[0],
+                                                          productid=row1[1],
+                                                          name=row1[2],
+                                                          errorfield=row1[3],
+                                                          error_description=row1[4],
+                                                          creator = request.user,
+                                                          source = ""
+                                                          ))
+                            bulk_mgr.done()
+
+
+                    error_report = ProductErrorAggregate()
+
+                    error_report.clean=Product.objects.count()
+                    error_report.error=ProductError.objects.count()
+
+                    error_report.total=(error_report.clean + error_report.error)
+
+                    #Refresh Error aggregate table for concerned group
+                    ProductErrorAggregate.objects.all().delete()
+
+                    error_report.save()
+
+
+
+                    return HttpResponseRedirect(reverse("products:all"))
+
+
+
+                    #return HttpResponseRedirect(reverse("products:all"))
+
+        else:
+                            # add form dictionary to context
+                    context["form"] = form
+
+                    return render(request, "bulkuploads/bulkupload_form.html", context)
+
+
+@permission_required("products.add_product")
+@login_required
+def BulkUploadProduct_deprecated(request):
 
     context ={}
 
@@ -493,6 +714,18 @@ def BulkUploadSOR(request):
         return HttpResponseRedirect(reverse("products:all"))
 
 
+class ViewProductErrorList(LoginRequiredMixin, generic.ListView):
+    context_object_name = 'product_error_list'
+    model = models.ProductError
+    template_name = 'products/product_error_list.html'
+
+    #form_class = forms.MemberForm
+
+    def get_queryset(self):
+    #    return Member.objects.filter(group=group_name)
+    #    return Member.objects.all
+        #return models.Member.objects.prefetch_related('group')
+        return models.ProductError.objects.all()
 
 
 @api_view(['GET', 'POST'])

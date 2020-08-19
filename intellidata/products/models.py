@@ -26,7 +26,7 @@ import json
 User = get_user_model()
 
 # https://docs.djangoproject.com/en/1.11/howto/custom-template-tags/#inclusion-tags
-# This is for the in_group_members check template tag
+# This is for the in_group_products check template tag
 from django import template
 register = template.Library()
 
@@ -112,6 +112,52 @@ class Product(models.Model):
     class Meta:
         ordering = ["-product_date"]
         unique_together = ("name", "type", "product_date")
+
+
+class ProductError(models.Model):
+    serial = models.CharField(max_length=255, null=True, blank=True)
+    productid = models.CharField(max_length=256, null=True, blank=True)
+    name = models.CharField(max_length=256, null=True, blank=True)
+    errorfield = models.CharField(max_length=256)
+    error_description = models.CharField(max_length=256)
+    error_date = models.DateTimeField(auto_now=True)
+    creator = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    source = models.CharField(max_length=1, null=True, blank=True)
+
+    def __str__(self):
+        return self.description
+
+    def save(self, *args, **kwargs):
+
+        super().save(*args, **kwargs)
+
+    def get_absolute_url(self):
+        return reverse("products:single", kwargs={"pk": self.pk})
+
+
+    class Meta:
+        ordering = ["-error_date"]
+
+class ProductErrorAggregate(models.Model):
+    error_date = models.DateTimeField(auto_now=True)
+    total = models.CharField(max_length=256)
+    clean = models.CharField(max_length=256)
+    error = models.CharField(max_length=256)
+    source = models.CharField(max_length=1, null=True, blank=True)
+
+    def __str__(self):
+        return (self.total + " " + self.clean + " " + self.error)
+
+    def save(self, *args, **kwargs):
+
+        super().save(*args, **kwargs)
+
+    def get_absolute_url(self):
+        return reverse("products:single", kwargs={"pk": self.pk})
+
+
+    class Meta:
+        ordering = ["-error_date"]
 
 
 class ProductSerializer(serializers.ModelSerializer):

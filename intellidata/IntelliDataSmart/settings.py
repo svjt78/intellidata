@@ -48,6 +48,8 @@ INSTALLED_APPS = [
     'Accounts',
     'groups',
     'members',
+    'employers',
+    'employees',
     'products',
     'agreements',
     'bulkuploads',

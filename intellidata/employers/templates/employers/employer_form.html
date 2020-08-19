@@ -1,0 +1,14 @@
+{% extends "employers/employer_base.html" %}
+{% load bootstrap3 %}
+
+{% block employer_content %}
+<h4>Edit Employer</h4>
+  <!-- <form method="POST" action="{% url 'employers:create' %}" id="employerForm"> -->
+  <form method="POST" enctype="multipart/form-data">
+  	{% csrf_token %}
+  	{% bootstrap_form form %}
+  	<input type="submit" value="Save" class="btn btn-primary btn-large">
+    &nbsp;
+    <a href="{% url 'employers:all'%}" class="btn btn-primary btn-large">Cancel</a>
+  </form>
+{% endblock %}

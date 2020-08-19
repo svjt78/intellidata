@@ -1,0 +1,24 @@
+{% extends "employees/employee_base.html" %}
+{% load bootstrap3 %}
+
+{% block employee_content %}
+<div class="col-md-8">
+	<div class="list-group">
+		{% for employee in object_list %}
+		  <a class="list-group-item" href="{% url 'employees:single' pk=employee.pk %}">
+			     <h3 class="title list-group-item-heading">{{ employee.name }}</h3>
+					  <h4 class="title list-group-item-heading">employee ID: {{ employee.employeeid }}</h4>
+					 <h4 class="title list-group-item-heading">Age: {{ employee.age }}</h4>
+					 <h4 class="title list-group-item-heading">Email: {{ employee.email }}</h4>
+					 <h4 class="title list-group-item-heading">Group: {{ employee.group }}</h4>
+					 <h4 class="title list-group-item-heading">Created On: {{ employee.employee_date }}</h4>
+					 <h4 class="title list-group-item-heading">Created By: {{ employee.creator }}</h4>
+		</a>
+		{% endfor %}
+	</div>
+</div>
+{% endblock %}
+
+{% block postemployee %}
+	<input type="button" class="btn btn-primary btn-large" value="Go back!" onclick="history.back()">
+{% endblock %}

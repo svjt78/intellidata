@@ -1,0 +1,44 @@
+{% extends "products/product_base.html" %}
+
+{% block preproduct %}
+<div class="col-md-4">
+	<div class="content">
+		{% if user.is_authenticated %}
+		<h2>
+			Welcome
+			{{user.username }}
+		</h2>
+
+    {% endif %}
+		<h2>Errors in Products</h2>
+
+		{% if not object_list %}
+  			<p>No errors. Congratulations!</p>
+		{% else %}
+				<p>Following are the errors!</p>
+		{% endif %}
+
+		<br>
+		<input type="button" class="btn btn-primary btn-large" value="Go back!" onclick="history.back()">
+
+	</div>
+</div>
+{% endblock %}
+
+{% block product_content %}
+<div class="col-md-8">
+	<div class="list-group">
+			{% for error in object_list %}
+
+			     <h4 class="title list-group-item-heading">{{ error.serial }}</h4>
+					 <h4 class="title list-group-item-heading">Product ID: {{ error.productid }}</h4>
+					 <h4 class="title list-group-item-heading">Product Name: {{ error.name }}</h4>
+					 <h4 class="title list-group-item-heading">Field At Error: {{ error.errorfield }}</h4>
+					 <h4 class="title list-group-item-heading">Error Description: {{ error.error_description }}</h4>
+					 <h4 class="title list-group-item-heading">Event_Date: {{ error.error_date }}</h4>
+					 &nbsp;
+
+			{% endfor %}
+	</div>
+</div>
+{% endblock %}

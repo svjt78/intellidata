@@ -1,0 +1,83 @@
+{% extends "employees/employee_base.html" %}
+
+{% block preemployee %}
+
+  <div class="dropdown">
+    <button class="dropbtn btn btn-primary btn-large">Manage employee</button>
+    <div class="dropdown-content">
+
+    <a href="{% url 'employees:version' pk=employee_details.pk %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-pencil"></span> Version employee</a>
+    &nbsp;
+    <a href="{% url 'employees:update' pk=employee_details.pk %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-pencil"></span> Update employee</a>
+    &nbsp;
+    <a href="{% url 'employees:delete' pk=employee_details.pk %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-remove-circle"></span> Delete employee</a>
+    &nbsp;
+
+    </div>
+  </div>
+
+
+  <div class="dropdown">
+    <button class="dropbtn btn btn-primary btn-large">Notify employee</button>
+    <div class="dropdown-content">
+
+    <a href="{% url 'employees:email' pk=employee_details.pk %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-envelope"></span> Email employee</a>
+    &nbsp;
+    <a href="{% url 'employees:subscribe' pk=employee_details.pk %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-phone"></span> Subscribe employee</a>
+    &nbsp;
+    <a href="{% url 'employees:text' pk=employee_details.pk %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-phone"></span> Text employee</a>
+    &nbsp;
+
+    </div>
+  </div>
+
+  &nbsp;
+  <a href="{% url 'employees:backendpull' pk=employee_details.pk %}" class="btn btn-primary btn-large"><span class="glyphicon glyphicon-cloud"></span> Pull From Backend</a>
+  &nbsp;
+  <a href="{% url 'employees:history' pk=employee_details.pk %}" class="btn btn-primary btn-large"><span class="glyphicon glyphicon-cloud"></span> List History</a>
+  &nbsp;
+  <a href="{% url 'employees:refresh' pk=employee_details.pk %}" class="btn btn-primary btn-large"><span class="glyphicon glyphicon-refresh"></span> Refresh From Backend</a>
+  &nbsp;
+  <input type="button" class="btn btn-primary btn-large" value="Go back!" onclick="history.back()">
+  &nbsp;
+
+{% endblock %}
+
+
+{% block postemployee %}
+
+  <div class="container">
+    <h1>{{employee_details.name}}</h1>
+    <h2>employee ID: {{employee_details.employeeid}}</h2>
+    <h2>Age: {{employee_details.age}}</h2>
+    <h2>Email: {{employee_details.email}}</h2>
+    <h2>Phone: {{employee_details.phone}}</h2>
+  </div>
+  &nbsp;
+  <div class="container">
+    <h2>Address Line 1: {{employee_details.address_line_1}}</h2>
+    <h2>Address Line 2: {{employee_details.address_line_2}}</h2>
+    <h2>City: {{employee_details.city}}</h2>
+    <h2>State: {{employee_details.state}}</h2>
+    <h2>Zipcode: {{employee_details.zipcode}}</h2>
+  </div>
+  &nbsp;
+  <div class="container">
+    <h2>Group: {{employee_details.group}}</h2>
+    <h2>Created On: {{employee_details.employee_date}}</h2>
+    <h2>Created By: {{employee_details.creator}}</h2>
+    <h2>SMS Sent: {{employee_details.sms}}</h2>
+    <h2>EMAIL Sent: {{employee_details.emailer}}</h2>
+
+    <h2>Artefacts: <a href={{employee_details.artefact.url}}>View Document</a></h2>
+  </div>
+    &nbsp;
+  <div class="container">
+    <h2>Orgin of Data Element: {{employee_details.source}}</h2>
+    <h2>ODS Connection: {{employee_details.backend_SOR_connection}}</h2>
+    <h2>Commit Indicator: {{employee_details.commit_indicator}}</h2>
+    <h2>Record Status: {{employee_details.record_status}}</h2>
+    <h2>Response: {{employee_details.response}}</h2>
+  </div>
+
+{% endblock %}

@@ -19,4 +19,5 @@ urlpatterns = [
     url(r"^update/(?P<pk>\d+)/$",views.UpdateProduct.as_view(),name="update"),
     url(r"^delete/(?P<pk>\d+)/$",views.DeleteProduct.as_view(),name="delete"),
     url(r"^rest/productlist/$",views.ProductList, name="rest"),
+    url(r"^product/error/$",views.ViewProductErrorList.as_view(), name='feederrors')
 ]

@@ -1,4 +1,4 @@
-CI Prudential,CI,Description,2000000,0.01
-Hardware Insurance,Life,This is a Hardware product,2000001,0.02
-Personal properties,STD,This is a personal property insurance,2000002,0.03
-Mobile home coverage,LTD,Mobile home,2000003,0.04
+1,,CI Prudential,CI,Description,2000000,0.01
+2,,,Life,This is a Hardware product,2000001,0.02
+3,,Personal properties,STD,This is a personal property insurance,2000002,0.03
+4,,Mobile home coverage,LTD,Mobile home,2000003,0.04

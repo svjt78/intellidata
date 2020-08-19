@@ -7,8 +7,9 @@ from groups.models import Group
 from agreements.models import Agreement
 from members.models import Member
 from members.models import MemberErrorAggregate
+from products.models import ProductErrorAggregate
 
-#1
+#
 
 class MemberFeedErrorAnalysis(widgets.ItemList):
     # This widget displays a list of agreements ordered in the Group
@@ -16,6 +17,11 @@ class MemberFeedErrorAnalysis(widgets.ItemList):
     model = MemberErrorAggregate
     list_display = ('group', 'total', 'clean', 'error', 'error_date')
 
+class ProductFeedErrorAnalysis(widgets.ItemList):
+    # This widget displays a list of agreements ordered in the Group
+    title = 'Product feed error analysis'
+    model = ProductErrorAggregate
+    list_display = ('total', 'clean', 'error', 'error_date')
 
 class CoverageLimitsProducts(widgets.SingleBarChart):
     # label and series
@@ -126,6 +132,7 @@ class AgreementList(widgets.ItemList):
 class MyDashboard(Dashboard):
     widgets = (
         MemberFeedErrorAnalysis,
+        ProductFeedErrorAnalysis,
         CoverageLimitsProducts,
         RateByProducts,
         MemberByAge,

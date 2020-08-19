@@ -1,0 +1,47 @@
+{% extends "employees/employee_base.html" %}
+
+{% block preemployee %}
+<div class="col-md-4">
+	<div class="content">
+		{% if user.is_authenticated %}
+		<h2>
+			Welcome
+			{{user.username }}
+		</h2>
+
+    {% endif %}
+		<h2>Employees</h2>
+
+		{% if not object_list %}
+  			<p>No employees available at this time! Go back and add a employee to this group!</p>
+		{% else %}
+				<p>Welcome to the Employees Page! Select a employee that you want to work on!</p>
+		{% endif %}
+
+		<br>
+		<input type="button" class="btn btn-primary btn-large" value="Go back!" onclick="history.back()">
+
+	</div>
+</div>
+{% endblock %}
+
+{% block employee_content %}
+<div class="col-md-8">
+	<div class="list-group">
+		{% for employee in object_list %}
+		  <a class="list-group-item" href="{% url 'employees:single' pk=employee.pk %}">
+			     <h3 class="title list-group-item-heading">{{ employee.name }}</h3>
+					 <h4 class="title list-group-item-heading">employee ID: {{ employee.employeeid }}</h4>
+					 <h4 class="title list-group-item-heading">Age: {{ employee.age }}</h4>
+					 <h4 class="title list-group-item-heading">Email: {{ employee.email }}</h4>
+					 <h4 class="title list-group-item-heading">Phone: {{ employee.phone }}</h4>
+					 &nbsp;
+					 <h4 class="title list-group-item-heading">Group: {{ employee.group }}</h4>
+					 <h4 class="title list-group-item-heading">Created On: {{ employee.employee_date }}</h4>
+					 <h4 class="title list-group-item-heading">Created By: {{ employee.creator }}</h4>
+
+		  </a>
+		{% endfor %}
+	</div>
+</div>
+{% endblock %}

@@ -1,0 +1,13 @@
+{% extends "employers/employer_base.html" %}
+
+{% block preemployer %}
+<h4>Search Employer</h4>
+  <!-- <form method="POST" action="{% url 'employers:create' %}" id="employerForm"> -->
+  <form action="{% url 'employers:search_results' %}" method="GET">
+  	{% csrf_token %}
+    <input name="q" type="text" placeholder="Search...">
+    &nbsp;
+    <button class="btn btn-primary btn-large" type="submit" >Search</button>
+  </form>
+
+{% endblock %}

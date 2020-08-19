@@ -1,0 +1,32 @@
+{% extends "employers/employer_base.html" %}
+{% load bootstrap3 %}
+
+{% block employer_content %}
+<div class="col-md-8">
+	<div class="list-employer">
+		{% for employer in object_list %}
+			<a class="list-employer-item" href="{% url 'employers:single' pk=employer.pk %}">
+			     <h3 class="title list-employer-item-heading">{{ employer.name }}</h3>
+					 <h4 class="title list-employer-item-heading">employer ID: {{ employer.employerid }}</h4>
+					  <h4 class="title list-employer-item-heading">Purpose: {{ employer.purpose }}</h4>
+						<br>
+						 <h4 class="title list-employer-item-heading">Created On: {{ employer.employer_date }}</h4>
+						 <br>
+			<div class="list-employer-item-text container-fluid">
+				{{ employer.description_html|safe }}
+				<br>
+				<div class="row">
+					<div class="col-md-4">
+						<span class="badge">{{ employer.member_set.count }}</span> member{{ employer.member_set.count|pluralize }}
+					</div>
+				</div>
+			</div>
+		</a>
+		{% endfor %}
+	</div>
+</div>
+{% endblock %}
+
+{% block postemployer %}
+	<input type="button" class="btn btn-primary btn-large" value="Go back!" onclick="history.back()">
+{% endblock %}

@@ -1,0 +1,35 @@
+{% extends "employees/employee_base.html" %}
+
+{% block preemployee %}
+<div class="col-md-4">
+	<div class="content">
+		{% if user.is_authenticated %}
+		<h2>
+			Welcome back
+			{{user.username }}
+		</h2>
+
+    {% endif %}
+			<h2>Employees</h2>
+
+			<p>Welcome to the Employees Page! Select a Employee that you want to work on!</p>
+	</div>
+	{% if user.is_authenticated %}
+	<a href="{% url 'employees:create' pk=group.pk %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-plus-sign"></span> Create New employee!</a>
+	{% endif %}
+</div>
+{% endblock %}
+
+{% block employee_content %}
+<div class="col-md-8">
+	<div class="list-group">
+		{% for employee in object_list %}
+		  <a class="list-group-item" href="{% url 'employee:single' pk=employee.pk %}">
+			     <h3 class="title list-group-item-heading">{{ employee.name }}</h3>
+					 <h3 class="title list-group-item-heading">Age: {{ employee.age }}</h3>
+					 <h3 class="title list-group-item-heading">Group: {{ employee.group }}</h3>
+		</a>
+		{% endfor %}
+	</div>
+</div>
+{% endblock %}

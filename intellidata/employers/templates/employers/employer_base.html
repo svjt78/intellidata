@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container">
+  <div class="row">
+    {% block preemployer %}{% endblock %}
+    {% block employer_content %}{% endblock %}
+    {% block postemployer %}{% endblock %}
+  </div>
+</div>
+
+{% endblock %}

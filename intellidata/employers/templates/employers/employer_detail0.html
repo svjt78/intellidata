@@ -1,0 +1,63 @@
+{% extends "employers/employer_base.html" %}
+
+{% block preemployer %}
+
+<div class="content">
+
+    <a href="{% url 'members:create' pk=employer_details.pk %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-plus-sign"></span> Add Members</a>
+    &nbsp;
+    <a href="{% url 'employers:update' pk=employer_details.pk %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-pencil"></span> Update employer</a>
+    &nbsp;
+    <a href="{% url 'employers:delete' pk=employer_details.pk %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-remove-circle"></span> Delete employer</a>
+    &nbsp;
+    <a href="{% url 'employers:show_members' pk=employer_details.pk %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-ok-circle"></span> Show Members</a>
+    &nbsp;
+    <input type="button" class="btn btn-primary btn-large" value="Go back!" onclick="history.back()">
+
+</div>
+
+<h1>{{employer_details.name}}</h1>
+<h2>ID: {{employer_details.pk}}</h2>
+<h2>Purpose: {{employer_details.purpose}}</h2>
+<h2>Member Count: {{employer_details.member_set.count}}</h2>
+<div style="background-color: rgba(255, 255, 255, 0.8);" data-spy="scroll" data-target=".navbar">
+  <div class="list-employer-item-text container-fluid">
+    <h4 style="color:black;">{{ employer_details.description_html|safe }}</h4>
+  </div>
+</div>
+
+{% endblock %}
+
+<!--
+<div class="content">
+
+
+				{% if user in employer.members.all %}
+					<a href="{% url 'employers:leave' slug=employer_details.slug %}" class="btn btn-lg btn-fill btn-warning"><span class="glyphicon glyphicon-remove-circle"></span> Leave</a>
+				{% else %}
+					<a href="{% url 'employers:join' slug=employer_details.slug %}" class="btn btn-lg btn-fill btn-warning"><span class="glyphicon glyphicon-ok-circle"></span> Join</a>
+				{% endif %}
+
+
+
+</div>
+
+-->
+
+
+
+<!--{% block employer_content %}
+
+<div class="col-md-8">
+	{% if employer.posts.count == 0 %}
+	<h2>No posts in this employer yet!</h2>
+
+	{% else %}
+
+		{% for post in employer.posts.all %}
+			{% include "posts/_post.html" %}
+		{% endfor %}
+
+	{% endif %}
+</div>
+{% endblock %}-->

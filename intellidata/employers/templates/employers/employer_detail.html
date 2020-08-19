@@ -1,0 +1,116 @@
+{% extends "employers/employer_base.html" %}
+{% load static %}
+{% block preemployer %}
+
+<div class="dropdown">
+  <button class="dropbtn btn btn-primary btn-large">Manage Employer</button>
+  <div class="dropdown-content">
+
+    <a href="{% url 'employers:version' pk=employer_details.pk %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-pencil"></span> Version employer</a>
+    &nbsp;
+    <a href="{% url 'employers:update' pk=employer_details.pk %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-pencil"></span> Update employer</a>
+    &nbsp;
+    <a href="{% url 'employers:delete' pk=employer_details.pk %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-remove-circle"></span> Delete employer</a>
+    &nbsp;
+    <a href="{% url 'employers:backendpull' pk=product_details.pk %}" class="btn btn-primary btn-large"><span class="glyphicon glyphicon-cloud"></span> Pull From Backend</a>
+    &nbsp;
+    <a href="{% url 'employers:history' pk=product_details.pk %}" class="btn btn-primary btn-large"><span class="glyphicon glyphicon-cloud"></span> List History</a>
+    &nbsp;
+    <a href="{% url 'employers:refresh' pk=product_details.pk %}" class="btn btn-primary btn-large"><span class="glyphicon glyphicon-cloud"></span> Refresh From Backend</a>
+    &nbsp;
+    <input type="button" class="btn btn-primary btn-large" value="Go back!" onclick="history.back()">
+    &nbsp;
+
+  </div>
+</div>
+
+
+<div class="dropdown">
+  <button class="dropbtn btn btn-primary btn-large">Manage Members</button>
+  <div class="dropdown-content">
+
+    <a href="{% url 'employers:show_members' pk=employer_details.pk %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-ok-circle"></span>Show Members</a>
+    &nbsp;
+    <a href="{% url 'members:create' pk=employer_details.pk %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-plus-sign"></span>Add Members</a>
+    &nbsp;
+    <a href="{% url 'members:upload' pk=employer_details.pk %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-upload"></span>Upload Members</a>
+    &nbsp;
+    <a href="{% url 'members:bulksor' %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-upload"></span>Load To ODS</a>
+    &nbsp;
+    <a href="{% url 'members:feederrors' pk=employer_details.pk %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-fire"></span>View Feed Errors</a>
+    &nbsp;
+
+
+
+  </div>
+</div>
+
+<div class="dropdown">
+  <button class="dropbtn btn btn-primary btn-large">Manage Agreements</button>
+  <div class="dropdown-content">
+
+    <a href="{% url 'agreements:create' pk=employer_details.pk %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-plus-sign"></span> Create Agreement</a>
+    &nbsp;
+    <a href="{% url 'employers:show_agreements' pk=employer_details.pk %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-ok-circle"></span> Show Ageements</a>
+    &nbsp;
+
+  </div>
+</div>
+
+<input type="button" class="btn btn-primary btn-large" value="Go back!" onclick="history.back()">
+&nbsp;
+
+<h1>{{employer_details.name}}</h1>
+<h2>Employer ID: {{employer_details.employerid}}</h2>
+<h2>Federal Employer Identification Number: {{employer_details.FederalEmployerIdentificationNumber}}</h2>
+<h2>Carrier Master Agreement Number: {{employer_details.CarrierMasterAgreementNumber}}</h2>
+<h2>Purpose: {{employer_details.purpose}}</h2>
+<h2>Created On: {{employer_details.employer_date}}</h2>
+<h2>Created By: {{employer_details.creator}}</h2>
+<h2>Employee Count: {{employer_details.employee_set.count}}</h2>
+<div style="background-color: rgba(255, 255, 255, 0.8);" data-spy="scroll" data-target=".navbar">
+  <div class="list-employer-item-text container-fluid">
+    <h4 style="color:black;">{{ employer_details.description_html|safe }}</h4>
+  </div>
+</div>
+
+{% if employer_details.photo %}
+  <img src="{{ employer_details.photo.url }}"/>
+{% endif %}
+
+
+{% endblock %}
+
+<!--
+<div class="content">
+
+
+				{% if user in employer.members.all %}
+					<a href="{% url 'employers:leave' slug=employer_details.slug %}" class="btn btn-lg btn-fill btn-warning"><span class="glyphicon glyphicon-remove-circle"></span> Leave</a>
+				{% else %}
+					<a href="{% url 'employers:join' slug=employer_details.slug %}" class="btn btn-lg btn-fill btn-warning"><span class="glyphicon glyphicon-ok-circle"></span> Join</a>
+				{% endif %}
+
+
+
+</div>
+
+-->
+
+
+
+<!--{% block employer_content %}
+
+<div class="col-md-8">
+	{% if employer.posts.count == 0 %}
+	<h2>No posts in this employer yet!</h2>
+
+	{% else %}
+
+		{% for post in employer.posts.all %}
+			{% include "posts/_post.html" %}
+		{% endfor %}
+
+	{% endif %}
+</div>
+{% endblock %}-->
