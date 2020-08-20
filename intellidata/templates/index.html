@@ -42,8 +42,8 @@
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
     					<ul class="nav navbar-nav navbar-right">
     						{% if user.is_authenticated %}
-                      <li><a class="navbar-brand mynav" href="{% url 'groups:all' %}" class="btn btn-simple">Groups</a></li>
-                      <li><a class="navbar-brand mynav" href="{% url 'members:all' %}" class="btn btn-simple">Members</a></li>
+                      <li><a class="navbar-brand mynav" href="{% url 'employers:all' %}" class="btn btn-simple">Employers</a></li>
+                      <li><a class="navbar-brand mynav" href="{% url 'employees:all' %}" class="btn btn-simple">Employees</a></li>
                       <li><a class="navbar-brand mynav" href="{% url 'products:all' %}" class="btn btn-simple">Products</a></li>
                       <li><a class="navbar-brand mynav" href="{% url 'agreements:all' %}" class="btn btn-simple">Agreements</a></li>
 
@@ -51,8 +51,8 @@
                         <li><a class="navbar-brand mynav" href="#" class="btn btn-simple">Search</a></li>
                         <div class="dropdown-content">
 
-                          <li><a class="navbar-brand mynav" href="{% url 'groups:search' %}" class="btn btn-simple">Group</a></li>
-                          <li><a class="navbar-brand mynav" href="{% url 'members:search' %}" class="btn btn-simple">Member</a></li>
+                          <li><a class="navbar-brand mynav" href="{% url 'employers:search' %}" class="btn btn-simple">Employer</a></li>
+                          <li><a class="navbar-brand mynav" href="{% url 'employees:search' %}" class="btn btn-simple">Employee</a></li>
                           <li><a class="navbar-brand mynav" href="{% url 'products:search' %}" class="btn btn-simple">Product</a></li>
                           <li><a class="navbar-brand mynav" href="{% url 'agreements:search' %}" class="btn btn-simple">Agreement</a></li>
 

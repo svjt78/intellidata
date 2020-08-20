@@ -8,7 +8,7 @@
 			<a class="list-group-item" href="{% url 'agreements:single' pk=agreement.pk %}">
 			     <h3 class="title list-group-item-heading">{{ agreement.name }}</h3>
 					 <h4 class="title list-group-item-heading">ID: {{ agreement.agreementid }}</h4>
-					 <h4 class="title list-group-item-heading">Group: {{ agreement.group }}</h4>
+					 <h4 class="title list-group-item-heading">Employer: {{ agreement.employer }}</h4>
 					 <h4 class="title list-group-item-heading">Products: {{ agreement.product }}</h4>
 					 <h4 class="title list-group-item-heading">Created On: {{ agreement.agreement_date }}</h4>
 			<div class="list-group-item-text container-fluid">

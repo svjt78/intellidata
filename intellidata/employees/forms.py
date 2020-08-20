@@ -29,14 +29,14 @@ ENROLLMENT_METHOD=[('OneOnOne','OneOnOne'),
 
 class EmployeeForm(forms.ModelForm):
     age: forms.IntegerField()
-    home_phone = PhoneNumberField()
-    work_phone = PhoneNumberField()
+    home_phone = PhoneNumberField(required=False)
+    work_phone = PhoneNumberField(required=False)
     mobile_phone = PhoneNumberField()
     backend_SOR_connection = forms.ChoiceField(choices=TRANSMISSION_CHOICES, widget=forms.RadioSelect, label='If connected to ODS')
     gendercode = forms.ChoiceField(choices=GENDER, widget=forms.RadioSelect, label='Gender')
     maritalstatus = forms.ChoiceField(choices=MARITAL_STATUS, widget=forms.RadioSelect, label='Marital Status')
     enrollment_method = forms.ChoiceField(choices=ENROLLMENT_METHOD, widget=forms.RadioSelect, label='Enrollment Method')
-    birthdate = forms.DateField()
+    birthdate = forms.DateField(required=False)
     sms = forms.CharField(required=False, label='SMS Notification', widget=forms.TextInput(attrs={'readonly':'readonly'}))
     emailer = forms.CharField(required=False, label='Email Notification', widget=forms.TextInput(attrs={'readonly':'readonly'}))
     artefact = forms.FileField(required=False)

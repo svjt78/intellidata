@@ -8,6 +8,13 @@ PRODUCT_CHOICES = (
     ('STD', 'Short Term Disability'),
     ('LTD', 'Long Term Disability'),
     ('CI', 'Critical Illness'),
+    ('ACCIDENT', 'Accident'),
+    ('ADND', 'Accidental Death & Dismemberment'),
+    ('CANCER', 'Cancer'),
+    ('DENTAL', 'DENTAL'),
+    ('VISION', 'Vision'),
+    ('HOSPITAL', 'Hospital;'),
+    ('IDI', 'Individual Disability'),
     )
 
 TRANSMISSION_CHOICES=[('Connected','Connected'),

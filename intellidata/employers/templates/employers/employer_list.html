@@ -17,30 +17,21 @@
 		<h2>Employers</h2>
 
 		{% if not object_list %}
-  			<p>No employers available at this time! Go ahead and create a employer if needed!</p>
+  			<p>No employers available at this time! Go ahead and add an employer to this transmission if needed!</p>
 		{% else %}
 				<p>Welcome to the Employers Page! Select a employer that you want to work with!</p>
 		{% endif %}
 
+		<br>
+
+		<input type="button" class="btn btn-primary btn-large" value="Go back!" onclick="history.back()">
+
 	</div>
-
-
-	<a href="{% url 'employers:create' %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-plus-sign"></span> Create New employer!</a>
-	&nbsp;
-	<a href="{% url 'employers:bulk' %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-plus-sign"></span> Uplaod employers!</a>
-	&nbsp;
-	{% if FileNotFound %}
-    <div id="some_flag" title="Some Flag">
-        <h2>File Does Not Exist!</h2>
-    </div>
-	{% endif %}
-
 </div>
 
 <br>
 
 {% endblock %}
-
 
 
 {% block employer_content %}
@@ -63,6 +54,7 @@
 					<br>
 					 <h4 class="title list-employer-item-heading">employer ID: {{ employer.employerid }}</h4>
 					 <h4 class="title list-employer-item-heading">Purpose: {{ employer.purpose }}</h4>
+					 <h4 class="title list-group-item-heading">Sender Name: {{ employer.transmission }}</h4>
 					 <h4 class="title list-employer-item-heading">Created On: {{ employer.employer_date }}</h4>
 					 <h4 class="title list-employer-item-heading">Created By: {{ employer.creator }}</h4>
 			<div class="list-employer-item-text container-fluid">

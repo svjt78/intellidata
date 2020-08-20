@@ -30,7 +30,7 @@ class Employee(models.Model):
     name = models.CharField(max_length=256)
     slug = models.SlugField(allow_unicode=True)
     gendercode = models.CharField(max_length=255)
-    age = models.PositiveIntegerField()
+    age = models.PositiveIntegerField(default=0)
     birthdate = models.DateField()
     maritalstatus =  models.CharField(max_length=255)
 
@@ -152,23 +152,23 @@ class Employee(models.Model):
 
     home_zipcode = models.CharField(max_length=256)
 
-    mail_address_line_1 = models.CharField(max_length=256)
+    mail_address_line_1 = models.CharField(max_length=256, null=True, blank=True)
     mail_address_line_2 = models.CharField(max_length=256, null=True, blank=True)
-    mail_city = models.CharField(max_length=256)
+    mail_city = models.CharField(max_length=256, null=True, blank=True)
     mail_state = models.CharField(max_length=100,
                                       choices=STATE_NAMES,
                                       default=DF)
 
-    mail_zipcode = models.CharField(max_length=256)
+    mail_zipcode = models.CharField(max_length=256, null=True, blank=True)
 
-    work_address_line_1 = models.CharField(max_length=256)
+    work_address_line_1 = models.CharField(max_length=256, null=True, blank=True)
     work_address_line_2 = models.CharField(max_length=256, null=True, blank=True)
-    work_city = models.CharField(max_length=256)
+    work_city = models.CharField(max_length=256, null=True, blank=True)
     work_state = models.CharField(max_length=100,
                                       choices=STATE_NAMES,
                                       default=DF)
 
-    work_zipcode = models.CharField(max_length=256)
+    work_zipcode = models.CharField(max_length=256, null=True, blank=True)
 
     email = models.EmailField(max_length=254)
     alternate_email = models.EmailField(max_length=254, blank=True, null=True)
@@ -178,8 +178,8 @@ class Employee(models.Model):
     work_phone = PhoneNumberField(null=True, blank=True, unique=False)
     mobile_phone = PhoneNumberField(null=True, blank=True, unique=False)
 
-    enrollment_method = models.CharField(max_length=255)
-    employment_information = models.CharField(max_length=255)
+    enrollment_method = models.CharField(max_length=255, null=True, blank=True)
+    employment_information = models.CharField(max_length=255, null=True, blank=True)
 
     employer = models.ForeignKey(Employer, on_delete=models.SET_NULL, null=True, blank=True, related_name="employee_set")
 

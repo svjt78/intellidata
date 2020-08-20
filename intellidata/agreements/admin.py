@@ -5,11 +5,11 @@ from . import models
 class AgreementAdmin(admin.ModelAdmin):
 
 
-    search_fields = ['name', 'group', 'product']
+    search_fields = ['name', 'employer', 'product']
 
-    list_filter = ['name', 'group', 'product', 'agreement_date']
+    list_filter = ['name', 'employer', 'product', 'agreement_date']
 
-    list_display = ['pk', 'name', 'group', 'agreement_date']
+    list_display = ['pk', 'name', 'employer', 'agreement_date']
 
     list_editable = ['name']
 

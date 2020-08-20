@@ -4,7 +4,7 @@
 {% block code_content %}
 <h2>API Code Maintenance Screen</h2>
 <h2>Please Do Not Use Unless Absolutely Necessary!</h2>
-  <!-- <form method="POST" action="{% url 'groups:create' %}" id="groupForm"> -->
+
   <form method="POST">
   	{% csrf_token %}
   	{% bootstrap_form form %}

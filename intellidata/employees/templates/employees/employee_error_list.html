@@ -10,7 +10,7 @@
 		</h2>
 
     {% endif %}
-		<h2>Errors in employees</h2>
+		<h2>Errors in Employees</h2>
 
 		{% if not object_list %}
   			<p>No errors. Congratulations!</p>
@@ -31,11 +31,11 @@
 			{% for error in object_list %}
 
 			     <h4 class="title list-group-item-heading">{{ error.serial }}</h4>
-					 <h4 class="title list-group-item-heading">employee Name: {{ error.name }}</h4>
+					 <h4 class="title list-group-item-heading">Employee Name: {{ error.name }}</h4>
 					 <h4 class="title list-group-item-heading">Field At Error: {{ error.errorfield }}</h4>
 					 <h4 class="title list-group-item-heading">Error Description: {{ error.description }}</h4>
 					 <h4 class="title list-group-item-heading">Group: {{ error.group }}</h4>
-					 <h4 class="title list-group-item-heading">Group: {{ error.error_date }}</h4>
+					 <h4 class="title list-group-item-heading">Event Date: {{ error.error_date }}</h4>
 					 &nbsp;
 
 			{% endfor %}

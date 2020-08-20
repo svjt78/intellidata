@@ -2,7 +2,7 @@
 
 {% block preproduct %}
 <h4>Search Product</h4>
-  <!-- <form method="POST" action="{% url 'groups:create' %}" id="groupForm"> -->
+
   <form action="{% url 'products:search_results' %}" method="GET">
   	{% csrf_token %}
     <input name="q" type="text" placeholder="Search...">

@@ -19,8 +19,8 @@ from django.db import IntegrityError
 from django.shortcuts import get_object_or_404
 from django.views import generic
 from django.db.models import Count
-from groups.models import Group
-from members.models import Member
+from employers.models import Employer
+from employees.models import Employee
 from django.contrib.auth.models import User
 from bulkuploads.models import BulkUpload
 from apicodes.models import APICodes
@@ -32,8 +32,8 @@ from . import forms
 from products.forms import ProductForm
 from bulkuploads.forms import BulkUploadForm
 import csv
-from groups.utils import BulkCreateManager
-from groups.utils import ApiDomains
+from employers.utils import BulkCreateManager
+from employers.utils import ApiDomains
 import os.path
 from os import path
 from django.utils.text import slugify
@@ -594,7 +594,7 @@ def BulkUploadProduct(request):
                         # load the product error table
                         s3.download_file('intellidatastatic', 'media/products_error.csv', 'products_error.csv')
 
-                        #Refresh Error table for concerned group
+                        #Refresh Error table for concerned employer
                         ProductError.objects.all().delete()
 
                         with open('products_error.csv', 'rt') as csv_file:
@@ -618,7 +618,7 @@ def BulkUploadProduct(request):
 
                     error_report.total=(error_report.clean + error_report.error)
 
-                    #Refresh Error aggregate table for concerned group
+                    #Refresh Error aggregate table for concerned employer
                     ProductErrorAggregate.objects.all().delete()
 
                     error_report.save()
@@ -722,9 +722,9 @@ class ViewProductErrorList(LoginRequiredMixin, generic.ListView):
     #form_class = forms.MemberForm
 
     def get_queryset(self):
-    #    return Member.objects.filter(group=group_name)
+    #    return Member.objects.filter(employer=employer_name)
     #    return Member.objects.all
-        #return models.Member.objects.prefetch_related('group')
+        #return models.Member.objects.prefetch_related('employer')
         return models.ProductError.objects.all()
 
 

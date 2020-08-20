@@ -54,7 +54,7 @@ class BulkCreateManager(object):
 class Notification:
     #Send for subscription
 
-    def SubscribeMemberObj(self, phone_num):
+    def SubscribeEmployeeObj(self, phone_num):
 
         context ={}
 
@@ -92,7 +92,7 @@ class Notification:
 
 
 
-    def TextMemberObj(self, subscription_arn):
+    def TextEmployeeObj(self, subscription_arn):
 
         context = {}
 
@@ -123,7 +123,7 @@ class Notification:
 
 
 
-    def EmailMemberObj(self, email_addr):
+    def EmailEmployeeObj(self, email_addr):
 
         context = {}
 

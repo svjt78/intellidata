@@ -1,0 +1,74 @@
+{% extends "transmissions/transmission_base.html" %}
+{% load static %}
+{% block pretransmission %}
+
+<div class="dropdown">
+  <button class="dropbtn btn btn-primary btn-large">Manage Transmissions</button>
+  <div class="dropdown-content">
+
+  <a href="{% url 'transmissions:version' pk=transmission_details.pk %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-pencil"></span> Version transmission</a>
+  &nbsp;
+  <a href="{% url 'transmissions:update' pk=transmission_details.pk %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-pencil"></span> Update transmission</a>
+  &nbsp;
+  <a href="{% url 'transmissions:delete' pk=transmission_details.pk %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-remove-circle"></span> Delete transmission</a>
+  &nbsp;
+  <a href="{% url 'transmissions:backendpull' pk=transmission_details.pk %}" class="btn btn-primary btn-large"><span class="glyphicon glyphicon-cloud"></span> Pull From Backend</a>
+  &nbsp;
+  <a href="{% url 'transmissions:history' pk=transmission_details.pk %}" class="btn btn-primary btn-large"><span class="glyphicon glyphicon-cloud"></span> List History</a>
+  &nbsp;
+  <a href="{% url 'transmissions:refresh' pk=transmission_details.pk %}" class="btn btn-primary btn-large"><span class="glyphicon glyphicon-cloud"></span> Refresh From Backend</a>
+  &nbsp;
+  <input type="button" class="btn btn-primary btn-large" value="Go back!" onclick="history.back()">
+  &nbsp;
+  </div>
+</div>
+
+<div class="dropdown">
+  <button class="dropbtn btn btn-primary btn-large">Manage Employer</button>
+  <div class="dropdown-content">
+
+    <a href="{% url 'transmissions:show_employers' pk=transmission_details.pk %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-ok-circle"></span>Show Employers</a>
+    &nbsp;
+    <a href="{% url 'employers:create' pk=transmission_details.pk %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-plus-sign"></span>Add Employer</a>
+    &nbsp;
+    <a href="{% url 'employers:bulk' pk=transmission_details.pk %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-upload"></span>Upload Employer</a>
+    &nbsp;
+    <a href="{% url 'employers:bulksor' %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-upload"></span>Load To ODS</a>
+    &nbsp;
+    <a href="{% url 'employers:feederrors' pk=transmission_details.pk %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-fire"></span>View Feed Errors</a>
+    &nbsp;
+
+  </div>
+</div>
+
+<input type="button" class="btn btn-primary btn-large" value="Go back!" onclick="history.back()">
+&nbsp;
+
+
+
+<h1>Sender Name: {{transmission_details.SenderName}}</h1>
+<h2>ID: {{transmission_details.transmissionid}}</h2>
+<h2>Benefit Administrator Platform: {{transmission_details.BenefitAdministratorPlatform}}</h2>
+<h2>Receiver Name: {{transmission_details.ReceiverName}}</h2>
+<h2>Test Production Code: {{transmission_details.TestProductionCode}}</h2>
+<h2>Transmission Type Code: {{transmission_details.TransmissionTypeCode}}</h2>
+<h2>System Version Identifier: {{transmission_details.SystemVersionIdentifier}}</h2>
+<h2>Created On: {{transmission_details.create_date}}</h2>
+<h2>Created By: {{transmission_details.creator}}</h2>
+<h2>Origin: {{transmission_details.source}}</h2>
+<h2>ODS Connection: {{transmission_details.backend_SOR_connection}}</h2>
+<h2>Commit Indicator: {{transmission_details.commit_indicator}}</h2>
+<h2>Record Status: {{transmission_details.record_status}}</h2>
+<h2>Response: {{transmission_details.response}}</h2>
+
+{% for message in messages %}
+
+        <div class="alert alert-success">
+            <a class="close" href="#" data-dismiss="alert">×</a>
+
+            {{ message }}
+
+        </div>
+{% endfor %}
+
+{% endblock %}

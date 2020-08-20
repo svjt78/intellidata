@@ -6,8 +6,8 @@ from pytz import timezone
 from django.urls import reverse
 from django.db import models
 from django.utils.text import slugify
-from groups.utils import create_new_ref_number
-from groups.models import Group
+from employers.utils import create_new_ref_number
+from employers.models import Employer
 from products.models import Product
 # from accounts.models import User
 
@@ -17,7 +17,7 @@ from django.contrib.auth import get_user_model
 User = get_user_model()
 
 # https://docs.djangoproject.com/en/1.11/howto/custom-template-tags/#inclusion-tags
-# This is for the in_group_members check template tag
+# This is for the in_employer_members check template tag
 from django import template
 register = template.Library()
 
@@ -31,7 +31,7 @@ class Agreement(models.Model):
     description_html = models.TextField(editable=False, default='', blank=True)
     agreement_date = models.DateTimeField(auto_now=True)
     creator = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
-    group = models.ForeignKey(Group, on_delete=models.SET_NULL, null=True, blank=True, related_name="group_set")
+    employer = models.ForeignKey(Employer, on_delete=models.SET_NULL, null=True, blank=True, related_name="agreement_set")
     product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True, blank=True, related_name="agreements_products_set")
     coverage = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     price_per_1000_units = models.DecimalField(max_digits=4, decimal_places=2, default=0)

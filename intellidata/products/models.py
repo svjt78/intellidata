@@ -12,7 +12,7 @@ import uuid
 
 from django.contrib.auth import get_user_model
 
-from groups.utils import ApiDomains
+from employers.utils import ApiDomains
 
 # For Rest rest_framework
 from rest_framework import status
@@ -39,12 +39,27 @@ class Product(models.Model):
     STD = 'STD'
     LTD = 'LTD'
     CI = 'CI'
+    ACCIDENT = 'ACCIDENT'
+    ADND = 'ADND'
+    CANCER = 'CANCER'
+    DENTAL = 'DENTAL'
+    VISION = 'VISION'
+    HOSPITAL = 'HOSPITAL'
+    IDI = 'IDI'
+
     PRODUCT_CHOICES = (
         (CHOOSE, 'Unknown Type'),
         (LIFE, 'Life Insurance'),
         (STD, 'Short Term Disability'),
         (LTD, 'Long Term Disability'),
         (CI, 'Critical Illness'),
+        (ACCIDENT, 'Accident'),
+        (ADND, 'Accidental Death & Dismemberment'),
+        (CANCER, 'Cancer'),
+        (DENTAL, 'DENTAL'),
+        (VISION, 'Vision'),
+        (HOSPITAL, 'Hospital;'),
+        (IDI, 'Individual Disability'),
     )
     type = models.CharField(max_length=100,
                                       choices=PRODUCT_CHOICES,
@@ -58,6 +73,7 @@ class Product(models.Model):
     price_per_1000_units = models.DecimalField(max_digits=4, decimal_places=3, default=0)
     creator = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     product_date = models.DateTimeField(auto_now=True)
+    source = models.CharField(max_length=1, null=True, blank=True)
     photo = models.ImageField(blank=True, null=True)
     backend_SOR_connection = models.CharField(max_length=255, default='Disconnected')
     commit_indicator = models.CharField(max_length=255, default='Not Committed')

@@ -17,5 +17,5 @@ urlpatterns = [
     url(r"^update/(?P<pk>\d+)/$",views.UpdateAgreement.as_view(),name="update"),
     url(r"^delete/(?P<pk>\d+)/$",views.DeleteAgreement.as_view(),name="delete"),
     url(r"^rest/agreementlist/$",views.AgreementList, name="rest"),
-    url(r"^(?P<pk>\d+)/rest/agreementlist/$",views.AgreementListByGroup, name="bygroup"),
+    url(r"^(?P<pk>\d+)/rest/agreementlist/$",views.AgreementListByEmployer, name="byemployer"),
     ]

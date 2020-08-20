@@ -2,26 +2,37 @@ from controlcenter import Dashboard, widgets
 from django.db import connection
 from django.db.models import Sum
 from django.db.models import Count
-from products.models import Product
-from groups.models import Group
+from employers.models import Employer
+from employers.models import EmployerErrorAggregate
 from agreements.models import Agreement
-from members.models import Member
-from members.models import MemberErrorAggregate
+from employees.models import Employee
+from employees.models import EmployeeErrorAggregate
+from products.models import Product
 from products.models import ProductErrorAggregate
+from transmissions.models import Transmission
+from transmissions.models import TransmissionErrorAggregate
+
 
 #
 
-class MemberFeedErrorAnalysis(widgets.ItemList):
-    # This widget displays a list of agreements ordered in the Group
-    title = 'Member feed error analysis by Group'
-    model = MemberErrorAggregate
-    list_display = ('group', 'total', 'clean', 'error', 'error_date')
+class TransmissionFeedErrorAnalysis(widgets.ItemList):
+    # This widget displays a list of agreements ordered in the Employer
+    title = 'Transmission feed error analysis'
+    model = TransmissionErrorAggregate
+    list_display = ('total', 'clean', 'error', 'error_date')
+
 
 class ProductFeedErrorAnalysis(widgets.ItemList):
-    # This widget displays a list of agreements ordered in the Group
+    # This widget displays a list of agreements ordered in the Employer
     title = 'Product feed error analysis'
     model = ProductErrorAggregate
     list_display = ('total', 'clean', 'error', 'error_date')
+
+class EmployeeFeedErrorAnalysis(widgets.ItemList):
+    # This widget displays a list of agreements ordered in the Employer
+    title = 'Employee feed error analysis by Employer'
+    model = EmployeeErrorAggregate
+    list_display = ('Employer', 'total', 'clean', 'error', 'error_date')
 
 class CoverageLimitsProducts(widgets.SingleBarChart):
     # label and series
@@ -54,14 +65,14 @@ class RateByProducts(widgets.SingleBarChart):
     queryset = Product.objects.values('name', 'price_per_1000_units').filter()
 
 
-class MemberByAge(widgets.SingleBarChart):
+class EmployeeByAge(widgets.SingleBarChart):
     # label and series
-    title = 'Member By Age'
-    model = Member
+    title = 'Employee By Age'
+    model = Employee
     values_list = ('name', 'age')
     # Data source
     #queryset = Product.objects.order_by('-coverage_limit')
-    queryset = Member.objects.values('name', 'age').filter()
+    queryset = Employee.objects.values('name', 'age').filter()
 
 
 class ProductPie(widgets.SinglePieChart):
@@ -78,24 +89,24 @@ class ProductList(widgets.ItemList):
     queryset = Product.objects.values('type').annotate(count=Count('pk')).order_by('-count')
     limit_to = 10
 
-class MemberCountByGroup(widgets.SingleBarChart):
+class EmployeeCountByEmployer(widgets.SingleBarChart):
     # label and series
-    title = 'Members By Group'
-    model = Group
-    values_list = ('name', 'number_of_members')
+    title = 'Employees By Employer'
+    model = Employer
+    values_list = ('name', 'number_of_Employees')
     # Data source
     #queryset = Product.objects.order_by('-coverage_limit')
-    queryset = Group.objects.order_by('-number_of_members').annotate(number_of_members=Count('member_set')) # annotate the queryset
+    queryset = Employer.objects.order_by('-number_of_Employees').annotate(number_of_Employees=Count('employee_set')) # annotate the queryset
 
 
-class AgreementCountByGroup(widgets.SingleBarChart):
+class AgreementCountByEmployer(widgets.SingleBarChart):
     # label and series
-    title = 'Agreements By Group'
-    model = Group
+    title = 'Agreements By Employer'
+    model = Employer
     values_list = ('name', 'number_of_agreements')
     # Data source
     #queryset = Product.objects.order_by('-coverage_limit')
-    queryset = Group.objects.order_by('-number_of_agreements').annotate(number_of_agreements=Count('group_set')) # annotate the queryset
+    queryset = Employer.objects.order_by('-number_of_agreements').annotate(number_of_agreements=Count('employer_set')) # annotate the queryset
 
 
 
@@ -103,46 +114,47 @@ class AgreementCountByGroup(widgets.SingleBarChart):
     # Data source
     #queryset = Product.objects.order_by('-coverage_limit').annotate(Sum('coverage_limit'))
 
-class GroupProductAgreement(widgets.ItemList):
+class EmployerProductAgreement(widgets.ItemList):
     # label and series
     title = 'Coverage limits by Agreements and Products'
     model = Agreement
     list_display = ('product', 'name', 'coverage')
 
 
-class CoverageByGroupsProductsAgreement(widgets.SingleBarChart):
+class CoverageByEmployersProductsAgreement(widgets.SingleBarChart):
     # label and series
     title = 'Coverage by Products and Agreement'
     model = Agreement
     values_list = ('product', 'coverage')
     queryset = Agreement.objects.values('product').annotate(Sum('coverage')).order_by('coverage')
 
-class GroupList(widgets.ItemList):
-    title = 'Groups by Purpose'
-    model = Group
-    list_display = ('name', 'purpose', 'group_date')
+class EmployerList(widgets.ItemList):
+    title = 'Employers by Purpose'
+    model = Employer
+    list_display = ('name', 'purpose', 'Employer_date')
 
 #3
 class AgreementList(widgets.ItemList):
-    # This widget displays a list of agreements ordered in the Group
-    title = 'Agreements by Group'
+    # This widget displays a list of agreements ordered in the Employer
+    title = 'Agreements by Employer'
     model = Agreement
-    list_display = ('name', 'group', 'agreement_date')
+    list_display = ('name', 'Employer', 'agreement_date')
 
 class MyDashboard(Dashboard):
     widgets = (
-        MemberFeedErrorAnalysis,
+        TransmissionFeedErrorAnalysis,
         ProductFeedErrorAnalysis,
+        EmployeeFeedErrorAnalysis,
         CoverageLimitsProducts,
         RateByProducts,
-        MemberByAge,
+        EmployeeByAge,
         ProductPie,
-        MemberCountByGroup,
-        AgreementCountByGroup,
-        GroupProductAgreement,
-        CoverageByGroupsProductsAgreement,
+        EmployeeCountByEmployer,
+        AgreementCountByEmployer,
+        EmployerProductAgreement,
+        CoverageByEmployersProductsAgreement,
         ProductList,
-        GroupList,
+        EmployerList,
         AgreementList,
 
     )

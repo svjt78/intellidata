@@ -2,7 +2,7 @@
 
 {% block pre_agreement %}
 <h4>Search Agreement</h4>
-  <!-- <form method="POST" action="{% url 'groups:create' %}" id="groupForm"> -->
+
   <form action="{% url 'agreements:search_results' %}" method="GET">
   	{% csrf_token %}
     <input name="q" type="text" placeholder="Search...">

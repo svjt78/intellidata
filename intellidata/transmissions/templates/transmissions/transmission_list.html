@@ -1,0 +1,82 @@
+{% extends "transmissions/transmission_base.html" %}
+
+{% load static %}
+{% load thumbnail %}
+
+{% block pretransmission %}
+<div class="col-md-4">
+	<div class="content">
+		{% if user.is_authenticated %}
+		<h2>
+			Welcome
+			{{user.username }}
+
+		</h2>
+
+    {% endif %}
+		<h2>Transmissions</h2>
+
+		{% if not object_list %}
+  			<p>No transmissions available at this time! Go ahead and create a transmission if needed!</p>
+		{% else %}
+				<p>Welcome to the transmissions Page! Select a transmission that you want to work with!</p>
+		{% endif %}
+
+	</div>
+
+	{% if user.is_authenticated %}
+
+
+	<div class="dropdown">
+	  <button class="dropbtn btn btn-primary btn-large">Manage Transmissions</button>
+	  <div class="dropdown-content">
+
+		<a href="{% url 'transmissions:create' %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-plus-sign"></span> Create New transmission!</a>
+		&nbsp;
+		<a href="{% url 'transmissions:bulk' %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-plus-sign"></span> Upload transmissions!</a>
+		&nbsp;
+		<a href="{% url 'transmissions:feederrors' %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-fire"></span>View Feed Errors</a>
+		&nbsp;
+	  <a href="{% url 'transmissions:bulksor' %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-plus-sign"></span> Upload To ODS!</a>
+
+	  </div>
+	</div>
+
+	<!--
+	<a href="{% url 'transmissions:create' %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-plus-sign"></span> Create New transmission!</a>
+	&nbsp;
+	<a href="{% url 'transmissions:bulk' %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-plus-sign"></span> Upload transmissions!</a>
+	&nbsp;
+-->
+	{% if FileNotFound %}
+    <div id="some_flag" title="Some Flag">
+        <h2>File Does Not Exist!</h2>
+    </div>
+	{% endif %}
+
+	{% endif %}
+</div>
+{% endblock %}
+
+{% block transmission_content %}
+<div class="col-md-8">
+	<div class="list-group">
+		{% for transmission in object_list %}
+			<a class="list-group-item" href="{% url 'transmissions:single' pk=transmission.pk %}">
+			     <h3 class="title list-group-item-heading">Sender Name: {{ transmission.SenderName }}</h3>
+					 <h3 class="title list-group-item-heading">ID: {{ transmission.transmissionid }}</h3>
+
+					 <br>
+
+					 <h4 class="title list-group-item-heading">Created On: {{ transmission.create_date }}</h4>
+					 <h4 class="title list-group-item-heading">Created By: {{ transmission.creator }}</h4>
+
+					 <br>
+			<div class="list-group-item-text container-fluid">
+				{{ transmission.description_html|safe }}
+			</div>
+		</a>
+		{% endfor %}
+	</div>
+</div>
+{% endblock %}

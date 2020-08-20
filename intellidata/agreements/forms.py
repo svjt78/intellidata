@@ -1,6 +1,6 @@
 from django import forms
 from django.core.exceptions import ValidationError
-from members.models import *
+from employees.models import *
 
 from .models import Agreement
 
@@ -13,7 +13,7 @@ class AgreementForm(forms.ModelForm):
         model = Agreement
         exclude = ('slug',)
 
-        fields = ('agreementid', 'name','description', 'group', 'product', 'price_per_1000_units', 'coverage',)
+        fields = ('agreementid', 'name','description', 'employer', 'product', 'price_per_1000_units', 'coverage',)
 
         widgets = {
             'agreementid': forms.TextInput(attrs={'readonly':'readonly'}),

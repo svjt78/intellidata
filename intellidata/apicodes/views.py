@@ -26,7 +26,7 @@ from bulkuploads.forms import BulkUploadForm
 from bulkuploads.models import BulkUpload
 from apicodes.forms import APICodesForm
 import csv
-from groups.utils import BulkCreateManager
+from employers.utils import BulkCreateManager
 import os.path
 from os import path
 import uuid

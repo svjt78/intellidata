@@ -13,6 +13,8 @@ class EmployerForm(forms.ModelForm):
 
     photo = forms.ImageField()
 
+    transmission = forms.CharField(required=False, label='Transmission', widget=forms.TextInput(attrs={'readonly':'readonly'}))
+
     source = forms.CharField(required=False, label='Origin', widget=forms.TextInput(attrs={'readonly':'readonly'}))
 
     backend_SOR_connection = forms.ChoiceField(choices=TRANSMISSION_CHOICES, widget=forms.RadioSelect, label='If connected to ODS')
@@ -30,7 +32,7 @@ class EmployerForm(forms.ModelForm):
             'name': forms.TextInput(attrs={'class': 'textinputclass'}),
             'description': forms.Textarea(attrs={'class': 'editable medium-editor-textarea postcontent'}),
             'FederalEmployerIdentificationNumber': forms.TextInput(attrs={'class': 'textinputclass'}),
-            'CarrierMasterAgreementNumber': forms.ImageField(),
+            'CarrierMasterAgreementNumber': forms.TextInput(attrs={'class': 'textinputclass'}),
             'address_line_1': forms.TextInput(attrs={'class': 'textinputclass'}),
             'address_line_2': forms.TextInput(attrs={'class': 'textinputclass'}),
             'city': forms.TextInput(attrs={'class': 'textinputclass'}),
@@ -38,6 +40,8 @@ class EmployerForm(forms.ModelForm):
             'zipcode': forms.TextInput(attrs={'class': 'textinputclass'}),
             'purpose': forms.TextInput(attrs={'class': 'textinputclass'}),
             'photo': forms.ImageField()
+
+
 
 
         }
@@ -48,8 +52,8 @@ class EmployerErrorForm(forms.ModelForm):
     name = forms.CharField(required=False, label='Employer Name', widget=forms.TextInput(attrs={'readonly':'readonly'}))
     errorfield = forms.CharField(required=False, label='Field At Error', widget=forms.TextInput(attrs={'readonly':'readonly'}))
     error_description = forms.CharField(required=False, label='Error description_html', widget=forms.TextInput(attrs={'readonly':'readonly'}))
+    transmission = forms.CharField(required=False, label='Transmission', widget=forms.TextInput(attrs={'readonly':'readonly'}))
     source = forms.CharField(required=False, label='Origin', widget=forms.TextInput(attrs={'readonly':'readonly'}))
-    #photo = forms.ImageField()
     #error_date = forms.DateTimeField(required=False, label='Feed Date', widget=forms.TextInput(attrs={'readonly':'readonly'}))
 
     class Meta:

@@ -1,0 +1,22 @@
+{% extends "transmissions/transmission_base.html" %}
+{% load bootstrap3 %}
+
+{% block transmission_content %}
+<div class="col-md-8">
+	<div class="list-group">
+		{% for transmission in object_list %}
+			<a class="list-group-item" href="{% url 'transmissions:single' pk=transmission.pk %}">
+			     <h3 class="title list-group-item-heading">Sender Name{{ transmission.SenderName }}</h3>
+					 <h4 class="title list-group-item-heading">ID: {{ transmission.transmissionid }}</h4>
+					 <h4 class="title list-group-item-heading">Created On: {{ transmission.create_date }}</h4>
+					 <h4 class="title list-group-item-heading">Created By: {{ transmission.creator }}</h4>
+					 <br>
+		  </a>
+		{% endfor %}
+	</div>
+</div>
+{% endblock %}
+
+{% block posttransmission %}
+	<input type="button" class="btn btn-primary btn-large" value="Go back!" onclick="history.back()">
+{% endblock %}

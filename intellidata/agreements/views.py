@@ -21,8 +21,8 @@ from django.views import generic
 from django.db.models import Count
 from . import models
 from . import forms
-from groups.models import Group,GroupMember
-from members.models import Member
+from employers.models import Employer
+from employees.models import Employee
 from agreements.models import Agreement
 from products.models import Product
 
@@ -40,7 +40,7 @@ class SingleAgreement(LoginRequiredMixin, generic.DetailView):
 class ListAgreements(LoginRequiredMixin, generic.ListView):
     model = models.Agreement
     template_name = 'agreements/agreement_list.html'
-    #form_class = forms.GroupForm
+    #form_class = forms.EmployerForm
 
     def get_queryset(self):
         return Agreement.objects.all()
@@ -57,10 +57,10 @@ class CreateAgreement(LoginRequiredMixin, PermissionRequiredMixin, generic.Creat
     def dispatch(self, request, *args, **kwargs):
 
         """
-        Overridden so we can make sure the `Group` instance exists
+        Overridden so we can make sure the `Employer` instance exists
         before going any further.
         """
-        self.group = get_object_or_404(models.Group, pk=kwargs['pk'])
+        self.employer = get_object_or_404(models.Employer, pk=kwargs['pk'])
         return super().dispatch(request, *args, **kwargs)
 
     def form_valid(self, form):
@@ -69,9 +69,9 @@ class CreateAgreement(LoginRequiredMixin, PermissionRequiredMixin, generic.Creat
             raise HttpResponseForbidden()
         else:
             """
-            Overridden to add the group relation to the `Member` instance.
+            Overridden to add the employer relation to the `Employee` instance.
             """
-            form.instance.group = self.group
+            form.instance.employer = self.employer
             form.instance.creator = self.request.user
             return super().form_valid(form)
 
@@ -200,10 +200,10 @@ def AgreementList(request):
 
 #rest API call
 @api_view(['GET', 'POST'])
-def AgreementListByGroup(request, pk):
+def AgreementListByEmployer(request, pk):
 
     if request.method == 'GET':
-        contacts = Agreement.objects.filter(group_id = pk)
+        contacts = Agreement.objects.filter(employer_id = pk)
         serializer = AgreementSerializer(contacts, many=True)
         return Response(serializer.data)
     elif request.method == 'POST':

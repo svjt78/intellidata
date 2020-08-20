@@ -19,8 +19,8 @@ from django.db import IntegrityError
 from django.shortcuts import get_object_or_404
 from django.views import generic
 from django.db.models import Count
-from groups.models import Group
-from members.models import Member
+from employers.models import Employer
+from employees.models import Employee
 from django.contrib.auth.models import User
 from bulkuploads.models import BulkUpload
 from apicodes.models import APICodes
@@ -32,8 +32,8 @@ from . import forms
 from employers.forms import EmployerForm
 from bulkuploads.forms import BulkUploadForm
 import csv
-from groups.utils import BulkCreateManager
-from groups.utils import ApiDomains
+from employers.utils import BulkCreateManager
+from employers.utils import ApiDomains
 import os.path
 from os import path
 from django.utils.text import slugify
@@ -66,7 +66,8 @@ class ListEmployers(LoginRequiredMixin, generic.ListView):
     template_name = 'employers/employer_list.html'
 
     def get_queryset(self):
-        return models.Employer.objects.all()
+        #return models.Employer.objects.all()
+        return models.Employer.objects.prefetch_related('transmission')
         #return models.employer.objects.get(user=request.user)
 
 
@@ -79,10 +80,23 @@ class CreateEmployer(LoginRequiredMixin, PermissionRequiredMixin, generic.Create
     model = models.Employer
     template_name = 'employers/employer_form.html'
 
+    def dispatch(self, request, *args, **kwargs):
+        """
+        Overridden so we can make sure the `Transmission ` instance exists
+        before going any further.
+        """
+        self.transmission = get_object_or_404(models.Transmission, pk=kwargs['pk'])
+        print(self.transmission)
+        return super().dispatch(request, *args, **kwargs)
+
     def form_valid(self, form):
         if not self.request.user.has_perm('employers.add_employer'):
             raise HttpResponseForbidden()
         else:
+            """
+            Overridden to add the transmission relation to the `Employer` instance.
+            """
+            form.instance.transmission = self.transmission
             form.instance.creator = self.request.user
             form.instance.record_status = "Created"
 
@@ -129,8 +143,8 @@ def BackendPull(request, pk):
             obj.slug = json_data["SLUG"]
             obj.description = json_data["DESCRIPTION"]
             obj.description_html = misaka.html(obj.description)
-            obj.FederalEmployerIdentificationNumber = json_data["FEDERALEMPLOYERIDENTIFICATIONNUMBER"]
-            obj.CarrierMasterAgreementNumber = json_data["CARRIERMASTERAGREEMENTNUMBER"]
+            obj.FederalEmployerIdentificationNumber = json_data["FEDERAL_EMPLOYER_IDENTIFICATION_NUMBER"]
+            obj.CarrierMasterAgreementNumber = json_data["CARRIER_MASTER_AGREEMENT_NUMBER"]
 
             obj.address_line_1 = json_data["ADDRESS_LINE_1"]
             obj.address_line_2 = json_data["ADDRESS_LINE_2"]
@@ -144,6 +158,11 @@ def BackendPull(request, pk):
             obj.creator = User.objects.get(pk=int(json_data["CREATOR"]))
             #obj.crerator = get_object_or_404(User, pk=obj.creatorid)
             obj.employer_date = json_data["EMPLOYER_DATE"]
+
+            transmission_id = json_data["TRANSMISSION"]
+            transmission_obj = get_object_or_404(Transmission, pk = transmission_id)
+            obj.transmission = transmission_obj.SenderName
+
             obj.backend_SOR_connection = json_data["CONNECTION"]
             obj.response = json_data["RESPONSE"]
             obj.commit_indicator = json_data["COMMIT_INDICATOR"]
@@ -198,8 +217,8 @@ def ListEmployersHistory(request, pk):
                      obj.slug = json_data[ix]["SLUG"]
                      obj.description = json_data[ix]["DESCRIPTION"]
                      obj.description_html = misaka.html(obj.description)
-                     obj.FederalEmployerIdentificationNumber = json_data[ix]["FEDERALEMPLOYERIDENTIFICATIONNUMBER"]
-                     obj.CarrierMasterAgreementNumber = json_data[ix]["CARRIERMASTERAGREEMENTNUMBER"]
+                     obj.FederalEmployerIdentificationNumber = json_data[ix]["FEDERAL_EMPLOYER_IDENTIFICATION_NUMBER"]
+                     obj.CarrierMasterAgreementNumber = json_data[ix]["CARRIER_MASTER_AGREEMENT_NUMBER"]
 
                      obj.address_line_1 = json_data[ix]["ADDRESS_LINE_1"]
                      obj.address_line_2 = json_data[ix]["ADDRESS_LINE_2"]
@@ -213,6 +232,11 @@ def ListEmployersHistory(request, pk):
                      obj.creator = User.objects.get(pk=int(json_data["CREATOR"]))
                      #obj.crerator = get_object_or_404(User, pk=obj.creatorid)
                      obj.employer_date = json_data[ix]["EMPLOYER_DATE"]
+
+                     transmission_id = json_data[ix]["TRANSMISSION"]
+                     transmission_obj = get_object_or_404(Transmission, pk = transmission_id)
+                     obj.transmission = transmission_obj.SenderName
+
                      obj.backend_SOR_connection = json_data[ix]["CONNECTION"]
                      obj.response = json_data[ix]["RESPONSE"]
                      obj.commit_indicator = json_data[ix]["COMMIT_INDICATOR"]
@@ -270,8 +294,8 @@ def RefreshEmployer(request, pk):
             obj1.slug = json_data["SLUG"]
             obj1.description = json_data["DESCRIPTION"]
             obj1.description_html = misaka.html(obj.description)
-            obj1.FederalEmployerIdentificationNumber = json_data["FEDERALEMPLOYERIDENTIFICATIONNUMBER"]
-            obj1.CarrierMasterAgreementNumber = json_data["CARRIERMASTERAGREEMENTNUMBER"]
+            obj1.FederalEmployerIdentificationNumber = json_data["FEDERAL_EMPLOYER_IDENTIFICATION_NUMBER"]
+            obj1.CarrierMasterAgreementNumber = json_data["CARRIER_MASTER_AGREEMENT_NUMBER"]
 
             obj1.address_line_1 = json_data["ADDRESS_LINE_1"]
             obj1.address_line_2 = json_data["ADDRESS_LINE_2"]
@@ -285,6 +309,11 @@ def RefreshEmployer(request, pk):
             obj1.creator = User.objects.get(pk=int(json_data["CREATOR"]))
             #obj.crerator = get_object_or_404(User, pk=obj.creatorid)
             obj1.employer_date = json_data["EMPLOYER_DATE"]
+
+            transmission_id = json_data["TRANSMISSION"]
+            transmission_obj = get_object_or_404(Transmission, pk = transmission_id)
+            obj1.transmission = transmission_obj.SenderName
+
             obj1.backend_SOR_connection = json_data["CONNECTION"]
             obj1.response = json_data["RESPONSE"]
             obj1.commit_indicator = json_data["COMMIT_INDICATOR"]
@@ -335,7 +364,7 @@ class UpdateEmployer(LoginRequiredMixin, PermissionRequiredMixin, generic.Update
     permission_required = 'employers.change_employer'
     context_object_name = 'employer_details'
     redirect_field_name = 'employers/employer_detail.html'
-    form_class = forms.employerForm
+    form_class = forms.EmployerForm
     model = models.Employer
     template_name = 'employers/employer_form.html'
 
@@ -417,8 +446,8 @@ class SearchEmployersList(LoginRequiredMixin, generic.ListView):
                 obj1.slug = json_data["SLUG"]
                 obj1.description = json_data["DESCRIPTION"]
                 obj1.description_html = misaka.html(obj.description)
-                obj1.FederalEmployerIdentificationNumber = json_data["FEDERALEMPLOYERIDENTIFICATIONNUMBER"]
-                obj1.CarrierMasterAgreementNumber = json_data["CARRIERMASTERAGREEMENTNUMBER"]
+                obj1.FederalEmployerIdentificationNumber = json_data["FEDERAL_EMPLOYER_IDENTIFICATION_NUMBER"]
+                obj1.CarrierMasterAgreementNumber = json_data["CARRIER_MASTER_AGREEMENT_NUMBER"]
 
                 obj1.address_line_1 = json_data["ADDRESS_LINE_1"]
                 obj1.address_line_2 = json_data["ADDRESS_LINE_2"]
@@ -432,6 +461,12 @@ class SearchEmployersList(LoginRequiredMixin, generic.ListView):
                 obj1.creator = User.objects.get(pk=int(json_data["CREATOR"]))
                 #obj.crerator = get_object_or_404(User, pk=obj.creatorid)
                 obj1.employer_date = json_data["EMPLOYER_DATE"]
+
+                transmission_id = json_data["TRANSMISSION"]
+                transmission_obj = get_object_or_404(Transmission, pk = transmission_id)
+                #obj1.transmission = transmission_obj.SenderName
+                obj1.transmission = transmission_obj
+
                 obj1.backend_SOR_connection = json_data["CONNECTION"]
                 obj1.response = json_data["RESPONSE"]
                 obj1.commit_indicator = json_data["COMMIT_INDICATOR"]
@@ -456,6 +491,26 @@ class SearchEmployersList(LoginRequiredMixin, generic.ListView):
 
             return object_list
 
+
+class ShowEmployeesList(LoginRequiredMixin, generic.ListView):
+    model = Employer
+    template_name = 'employees/employee_list.html'
+
+    def get_queryset(self): # new
+        employer = get_object_or_404(models.Employer, pk=self.kwargs['pk'])
+        object_list = employer.employee_set.all()
+
+        return object_list
+
+class ShowAgreementsList(LoginRequiredMixin, generic.ListView):
+    model = Employer
+    template_name = 'agreements/agreement_list.html'
+
+    def get_queryset(self): # new
+        employer = get_object_or_404(models.Employer, pk=self.kwargs['pk'])
+        object_list = employer.agreement_set.all()
+
+        return object_list
 
 
 @permission_required("employers.add_employer")
@@ -658,6 +713,7 @@ def BulkUploadEmployer(request):
                                                           state=row[9],
                                                           zipcode=row[10],
                                                           purpose=row[11],
+                                                          transmission=get_object_or_404(models.Transmission, pk=pk),
                                                           creator = request.user,
                                                           record_status = "Created",
                                                           bulk_upload_indicator = "Y"
@@ -676,6 +732,7 @@ def BulkUploadEmployer(request):
                                                            state=row[9],
                                                            zipcode=row[10],
                                                            purpose=row[11],
+                                                           transmission=get_object_or_404(models.Transmission, pk=pk),
                                                            creator = request.user,
                                                            record_status = "Created",
                                                            bulk_upload_indicator = "Y"
@@ -686,7 +743,7 @@ def BulkUploadEmployer(request):
                         # load the employer error table
                         s3.download_file('intellidatastatic', 'media/employers_error.csv', 'employers_error.csv')
 
-                        #Refresh Error table for concerned group
+                        #Refresh Error table for concerned employer
                         EmployerError.objects.all().delete()
 
                         with open('employers_error.csv', 'rt') as csv_file:
@@ -697,6 +754,7 @@ def BulkUploadEmployer(request):
                                                           name=row1[2],
                                                           errorfield=row1[3],
                                                           error_description=row1[4],
+                                                          transmission=get_object_or_404(models.Transmission, pk=pk),
                                                           creator = request.user,
                                                           source = ""
                                                           ))
@@ -705,12 +763,13 @@ def BulkUploadEmployer(request):
 
                     error_report = EmployerErrorAggregate()
 
+                    error_report.transmission = get_object_or_404(Transmission, pk=pk)
                     error_report.clean=Employer.objects.count()
                     error_report.error=EmployerError.objects.count()
 
                     error_report.total=(error_report.clean + error_report.error)
 
-                    #Refresh Error aggregate table for concerned group
+                    #Refresh Error aggregate table for concerned employer
                     EmployerErrorAggregate.objects.all().delete()
 
                     error_report.save()
@@ -814,10 +873,10 @@ class ViewEmployerErrorList(LoginRequiredMixin, generic.ListView):
     #form_class = forms.MemberForm
 
     def get_queryset(self):
-    #    return Member.objects.filter(group=group_name)
+    #    return Member.objects.filter(employer=employer_name)
     #    return Member.objects.all
-        #return models.Member.objects.prefetch_related('group')
-        return models.EmployerError.objects.all()
+        #return models.Member.objects.prefetch_related('employer')
+        return models.EmployerError.objects.filter(transmission_id=self.kwargs['pk'])
 
 
 @api_view(['GET', 'POST'])
@@ -836,6 +895,26 @@ def EmployerList(request):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+#rest API call
+@api_view(['GET', 'POST'])
+def EmployerListByTransmission(request, pk):
+
+    if request.method == 'GET':
+        contacts = Employer.objects.filter(transmission_id = pk)
+        serializer = EmployerSerializer(contacts, many=True)
+        return Response(serializer.data)
+    elif request.method == 'POST':
+        serializer = EmployerSerializer(data=request.data)
+
+    if serializer.is_valid():
+        serializer.save()
+
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 
 #class for handling built-in API errors

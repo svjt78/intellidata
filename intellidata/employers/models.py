@@ -5,6 +5,7 @@ from django.urls import reverse
 from django.db import models
 from django.utils.text import slugify
 from apicodes.models import APICodes
+from transmissions.models import Transmission
 
 from sorl.thumbnail import ImageField
 import misaka
@@ -12,7 +13,7 @@ import uuid
 
 from django.contrib.auth import get_user_model
 
-from groups.utils import ApiDomains
+from employers.utils import ApiDomains
 
 # For Rest rest_framework
 from rest_framework import status
@@ -156,6 +157,8 @@ class Employer(models.Model):
 
     zipcode = models.CharField(max_length=256)
 
+    transmission = models.ForeignKey(Transmission, on_delete=models.SET_NULL, null=True, blank=True, related_name="employer_set")
+
     creator = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     employer_date = models.DateTimeField(auto_now=True)
     photo = models.ImageField(blank=True, null=True)
@@ -214,7 +217,7 @@ class Employer(models.Model):
 
     class Meta:
         ordering = ["-employer_date"]
-        unique_together = ("name", "type", "employer_date")
+        #unique_together = ("name", "type", "employer_date")
 
 
 class EmployerError(models.Model):
@@ -223,6 +226,7 @@ class EmployerError(models.Model):
     name = models.CharField(max_length=256, null=True, blank=True)
     errorfield = models.CharField(max_length=256)
     error_description = models.CharField(max_length=256)
+    transmission = models.ForeignKey(Transmission, on_delete=models.SET_NULL, null=True, blank=True, related_name="errored_employers")
     error_date = models.DateTimeField(auto_now=True)
     creator = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     source = models.CharField(max_length=1, null=True, blank=True)
@@ -242,6 +246,7 @@ class EmployerError(models.Model):
         ordering = ["-error_date"]
 
 class EmployerErrorAggregate(models.Model):
+    transmission = models.ForeignKey(Transmission, on_delete=models.SET_NULL, null=True, blank=True)
     error_date = models.DateTimeField(auto_now=True)
     total = models.CharField(max_length=256)
     clean = models.CharField(max_length=256)

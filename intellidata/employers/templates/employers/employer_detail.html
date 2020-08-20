@@ -12,11 +12,11 @@
     &nbsp;
     <a href="{% url 'employers:delete' pk=employer_details.pk %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-remove-circle"></span> Delete employer</a>
     &nbsp;
-    <a href="{% url 'employers:backendpull' pk=product_details.pk %}" class="btn btn-primary btn-large"><span class="glyphicon glyphicon-cloud"></span> Pull From Backend</a>
+    <a href="{% url 'employers:backendpull' pk=employer_details.pk %}" class="btn btn-primary btn-large"><span class="glyphicon glyphicon-cloud"></span> Pull From Backend</a>
     &nbsp;
-    <a href="{% url 'employers:history' pk=product_details.pk %}" class="btn btn-primary btn-large"><span class="glyphicon glyphicon-cloud"></span> List History</a>
+    <a href="{% url 'employers:history' pk=employer_details.pk %}" class="btn btn-primary btn-large"><span class="glyphicon glyphicon-cloud"></span> List History</a>
     &nbsp;
-    <a href="{% url 'employers:refresh' pk=product_details.pk %}" class="btn btn-primary btn-large"><span class="glyphicon glyphicon-cloud"></span> Refresh From Backend</a>
+    <a href="{% url 'employers:refresh' pk=employer_details.pk %}" class="btn btn-primary btn-large"><span class="glyphicon glyphicon-cloud"></span> Refresh From Backend</a>
     &nbsp;
     <input type="button" class="btn btn-primary btn-large" value="Go back!" onclick="history.back()">
     &nbsp;
@@ -29,15 +29,15 @@
   <button class="dropbtn btn btn-primary btn-large">Manage Members</button>
   <div class="dropdown-content">
 
-    <a href="{% url 'employers:show_members' pk=employer_details.pk %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-ok-circle"></span>Show Members</a>
+    <a href="{% url 'employers:show_employees' pk=employer_details.pk %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-ok-circle"></span>Show Members</a>
     &nbsp;
-    <a href="{% url 'members:create' pk=employer_details.pk %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-plus-sign"></span>Add Members</a>
+    <a href="{% url 'employees:create' pk=employer_details.pk %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-plus-sign"></span>Add Members</a>
     &nbsp;
-    <a href="{% url 'members:upload' pk=employer_details.pk %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-upload"></span>Upload Members</a>
+    <a href="{% url 'employees:upload' pk=employer_details.pk %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-upload"></span>Upload Members</a>
     &nbsp;
-    <a href="{% url 'members:bulksor' %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-upload"></span>Load To ODS</a>
+    <a href="{% url 'employees:bulksor' %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-upload"></span>Load To ODS</a>
     &nbsp;
-    <a href="{% url 'members:feederrors' pk=employer_details.pk %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-fire"></span>View Feed Errors</a>
+    <a href="{% url 'employees:feederrors' pk=employer_details.pk %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-fire"></span>View Feed Errors</a>
     &nbsp;
 
 
@@ -65,9 +65,21 @@
 <h2>Federal Employer Identification Number: {{employer_details.FederalEmployerIdentificationNumber}}</h2>
 <h2>Carrier Master Agreement Number: {{employer_details.CarrierMasterAgreementNumber}}</h2>
 <h2>Purpose: {{employer_details.purpose}}</h2>
+<h2>Sender Name: {{employee_details.transmission}}</h2>
 <h2>Created On: {{employer_details.employer_date}}</h2>
 <h2>Created By: {{employer_details.creator}}</h2>
 <h2>Employee Count: {{employer_details.employee_set.count}}</h2>
+<h2>Origin: {{employer_details.source}}</h2>
+
+&nbsp;
+<div class="container">
+  <h2>Postal Address Line 1: {{employer_details.address_line_1}}</h2>
+  <h2>Postal Address Line 2: {{employer_details.address_line_2}}</h2>
+  <h2>Postal City: {{employer_details.city}}</h2>
+  <h2>Postal State: {{employer_details.state}}</h2>
+  <h2>Postal Zipcode: {{employer_details.zipcode}}</h2>
+</div>
+
 <div style="background-color: rgba(255, 255, 255, 0.8);" data-spy="scroll" data-target=".navbar">
   <div class="list-employer-item-text container-fluid">
     <h4 style="color:black;">{{ employer_details.description_html|safe }}</h4>

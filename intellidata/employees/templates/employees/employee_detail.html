@@ -48,22 +48,51 @@
 
   <div class="container">
     <h1>{{employee_details.name}}</h1>
-    <h2>employee ID: {{employee_details.employeeid}}</h2>
+    <h2>Employee ID: {{employee_details.employeeid}}</h2>
+    <h2>SSN: {{employee_details.ssn}}</h2>
+    <h2>Gender: {{employee_details.gendercode}}</h2>
     <h2>Age: {{employee_details.age}}</h2>
+    <h2>Birthdate: {{employee_details.birthdate}}</h2>
+    <h2>Marital Status: {{employee_details.maritalstatus}}</h2>
+
     <h2>Email: {{employee_details.email}}</h2>
-    <h2>Phone: {{employee_details.phone}}</h2>
+    <h2>Alternate Email: {{employee_details.alternate_email}}</h2>
+
+    <h2>Home Phone: {{employee_details.home_phone}}</h2>
+    <h2>Work Phone: {{employee_details.work_phone}}</h2>
+    <h2>Mobile Phone: {{employee_details.mobile_phone}}</h2>
+
+    <h2>Enrollment Method: {{employee_details.enrollment_method}}</h2>
+    <h2>Employment Information: {{employee_details.employment_information}}</h2>
+
   </div>
   &nbsp;
   <div class="container">
-    <h2>Address Line 1: {{employee_details.address_line_1}}</h2>
-    <h2>Address Line 2: {{employee_details.address_line_2}}</h2>
-    <h2>City: {{employee_details.city}}</h2>
-    <h2>State: {{employee_details.state}}</h2>
-    <h2>Zipcode: {{employee_details.zipcode}}</h2>
+    <h2>Home Address Line 1: {{employee_details.home_address_line_1}}</h2>
+    <h2>Home Address Line 2: {{employee_details.home_address_line_2}}</h2>
+    <h2>Home City: {{employee_details.home_city}}</h2>
+    <h2>Home State: {{employee_details.home_state}}</h2>
+    <h2>Home Zipcode: {{employee_details.home_zipcode}}</h2>
   </div>
   &nbsp;
   <div class="container">
-    <h2>Group: {{employee_details.group}}</h2>
+    <h2>Mail Address Line 1: {{employee_details.mail_address_line_1}}</h2>
+    <h2>Mail Address Line 2: {{employee_details.mail_address_line_2}}</h2>
+    <h2>Mail City: {{employee_details.mail_city}}</h2>
+    <h2>Mail State: {{employee_details.mail_state}}</h2>
+    <h2>Mail Zipcode: {{employee_details.mail_zipcode}}</h2>
+  </div>
+  &nbsp;
+  <div class="container">
+    <h2>Work Address Line 1: {{employee_details.work_address_line_1}}</h2>
+    <h2>Work Address Line 2: {{employee_details.work_address_line_2}}</h2>
+    <h2>Work City: {{employee_details.work_city}}</h2>
+    <h2>Work State: {{employee_details.work_state}}</h2>
+    <h2>Work Zipcode: {{employee_details.work_zipcode}}</h2>
+  </div>
+  &nbsp;
+  <div class="container">
+    <h2>Employer: {{employee_details.employer}}</h2>
     <h2>Created On: {{employee_details.employee_date}}</h2>
     <h2>Created By: {{employee_details.creator}}</h2>
     <h2>SMS Sent: {{employee_details.sms}}</h2>
@@ -73,7 +102,7 @@
   </div>
     &nbsp;
   <div class="container">
-    <h2>Orgin of Data Element: {{employee_details.source}}</h2>
+    <h2>Orgin: {{employee_details.source}}</h2>
     <h2>ODS Connection: {{employee_details.backend_SOR_connection}}</h2>
     <h2>Commit Indicator: {{employee_details.commit_indicator}}</h2>
     <h2>Record Status: {{employee_details.record_status}}</h2>

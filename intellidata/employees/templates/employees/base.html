@@ -32,7 +32,7 @@
 
     					<ul class="nav navbar-nav navbar-right">
     						{% if user.is_authenticated %}
-                      <li><a class="navbar-brand mynav" href="{% url 'groups:all' %}" class="btn btn-simple">Groups</a></li>
+                      <li><a class="navbar-brand mynav" href="{% url 'employers:all' %}" class="btn btn-simple">Employers</a></li>
                       <li><a class="navbar-brand mynav" href="{% url 'employees:all' %}" class="btn btn-simple">employees</a></li>
                       <li><a class="navbar-brand mynav" href="{% url 'Accounts:logout' %}">Log out</a></li>
     						{% else %}

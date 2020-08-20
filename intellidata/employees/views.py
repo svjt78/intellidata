@@ -105,7 +105,7 @@ class CreateEmployee(LoginRequiredMixin, PermissionRequiredMixin, generic.Create
             form.instance.record_status = "Created"
 
             email_addr = form.instance.email
-            phone_num = form.instance.phone
+            phone_num = form.instance.mobile_phone
             print(phone_num)
 
             #NOTIFY Employee

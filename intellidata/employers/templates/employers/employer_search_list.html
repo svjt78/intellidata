@@ -7,11 +7,12 @@
 		{% for employer in object_list %}
 			<a class="list-employer-item" href="{% url 'employers:single' pk=employer.pk %}">
 			     <h3 class="title list-employer-item-heading">{{ employer.name }}</h3>
-					 <h4 class="title list-employer-item-heading">employer ID: {{ employer.employerid }}</h4>
-					  <h4 class="title list-employer-item-heading">Purpose: {{ employer.purpose }}</h4>
-						<br>
-						 <h4 class="title list-employer-item-heading">Created On: {{ employer.employer_date }}</h4>
-						 <br>
+					 <h4 class="title list-employer-item-heading">Employer ID: {{ employer.employerid }}</h4>
+					 <h4 class="title list-employer-item-heading">Purpose: {{ employer.purpose }}</h4>
+					 <h4 class="title list-group-item-heading">Sender Name: {{ employer.transmission }}</h4>
+				   <br>
+					 <h4 class="title list-employer-item-heading">Created On: {{ employer.employer_date }}</h4>
+					 <br>
 			<div class="list-employer-item-text container-fluid">
 				{{ employer.description_html|safe }}
 				<br>
