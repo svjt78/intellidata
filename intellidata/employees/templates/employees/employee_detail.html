@@ -32,11 +32,11 @@
   </div>
 
   &nbsp;
-  <a href="{% url 'employees:backendpull' pk=employee_details.pk %}" class="btn btn-primary btn-large"><span class="glyphicon glyphicon-cloud"></span> Pull From Backend</a>
+  <a href="{% url 'employees:backendpull' pk=employee_details.pk %}" class="btn btn-primary btn-large"><span class="glyphicon glyphicon-cloud"></span> Pull From ODS</a>
   &nbsp;
   <a href="{% url 'employees:history' pk=employee_details.pk %}" class="btn btn-primary btn-large"><span class="glyphicon glyphicon-cloud"></span> List History</a>
   &nbsp;
-  <a href="{% url 'employees:refresh' pk=employee_details.pk %}" class="btn btn-primary btn-large"><span class="glyphicon glyphicon-refresh"></span> Refresh From Backend</a>
+  <a href="{% url 'employees:refresh' pk=employee_details.pk %}" class="btn btn-primary btn-large"><span class="glyphicon glyphicon-refresh"></span> Refresh From ODS</a>
   &nbsp;
   <input type="button" class="btn btn-primary btn-large" value="Go back!" onclick="history.back()">
   &nbsp;
@@ -53,6 +53,7 @@
     <h2>Gender: {{employee_details.gendercode}}</h2>
     <h2>Age: {{employee_details.age}}</h2>
     <h2>Birthdate: {{employee_details.birthdate}}</h2>
+    <h2>Employer: {{employee_details.employer}}</h2>
     <h2>Marital Status: {{employee_details.maritalstatus}}</h2>
 
     <h2>Email: {{employee_details.email}}</h2>
@@ -92,7 +93,6 @@
   </div>
   &nbsp;
   <div class="container">
-    <h2>Employer: {{employee_details.employer}}</h2>
     <h2>Created On: {{employee_details.employee_date}}</h2>
     <h2>Created By: {{employee_details.creator}}</h2>
     <h2>SMS Sent: {{employee_details.sms}}</h2>

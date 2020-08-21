@@ -11,9 +11,11 @@ class EmployerForm(forms.ModelForm):
 
     employerid: forms.TextInput(attrs={'readonly':'readonly'})
 
+    purpose = forms.CharField(required=False, label='SIC Code')
+
     photo = forms.ImageField()
 
-    transmission = forms.CharField(required=False, label='Transmission', widget=forms.TextInput(attrs={'readonly':'readonly'}))
+    #transmission = forms.CharField(required=False, label='Transmission', widget=forms.TextInput(attrs={'readonly':'readonly'}))
 
     source = forms.CharField(required=False, label='Origin', widget=forms.TextInput(attrs={'readonly':'readonly'}))
 
@@ -25,7 +27,7 @@ class EmployerForm(forms.ModelForm):
     class Meta:
         model = Employer
         #exclude = ('slug','creator', 'bulk_upload_indicator')
-        fields = ('employerid', 'name','description', 'FederalEmployerIdentificationNumber', 'CarrierMasterAgreementNumber', 'address_line_1', 'address_line_2', 'city', 'state', 'zipcode', 'purpose', 'photo', 'backend_SOR_connection', 'record_status', 'response')
+        fields = ('employerid', 'name','description', 'FederalEmployerIdentificationNumber', 'CarrierMasterAgreementNumber', 'address_line_1', 'address_line_2', 'city', 'state', 'zipcode', 'purpose', 'photo', 'transmission', 'backend_SOR_connection', 'record_status', 'response')
 
         widgets = {
             'employerid': forms.TextInput(attrs={'readonly':'readonly'}),
@@ -33,17 +35,8 @@ class EmployerForm(forms.ModelForm):
             'description': forms.Textarea(attrs={'class': 'editable medium-editor-textarea postcontent'}),
             'FederalEmployerIdentificationNumber': forms.TextInput(attrs={'class': 'textinputclass'}),
             'CarrierMasterAgreementNumber': forms.TextInput(attrs={'class': 'textinputclass'}),
-            'address_line_1': forms.TextInput(attrs={'class': 'textinputclass'}),
-            'address_line_2': forms.TextInput(attrs={'class': 'textinputclass'}),
-            'city': forms.TextInput(attrs={'class': 'textinputclass'}),
-            'state': forms.TextInput(attrs={'class': 'textinputclass'}),
-            'zipcode': forms.TextInput(attrs={'class': 'textinputclass'}),
             'purpose': forms.TextInput(attrs={'class': 'textinputclass'}),
             'photo': forms.ImageField()
-
-
-
-
         }
 
 class EmployerErrorForm(forms.ModelForm):

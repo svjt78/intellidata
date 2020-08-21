@@ -61,15 +61,15 @@ class SingleEmployer(LoginRequiredMixin, generic.DetailView):
     model = models.Employer
     template_name = 'employers/employer_detail.html'
 
+
 class ListEmployers(LoginRequiredMixin, generic.ListView):
     model = models.Employer
     template_name = 'employers/employer_list.html'
 
     def get_queryset(self):
-        #return models.Employer.objects.all()
-        return models.Employer.objects.prefetch_related('transmission')
+        return models.Employer.objects.all()
+        #return models.Employer.objects.prefetch_related('transmission')
         #return models.employer.objects.get(user=request.user)
-
 
 class CreateEmployer(LoginRequiredMixin, PermissionRequiredMixin, generic.CreateView):
 #    fields = ("name", "description")
@@ -80,27 +80,15 @@ class CreateEmployer(LoginRequiredMixin, PermissionRequiredMixin, generic.Create
     model = models.Employer
     template_name = 'employers/employer_form.html'
 
-    def dispatch(self, request, *args, **kwargs):
-        """
-        Overridden so we can make sure the `Transmission ` instance exists
-        before going any further.
-        """
-        self.transmission = get_object_or_404(models.Transmission, pk=kwargs['pk'])
-        print(self.transmission)
-        return super().dispatch(request, *args, **kwargs)
-
     def form_valid(self, form):
         if not self.request.user.has_perm('employers.add_employer'):
             raise HttpResponseForbidden()
         else:
-            """
-            Overridden to add the transmission relation to the `Employer` instance.
-            """
-            form.instance.transmission = self.transmission
             form.instance.creator = self.request.user
             form.instance.record_status = "Created"
 
             return super().form_valid(form)
+
 
 
 #Pull from  backend system of record(SOR)
@@ -515,7 +503,7 @@ class ShowAgreementsList(LoginRequiredMixin, generic.ListView):
 
 @permission_required("employers.add_employer")
 @login_required
-def BulkUploadEmployer(request):
+def BulkUploadEmployer(request, pk):
 
         context ={}
 
@@ -623,6 +611,10 @@ def BulkUploadEmployer(request):
 
                                                       purpose=row[11]
                                                       array2.append(purpose)
+
+                                                      transmission=row[12]
+                                                      array2.append(transmission)
+
 
                                                       if bad_ind == 0:
                                                           array_good.append(array2)

@@ -31,7 +31,7 @@ class Agreement(models.Model):
     description_html = models.TextField(editable=False, default='', blank=True)
     agreement_date = models.DateTimeField(auto_now=True)
     creator = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
-    employer = models.ForeignKey(Employer, on_delete=models.SET_NULL, null=True, blank=True, related_name="agreement_set")
+    employer = models.ForeignKey(Employer, on_delete=models.DO_NOTHING, null=True, blank=True, related_name="agreement_set")
     product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True, blank=True, related_name="agreements_products_set")
     coverage = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     price_per_1000_units = models.DecimalField(max_digits=4, decimal_places=2, default=0)

@@ -16,11 +16,11 @@
 </div>
 
 &nbsp;
-<a href="{% url 'products:backendpull' pk=product_details.pk %}" class="btn btn-primary btn-large"><span class="glyphicon glyphicon-cloud"></span> Pull From Backend</a>
+<a href="{% url 'products:backendpull' pk=product_details.pk %}" class="btn btn-primary btn-large"><span class="glyphicon glyphicon-cloud"></span> Pull From ODS</a>
 &nbsp;
 <a href="{% url 'products:history' pk=product_details.pk %}" class="btn btn-primary btn-large"><span class="glyphicon glyphicon-cloud"></span> List History</a>
 &nbsp;
-<a href="{% url 'products:refresh' pk=product_details.pk %}" class="btn btn-primary btn-large"><span class="glyphicon glyphicon-cloud"></span> Refresh From Backend</a>
+<a href="{% url 'products:refresh' pk=product_details.pk %}" class="btn btn-primary btn-large"><span class="glyphicon glyphicon-cloud"></span> Refresh From ODS</a>
 &nbsp;
 <input type="button" class="btn btn-primary btn-large" value="Go back!" onclick="history.back()">
 &nbsp;

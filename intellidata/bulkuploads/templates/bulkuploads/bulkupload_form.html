@@ -3,7 +3,7 @@
 
 {% block bulkupload_content %}
 <h4>Upload File</h4>
-  <!-- <form method="POST" action="{% url 'groups:create' %}" id="groupForm"> -->
+
   <form method="POST" enctype="multipart/form-data">
   	{% csrf_token %}
   	{% bootstrap_form form %}

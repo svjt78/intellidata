@@ -144,7 +144,7 @@ class TransmissionErrorAggregate(models.Model):
     class Meta:
         ordering = ["-error_date"]
 
-class transmissionSerializer(serializers.ModelSerializer):
+class TransmissionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Transmission
