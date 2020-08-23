@@ -100,9 +100,10 @@ class CreateEmployee(LoginRequiredMixin, PermissionRequiredMixin, generic.Create
             """
             Overridden to add the employer relation to the `Employee` instance.
             """
-            form.instance.employer = self.employer
+            #form.instance.employer = self.employer
             form.instance.creator = self.request.user
             form.instance.record_status = "Created"
+            form.instance.source = "Web App"
 
             email_addr = form.instance.email
             phone_num = form.instance.mobile_phone
@@ -190,7 +191,7 @@ def BackendPull(request, pk):
 
             employer_id = json_data["EMPLOYER"]
             employer_obj = get_object_or_404(Employer, pk = employer_id)
-            obj.employer = employer_obj.name
+            obj.employer = employer_obj
 
             obj.creator = User.objects.get(pk=int(json_data["CREATOR"]))
             obj.employee_date = json_data["EMPLOYEE_DATE"]
@@ -352,7 +353,7 @@ def RefreshEmployee(request, pk):
             obj1.employeeid = json_data["EMPLOYEE_ID"]
             obj1.ssn = json_data["SSN"]
             obj1.name = json_data["NAME"]
-            obj1.name_html = misaka.html(obj.name)
+            obj1.name_html = misaka.html(obj1.name)
             obj1.gendercode = json_data["GENDERCODE"]
             obj1.age = json_data["AGE"]
             obj1.birthdate = json_data["BIRTHDATE"]
@@ -492,7 +493,7 @@ class SearchEmployeesList(LoginRequiredMixin, generic.ListView):
     def get_queryset(self, **kwargs): # new
         query = self.request.GET.get('q', None)
         object_list = models.Employee.objects.filter(
-            Q(name__icontains=query) | Q(age__icontains=query)
+            Q(name__icontains=query) | Q(age__icontains=query) | Q(employeeid__icontains=query) | Q(home_address_line_1__icontains=query) | Q(home_city__icontains=query) | Q(home_state__icontains=query) | Q(home_zipcode__icontains=query) | Q(mail_address_line_1__icontains=query) | Q(mail_city__icontains=query) | Q(mail_state__icontains=query) | Q(mail_zipcode__icontains=query) | Q(work_address_line_1__icontains=query) | Q(work_city__icontains=query) | Q(work_state__icontains=query) | Q(work_zipcode__icontains=query) | Q(email__icontains=query) | Q(alternate_email__icontains=query) | Q(home_phone__icontains=query) | Q(work_phone__icontains=query) | Q(mobile_phone__icontains=query) | Q(enrollment_method__icontains=query) | Q(employment_information__icontains=query)
         )
 
         #change start for remote SearchEmployeesForm
@@ -1457,12 +1458,70 @@ def EmployeeList(request):
     elif request.method == 'POST':
         serializer = EmployeeSerializer(data=request.data)
 
-    if serializer.is_valid():
-        serializer.save()
+        serializer.is_valid(raise_exception=True)
+        employee = Employee()
 
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        if serializer.data["employeeid"] == '':
+            employee.employerid = str(uuid.uuid4())[26:36]
+        else:
+            employee.employeeid = serializer.data["employeeid"]
+        #transmission.transmissionid = serializer.data["transmissionid"]
+        employee.ssn = serializer.data["ssn"]
+        employee.name = serializer.data["name"]
+        employee.slug=slugify(employee.name),
 
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        employee.gendercode = serializer.data["gendercode"]
+        employee.age = serializer.data["age"]
+        employee.birthdate = serializer.data["birthdate"]
+        employee.maritalstatus = serializer.data["maritalstatus"]
+
+        employee.home_address_line_1 = serializer.data["home_address_line_1"]
+        employee.home_address_line_2 = serializer.data["home_address_line_2"]
+        employee.home_city = serializer.data["home_city"]
+        employee.home_state = serializer.data["home_state"]
+        employee.home_zipcode = serializer.data["home_zipcode"]
+
+        employee.mail_address_line_1 = serializer.data["mail_address_line_1"]
+        employee.mail_address_line_2 = serializer.data["mail_address_line_2"]
+        employee.mail_city = serializer.data["mail_city"]
+        employee.mail_state = serializer.data["mail_state"]
+        employee.mail_zipcode = serializer.data["mail_zipcode"]
+
+        employee.work_address_line_1 = serializer.data["work_address_line_1"]
+        employee.work_address_line_2 = serializer.data["work_address_line_2"]
+        employee.work_city = serializer.data["work_city"]
+        employee.work_state = serializer.data["work_state"]
+        employee.work_zipcode = serializer.data["work_zipcode"]
+
+        employee.email = serializer.data["email"]
+        employee.alternate_email = serializer.data["alternate_email"]
+
+        employee.home_phone = serializer.data["home_phone"]
+        employee.work_phone = serializer.data["work_phone"]
+        employee.mobile_phone = serializer.data["mobile_phone"]
+
+        employee.enrollment_method = serializer.data["enrollment_method"]
+        employee.employment_information = serializer.data["employment_information"]
+
+        employee.employer = get_object_or_404(Employer, pk=serializer.data["employer"])
+
+        employee.source = "API Call"
+
+        employee.creator = get_object_or_404(User, pk=serializer.data["creator"])
+        #transmission.create_date = serializer.data["create_date"]
+        employee.backend_SOR_connection = "Disconnected"
+        employee.response = ""
+        employee.commit_indicator = "Not Committed"
+        employee.record_status = ""
+        employee.save()
+        return Response(serializer.data)
+
+    #if serializer.is_valid():
+    #    serializer.save()
+
+    #    return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    #    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 
@@ -1477,12 +1536,70 @@ def EmployeeListByEmployer(request, pk):
     elif request.method == 'POST':
         serializer = EmployeeSerializer(data=request.data)
 
-    if serializer.is_valid():
-        serializer.save()
+        serializer.is_valid(raise_exception=True)
+        employee = Employee()
 
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        if serializer.data["employeeid"] == '':
+            employee.employerid = str(uuid.uuid4())[26:36]
+        else:
+            employee.employerid = serializer.data["employeeid"]
+        #transmission.transmissionid = serializer.data["transmissionid"]
+        employee.ssn = serializer.data["ssn"]
+        employee.name = serializer.data["name"]
+        employee.slug=slugify(employee.name),
 
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        employee.gendercode = serializer.data["gendercode"]
+        employee.age = serializer.data["age"]
+        employee.birthdate = serializer.data["birthdate"]
+        employee.maritalstatus = serializer.data["maritalstatus"]
+
+        employee.home_address_line_1 = serializer.data["home_address_line_1"]
+        employee.home_address_line_2 = serializer.data["home_address_line_2"]
+        employee.home_city = serializer.data["home_city"]
+        employee.home_state = serializer.data["home_state"]
+        employee.home_zipcode = serializer.data["home_zipcode"]
+
+        employee.mail_address_line_1 = serializer.data["mail_address_line_1"]
+        employee.mail_address_line_2 = serializer.data["mail_address_line_2"]
+        employee.mail_city = serializer.data["mail_city"]
+        employee.mail_state = serializer.data["mail_state"]
+        employee.mail_zipcode = serializer.data["mail_zipcode"]
+
+        employee.work_address_line_1 = serializer.data["work_address_line_1"]
+        employee.work_address_line_2 = serializer.data["work_address_line_2"]
+        employee.work_city = serializer.data["work_city"]
+        employee.work_state = serializer.data["work_state"]
+        employee.work_zipcode = serializer.data["work_zipcode"]
+
+        employee.email = serializer.data["email"]
+        employee.alternate_email = serializer.data["alternate_email"]
+
+        employee.home_phone = serializer.data["home_phone"]
+        employee.work_phone = serializer.data["work_phone"]
+        employee.mobile_phone = serializer.data["mobile_phone"]
+
+        employee.enrollment_method = serializer.data["enrollment_method"]
+        employee.employment_information = serializer.data["employment_information"]
+
+        employee.employer = get_object_or_404(Employer, pk=serializer.data["employer"])
+
+        employee.source = "API Call"
+
+        employee.creator = get_object_or_404(User, pk=serializer.data["creator"])
+        #transmission.create_date = serializer.data["create_date"]
+        employee.backend_SOR_connection = "Disconnected"
+        employee.response = ""
+        employee.commit_indicator = "Not Committed"
+        employee.record_status = ""
+        employee.save()
+        return Response(serializer.data)
+
+    #if serializer.is_valid():
+    #    serializer.save()
+
+    #    return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    #    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 

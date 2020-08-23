@@ -73,7 +73,7 @@ class Product(models.Model):
     price_per_1000_units = models.DecimalField(max_digits=4, decimal_places=3, default=0)
     creator = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     product_date = models.DateTimeField(auto_now=True)
-    source = models.CharField(max_length=1, null=True, blank=True)
+    source = models.CharField(max_length=255, null=True, blank=True)
     photo = models.ImageField(blank=True, null=True)
     backend_SOR_connection = models.CharField(max_length=255, default='Disconnected')
     commit_indicator = models.CharField(max_length=255, default='Not Committed')
@@ -138,7 +138,7 @@ class ProductError(models.Model):
     error_description = models.CharField(max_length=256)
     error_date = models.DateTimeField(auto_now=True)
     creator = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
-    source = models.CharField(max_length=1, null=True, blank=True)
+    source = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):
         return self.description
@@ -159,7 +159,7 @@ class ProductErrorAggregate(models.Model):
     total = models.CharField(max_length=256)
     clean = models.CharField(max_length=256)
     error = models.CharField(max_length=256)
-    source = models.CharField(max_length=1, null=True, blank=True)
+    source = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):
         return (self.total + " " + self.clean + " " + self.error)

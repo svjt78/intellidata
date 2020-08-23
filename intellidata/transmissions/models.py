@@ -40,7 +40,7 @@ class Transmission(models.Model):
     TestProductionCode = models.CharField(max_length=255, null=True, blank=True)
     TransmissionTypeCode = models.CharField(max_length=255, default="Electronic")
     SystemVersionIdentifier = models.CharField(max_length=255, null=True, blank=True)
-    source = models.CharField(max_length=1, null=True, blank=True)
+    source = models.CharField(max_length=255, null=True, blank=True)
 
     create_date = models.DateTimeField(auto_now=True)
     creator = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
@@ -106,7 +106,7 @@ class TransmissionError(models.Model):
     error_description = models.CharField(max_length=256)
     error_date = models.DateTimeField(auto_now=True)
     creator = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
-    source = models.CharField(max_length=1, null=True, blank=True)
+    source = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):
         return self.description
@@ -128,7 +128,7 @@ class TransmissionErrorAggregate(models.Model):
     total = models.CharField(max_length=256)
     clean = models.CharField(max_length=256)
     error = models.CharField(max_length=256)
-    source = models.CharField(max_length=1, null=True, blank=True)
+    source = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):
         return (self.total + " " + self.clean + " " + self.error)

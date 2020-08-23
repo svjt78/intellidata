@@ -40,6 +40,7 @@ from django.utils.text import slugify
 import misaka
 import uuid
 from django.shortcuts import get_object_or_404
+from transmissions.models import Transmission
 
 import boto3
 import requests
@@ -84,8 +85,10 @@ class CreateEmployer(LoginRequiredMixin, PermissionRequiredMixin, generic.Create
         if not self.request.user.has_perm('employers.add_employer'):
             raise HttpResponseForbidden()
         else:
+            #form.instance.transmission = self.transmission
             form.instance.creator = self.request.user
             form.instance.record_status = "Created"
+            form.instance.source = "Web App"
 
             return super().form_valid(form)
 
@@ -149,7 +152,7 @@ def BackendPull(request, pk):
 
             transmission_id = json_data["TRANSMISSION"]
             transmission_obj = get_object_or_404(Transmission, pk = transmission_id)
-            obj.transmission = transmission_obj.SenderName
+            obj.transmission = transmission_obj
 
             obj.backend_SOR_connection = json_data["CONNECTION"]
             obj.response = json_data["RESPONSE"]
@@ -217,13 +220,13 @@ def ListEmployersHistory(request, pk):
                      obj.purpose = json_data[ix]["PURPOSE"]
 
                      obj.photo = json_data[ix]["PHOTO"]
-                     obj.creator = User.objects.get(pk=int(json_data["CREATOR"]))
+                     obj.creator = User.objects.get(pk=int(json_data[ix]["CREATOR"]))
                      #obj.crerator = get_object_or_404(User, pk=obj.creatorid)
                      obj.employer_date = json_data[ix]["EMPLOYER_DATE"]
 
                      transmission_id = json_data[ix]["TRANSMISSION"]
                      transmission_obj = get_object_or_404(Transmission, pk = transmission_id)
-                     obj.transmission = transmission_obj.SenderName
+                     obj.transmission = transmission_obj
 
                      obj.backend_SOR_connection = json_data[ix]["CONNECTION"]
                      obj.response = json_data[ix]["RESPONSE"]
@@ -281,7 +284,7 @@ def RefreshEmployer(request, pk):
             obj1.name = json_data["NAME"]
             obj1.slug = json_data["SLUG"]
             obj1.description = json_data["DESCRIPTION"]
-            obj1.description_html = misaka.html(obj.description)
+            obj1.description_html = misaka.html(obj1.description)
             obj1.FederalEmployerIdentificationNumber = json_data["FEDERAL_EMPLOYER_IDENTIFICATION_NUMBER"]
             obj1.CarrierMasterAgreementNumber = json_data["CARRIER_MASTER_AGREEMENT_NUMBER"]
 
@@ -300,7 +303,7 @@ def RefreshEmployer(request, pk):
 
             transmission_id = json_data["TRANSMISSION"]
             transmission_obj = get_object_or_404(Transmission, pk = transmission_id)
-            obj1.transmission = transmission_obj.SenderName
+            obj1.transmission = transmission_obj
 
             obj1.backend_SOR_connection = json_data["CONNECTION"]
             obj1.response = json_data["RESPONSE"]
@@ -396,7 +399,7 @@ class SearchEmployersList(LoginRequiredMixin, generic.ListView):
     def get_queryset(self, **kwargs): # new
         query = self.request.GET.get('q', None)
         object_list = Employer.objects.filter(
-            Q(pk__icontains=query) | Q(employerid__icontains=query) | Q(name__icontains=query) | Q(type__icontains=query) | Q(description__icontains=query)
+            Q(employerid__icontains=query) | Q(name__icontains=query) | Q(description__icontains=query) | Q(purpose__icontains=query) | Q(FederalEmployerIdentificationNumber__icontains=query) | Q(CarrierMasterAgreementNumber__icontains=query) | Q(address_line_1__icontains=query) | Q(city__icontains=query) | Q(state__icontains=query) | Q(zipcode__icontains=query)
         )
 
         #change start for remote SearchemployersForm
@@ -881,12 +884,47 @@ def EmployerList(request):
     elif request.method == 'POST':
         serializer = EmployerSerializer(data=request.data)
 
-    if serializer.is_valid():
-        serializer.save()
+        serializer.is_valid(raise_exception=True)
+        employer = Employer()
 
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        if serializer.data["employerid"] == '':
+            employer.employerid = str(uuid.uuid4())[26:36]
+        else:
+            employer.employerid = serializer.data["employerid"]
+        #transmission.transmissionid = serializer.data["transmissionid"]
+        employer.name = serializer.data["name"]
+        employer.slug=slugify(employer.name),
 
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        employer.description = serializer.data["description"]
+        employer.description_html = misaka.html(employer.description),
+        employer.FederalEmployerIdentificationNumber = serializer.data["FederalEmployerIdentificationNumber"]
+        employer.CarrierMasterAgreementNumber = serializer.data["CarrierMasterAgreementNumber"]
+        employer.address_line_1 = serializer.data["address_line_1"]
+        employer.address_line_2 = serializer.data["address_line_2"]
+        employer.city = serializer.data["city"]
+        employer.state = serializer.data["state"]
+        employer.zipcode = serializer.data["zipcode"]
+        employer.purpose = serializer.data["purpose"]
+        employer.transmission = get_object_or_404(Transmission, pk=serializer.data["transmission"])
+
+        employer.source = "API Call"
+
+        employer.creator = get_object_or_404(User, pk=serializer.data["creator"])
+        #transmission.create_date = serializer.data["create_date"]
+        employer.backend_SOR_connection = "Disconnected"
+        employer.response = ""
+        employer.commit_indicator = "Not Committed"
+        employer.record_status = ""
+        employer.save()
+        return Response(serializer.data)
+
+
+    #if serializer.is_valid():
+    #    serializer.save()
+
+    #    return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    #    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 #rest API call
@@ -900,12 +938,47 @@ def EmployerListByTransmission(request, pk):
     elif request.method == 'POST':
         serializer = EmployerSerializer(data=request.data)
 
-    if serializer.is_valid():
-        serializer.save()
+        serializer.is_valid(raise_exception=True)
+        employer = Employer()
 
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        if serializer.data["employerid"] == '':
+            employer.employerid = str(uuid.uuid4())[26:36]
+        else:
+            employer.employerid = serializer.data["employerid"]
+        #transmission.transmissionid = serializer.data["transmissionid"]
+        employer.name = serializer.data["name"]
+        employer.slug=slugify(employer.name),
 
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        employer.description = serializer.data["description"]
+        employer.description_html = misaka.html(employer.description),
+        employer.FederalEmployerIdentificationNumber = serializer.data["FederalEmployerIdentificationNumber"]
+        employer.CarrierMasterAgreementNumber = serializer.data["CarrierMasterAgreementNumber"]
+        employer.address_line_1 = serializer.data["address_line_1"]
+        employer.address_line_2 = serializer.data["address_line_2"]
+        employer.city = serializer.data["city"]
+        employer.state = serializer.data["state"]
+        employer.zipcode = serializer.data["zipcode"]
+        employer.purpose = serializer.data["purpose"]
+        employer.transmission = get_object_or_404(Transmission, pk=serializer.data["transmission"])
+
+        employer.source = "API Call"
+
+        employer.crerator = get_object_or_404(User, pk=serializer.data["creator"])
+        #transmission.create_date = serializer.data["create_date"]
+        employer.backend_SOR_connection = "Disconnected"
+        employer.response = ""
+        employer.commit_indicator = "Not Committed"
+        employer.record_status = ""
+        employer.save()
+        return Response(serializer.data)
+
+
+    #if serializer.is_valid():
+    #    serializer.save()
+
+    #    return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    #    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 

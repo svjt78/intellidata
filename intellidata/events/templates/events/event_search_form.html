@@ -1,0 +1,13 @@
+{% extends "events/event_base.html" %}
+
+{% block preevent %}
+<h4>Search Events</h4>
+
+  <form action="{% url 'events:search_results' %}" method="GET">
+  	{% csrf_token %}
+    <input name="q" type="text" placeholder="Search...">
+    &nbsp;
+    <button class="btn btn-primary btn-large" type="submit" >Search</button>
+  </form>
+
+{% endblock %}

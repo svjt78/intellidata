@@ -163,7 +163,7 @@ class Employer(models.Model):
     employer_date = models.DateTimeField(auto_now=True)
     photo = models.ImageField(blank=True, null=True)
     purpose = models.CharField(max_length=255, null=True, default='', blank=True)
-    source = models.CharField(max_length=1, null=True, blank=True)
+    source = models.CharField(max_length=255, null=True, blank=True)
 
     backend_SOR_connection = models.CharField(max_length=255, default='Disconnected')
     commit_indicator = models.CharField(max_length=255, default='Not Committed')
@@ -229,7 +229,7 @@ class EmployerError(models.Model):
     transmission = models.ForeignKey(Transmission, on_delete=models.SET_NULL, null=True, blank=True, related_name="errored_employers")
     error_date = models.DateTimeField(auto_now=True)
     creator = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
-    source = models.CharField(max_length=1, null=True, blank=True)
+    source = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):
         return self.description
@@ -251,7 +251,7 @@ class EmployerErrorAggregate(models.Model):
     total = models.CharField(max_length=256)
     clean = models.CharField(max_length=256)
     error = models.CharField(max_length=256)
-    source = models.CharField(max_length=1, null=True, blank=True)
+    source = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):
         return (self.total + " " + self.clean + " " + self.error)

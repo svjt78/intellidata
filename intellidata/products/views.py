@@ -85,6 +85,7 @@ class CreateProduct(LoginRequiredMixin, PermissionRequiredMixin, generic.CreateV
         else:
             form.instance.creator = self.request.user
             form.instance.record_status = "Created"
+            form.instance.source = "Web App"
 
             return super().form_valid(form)
 
@@ -354,7 +355,7 @@ class SearchProductsList(LoginRequiredMixin, generic.ListView):
     def get_queryset(self, **kwargs): # new
         query = self.request.GET.get('q', None)
         object_list = Product.objects.filter(
-            Q(pk__icontains=query) | Q(productid__icontains=query) | Q(name__icontains=query) | Q(type__icontains=query) | Q(description__icontains=query)
+            Q(productid__icontains=query) | Q(name__icontains=query) | Q(type__icontains=query) | Q(description__icontains=query)
         )
 
         #change start for remote SearchProductsForm
@@ -738,12 +739,40 @@ def ProductList(request):
     elif request.method == 'POST':
         serializer = ProductSerializer(data=request.data)
 
-    if serializer.is_valid():
-        serializer.save()
+        serializer.is_valid(raise_exception=True)
+        product = Product()
 
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        if serializer.data["productid"] == '':
+            product.productid = str(uuid.uuid4())[26:36]
+        else:
+            product.productid = serializer.data["productid"]
+        #transmission.transmissionid = serializer.data["transmissionid"]
+        product.name = serializer.data["name"]
+        product.slug=slugify(product.name),
 
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        product.description = serializer.data["description"]
+        product.description_html = misaka.html(product.description),
+        product.coverage_limit = serializer.data["coverage_limit"]
+        product.price_per_1000_units = serializer.data["price_per_1000_units"]
+
+        product.source = "API Call"
+
+        product.creator = get_object_or_404(User, pk=serializer.data["creator"])
+        #transmission.create_date = serializer.data["create_date"]
+        product.backend_SOR_connection = "Disconnected"
+        product.response = ""
+        product.commit_indicator = "Not Committed"
+        product.record_status = ""
+
+        product.save()
+        return Response(serializer.data)
+
+    #if serializer.is_valid():
+   #        serializer.save()
+
+    #    return Response(serializer.data, status=status.HTTP_201_CREATED)
+ #
+    #    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 #class for handling built-in API errors

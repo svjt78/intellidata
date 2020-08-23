@@ -31,6 +31,7 @@ urlpatterns = [
     url(r"^employees/", include("employees.urls", namespace="employees")),
     url(r"^employers/",include("employers.urls", namespace="employers")),
     url(r"^transmissions/",include("transmissions.urls", namespace="transmissions")),
+    url(r"^events/",include("events.urls", namespace="events")),
     url(r"^products/",include("products.urls", namespace="products")),
     url(r"^agreements/",include("agreements.urls", namespace="agreements")),
     url(r"^bulkuploads/",include("bulkuploads.urls", namespace="bulkuploads")),

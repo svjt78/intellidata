@@ -191,10 +191,10 @@ class Employee(models.Model):
     emailer = models.CharField(max_length=256, null=True, blank=True)
 
     artefact = models.FileField(blank=True, null=True, default='intellidatastatic.s3.amazonaws.com/media/default.png')
-    source = models.CharField(max_length=1, null=True, blank=True)
+    source = models.CharField(max_length=255, null=True, blank=True)
 
-    backend_SOR_connection = models.CharField(max_length=255, default='Disconnected')
-    commit_indicator = models.CharField(max_length=255)
+    backend_SOR_connection = models.CharField(max_length=255, null=True, blank=True, default='Disconnected')
+    commit_indicator = models.CharField(max_length=255, null=True, blank=True)
     record_status = models.CharField(max_length=255, null=True, blank=True)
     response = models.CharField(max_length=255, null=True, blank=True)
     bulk_upload_indicator = models.CharField(max_length=1, null=True, blank=True)
@@ -254,7 +254,7 @@ class EmployeeError(models.Model):
     employer = models.ForeignKey(Employer, on_delete=models.SET_NULL, null=True, blank=True, related_name="errored_employees")
     error_date = models.DateTimeField(auto_now=True)
     creator = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
-    source = models.CharField(max_length=1, null=True, blank=True)
+    source = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):
         return self.description
@@ -276,7 +276,7 @@ class EmployeeErrorAggregate(models.Model):
     total = models.CharField(max_length=256)
     clean = models.CharField(max_length=256)
     error = models.CharField(max_length=256)
-    source = models.CharField(max_length=1, null=True, blank=True)
+    source = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):
         return (self.total + " " + self.clean + " " + self.error)

@@ -1,0 +1,10 @@
+{% extends "events/event_base.html" %}
+{% load bootstrap3 %}
+
+{% block event_content %}
+  <form action="" method="post">
+    {% csrf_token %}
+    <p>Are you sure you want to delete "{{ object }}"?</p>
+    <input class='btn btn-danger' type="submit" value="Confirm" />
+  </form>
+{% endblock %}

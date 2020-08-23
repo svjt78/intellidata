@@ -12,10 +12,6 @@ class TransmissionForm(forms.ModelForm):
 
     transmissionid: forms.TextInput(attrs={'readonly':'readonly'})
 
-    transmissionid: forms.TextInput(attrs={'readonly':'readonly'})
-    price_per_1000_units: forms.DecimalField()
-    coverage_limit: forms.DecimalField()
-
     backend_SOR_connection = forms.ChoiceField(choices=TRANSMISSION_CHOICES, widget=forms.RadioSelect, label='If connected to ODS')
     commit_indicator = forms.CharField(required=False, label='If this transmission data is sync-ed up with ODS', widget=forms.TextInput(attrs={'readonly':'readonly'}))
     record_status = forms.CharField(required=False, label='If this transmission data got Created or Updated', widget=forms.TextInput(attrs={'readonly':'readonly'}))

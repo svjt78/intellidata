@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'misaka',
     'controlcenter',
     'transmissions',
+    'events',
     'Accounts',
     'employers',
     'employees',

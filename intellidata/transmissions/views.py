@@ -85,6 +85,7 @@ class CreateTransmission(LoginRequiredMixin, PermissionRequiredMixin, generic.Cr
         else:
             form.instance.creator = self.request.user
             form.instance.record_status = "Created"
+            form.instance.source = "Web App"
 
             return super().form_valid(form)
 
@@ -353,7 +354,7 @@ class SearchTransmissionsList(LoginRequiredMixin, generic.ListView):
     def get_queryset(self, **kwargs): # new
         query = self.request.GET.get('q', None)
         object_list = Transmission.objects.filter(
-            Q(pk__icontains=query) | Q(transmissionid__icontains=query) | Q(name__icontains=query) | Q(type__icontains=query) | Q(description__icontains=query)
+            Q(transmissionid__icontains=query) | Q(SenderName__icontains=query) | Q(BenefitAdministratorPlatform__icontains=query) | Q(ReceiverName__icontains=query) | Q(TestProductionCode__icontains=query) | Q(TransmissionTypeCode__icontains=query)
         )
 
         #change start for remote SearchTransmissionsForm
@@ -746,13 +747,40 @@ def TransmissionList(request):
         return Response(serializer.data)
     elif request.method == 'POST':
         serializer = TransmissionSerializer(data=request.data)
+         # Raises a ValidatinException which will be sent as a 400 response.
+        serializer.is_valid(raise_exception=True)
+        transmission = Transmission()
 
-    if serializer.is_valid():
-        serializer.save()
+        if serializer.data["transmissionid"] == '':
+            transmission.transmissionid = str(uuid.uuid4())[26:36]
+        else:
+            transmission.transmissionid = serializer.data["transmissionid"]
+        #transmission.transmissionid = serializer.data["transmissionid"]
+        transmission.SenderName = serializer.data["SenderName"]
+        transmission.BenefitAdministratorPlatform = serializer.data["BenefitAdministratorPlatform"]
+        transmission.ReceiverName = serializer.data["ReceiverName"]
+        transmission.TestProductionCode = serializer.data["TestProductionCode"]
+        transmission.TransmissionTypeCode = serializer.data["TransmissionTypeCode"]
+        transmission.SystemVersionIdentifier = serializer.data["SystemVersionIdentifier"]
 
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        transmission.source = "API Call"
 
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        transmission.creator = get_object_or_404(User, pk=serializer.data["creator"])
+        #transmission.create_date = serializer.data["create_date"]
+        transmission.backend_SOR_connection = "Disconnected"
+        transmission.response = ""
+        transmission.commit_indicator = "Not Committed"
+        transmission.record_status = ""
+        print(transmission)
+        transmission.save()
+        return Response(serializer.data)
+
+    #if serializer.is_valid():
+    #    serializer.save()
+
+    #    return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    #    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 #class for handling built-in API errors

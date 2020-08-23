@@ -1,0 +1,14 @@
+{% extends "events/event_base.html" %}
+{% load bootstrap3 %}
+
+{% block event_content %}
+<h4>Edit Event</h4>
+
+  <form method="POST" enctype="multipart/form-data">
+  	{% csrf_token %}
+  	{% bootstrap_form form %}
+  	<input type="submit" value="Save" class="btn btn-primary btn-large">
+    &nbsp;
+    <a href="{% url 'events:all'%}" class="btn btn-primary btn-large">Cancel</a>
+  </form>
+{% endblock %}

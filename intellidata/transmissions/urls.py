@@ -18,7 +18,7 @@ urlpatterns = [
     url(r"^posts/in/(?P<pk>\d+)/$",views.SingleTransmission.as_view(),name="single"),
     url(r"^update/(?P<pk>\d+)/$",views.UpdateTransmission.as_view(),name="update"),
     url(r"^delete/(?P<pk>\d+)/$",views.DeleteTransmission.as_view(),name="delete"),
-    url(r"^rest/Transmissionlist/$",views.TransmissionList, name="rest"),
+    url(r"^rest/transmissionlist/$",views.TransmissionList, name="rest"),
     url(r"^transmission/error/$",views.ViewTransmissionErrorList.as_view(), name='feederrors'),
     url(r"^(?P<pk>\d+)/employers/show/$", views.ShowEmployersList.as_view(), name="show_employers"),
 ]

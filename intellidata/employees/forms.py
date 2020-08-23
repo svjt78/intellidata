@@ -32,6 +32,7 @@ class EmployeeForm(forms.ModelForm):
     home_phone = PhoneNumberField(required=False)
     work_phone = PhoneNumberField(required=False)
     mobile_phone = PhoneNumberField()
+    ssn = forms.CharField(required=False, label='SSN', widget=forms.TextInput())
     backend_SOR_connection = forms.ChoiceField(choices=TRANSMISSION_CHOICES, widget=forms.RadioSelect, label='If connected to ODS')
     gendercode = forms.ChoiceField(choices=GENDER, widget=forms.RadioSelect, label='Gender')
     maritalstatus = forms.ChoiceField(choices=MARITAL_STATUS, widget=forms.RadioSelect, label='Marital Status')

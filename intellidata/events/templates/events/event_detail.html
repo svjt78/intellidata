@@ -1,0 +1,46 @@
+{% extends "events/event_base.html" %}
+{% load static %}
+{% block preevent %}
+
+<div class="dropdown">
+  <button class="dropbtn btn btn-primary btn-large">Manage Events</button>
+  <div class="dropdown-content">
+
+  <a href="{% url 'events:delete' pk=event_details.pk %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-remove-circle"></span> Delete event</a>
+  &nbsp;
+  <a href="{% url 'events:backendpull' pk=event_details.pk %}" class="btn btn-primary btn-large"><span class="glyphicon glyphicon-cloud"></span> Pull From ODS</a>
+  &nbsp;
+  <a href="{% url 'events:history' pk=event_details.pk %}" class="btn btn-primary btn-large"><span class="glyphicon glyphicon-cloud"></span> List History</a>
+  &nbsp;
+  <a href="{% url 'events:refresh' pk=event_details.pk %}" class="btn btn-primary btn-large"><span class="glyphicon glyphicon-cloud"></span> Refresh From ODS</a>
+  &nbsp;
+  <input type="button" class="btn btn-primary btn-large" value="Go back!" onclick="history.back()">
+  &nbsp;
+  </div>
+</div>
+
+<input type="button" class="btn btn-primary btn-large" value="Go back!" onclick="history.back()">
+&nbsp;
+
+<h1>Event Descriptionn: {{event_details.EventTypeReason}}</h1>
+<h2>Event Code: {{event_details.EventTypeCode}}</h2>
+<h2>Event Date: {{event_details.EventDate}}</h2>
+<h2>Transaction Date: {{event_details.TransactionDate}}</h2>
+<h2>Created By: {{event_details.creator}}</h2>
+<h2>Origin: {{event_details.source}}</h2>
+<h2>ODS Connection: {{event_details.backend_SOR_connection}}</h2>
+<h2>Commit Indicator: {{event_details.commit_indicator}}</h2>
+<h2>Record Status: {{event_details.record_status}}</h2>
+<h2>Response: {{event_details.response}}</h2>
+
+{% for message in messages %}
+
+        <div class="alert alert-success">
+            <a class="close" href="#" data-dismiss="alert">×</a>
+
+            {{ message }}
+
+        </div>
+{% endfor %}
+
+{% endblock %}

@@ -2,8 +2,14 @@
 {% block content %}
 <div class="container">
   <h1>You are now logged in! {{user.username }}</h1>
-  <h2><a href="{% url 'transmissions:all'%}">Set up a Transmissions</a></h2>
-  <h2><a href="{% url 'products:all'%}">Set up a Product</a></h2>
+  <br>
+  <h3>Let's get started! You can either click on one of the below links to perform one of those activities, or you can click on one of the links in the top bar to view or manage those entities!</h3>
+
+    <br>
+  <h2><a href="{% url 'transmissions:all'%}">Set up a Transmission or view existing Transmissions</a></h2>
+  <h2><a href="{% url 'products:all'%}">Set up a Product or view existing Products</a></h2>
+  <h2><a href="{% url 'products:all'%}">Upload a Transmission</a></h2>
+  <h2><a href="{% url 'events:all'%}">View event log</a></h2>
 
 
 
