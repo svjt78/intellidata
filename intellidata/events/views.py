@@ -119,6 +119,8 @@ def BackendPull(request, pk):
             obj.pk = int(json_data["LOCAL_ID"])
             obj.eventid = json_data["EVENT_ID"]
             obj.EventTypeCode = json_data["EVENT_TYPE_CODE"]
+            obj.EventSubjectId = json_data["EVENT_SUBJECT_ID"]
+            obj.EventSubjectName = json_data["EVENT_SUBJECT_NAME"]
             obj.EventTypeReason = json_data["EVENT_TYPE_REASON"]
 
             obj.creator = User.objects.get(pk=int(json_data["CREATOR"]))
@@ -140,7 +142,7 @@ def BackendPull(request, pk):
 #Pull from  backend system of record(SOR)
 @permission_required("events.add_event")
 @login_required
-def ListeventsHistory(request, pk):
+def ListEventsHistory(request, pk):
 
                 context ={}
 
@@ -177,6 +179,8 @@ def ListeventsHistory(request, pk):
                      obj.pk = int(json_data[ix]["LOCAL_ID"])
                      obj.eventid = json_data[ix]["EVENT_ID"]
                      obj.EventTypeCode = json_data[ix]["EVENT_TYPE_CODE"]
+                     obj.EventSubjectId = json_data[ix]["EVENT_SUBJECT_ID"]
+                     obj.EventSubjectName = json_data[ix]["EVENT_SUBJECT_NAME"]
                      obj.EventTypeReason = json_data[ix]["EVENT_TYPE_REASON"]
 
                      obj.creator = User.objects.get(pk=int(json_data[ix]["CREATOR"]))
@@ -238,6 +242,8 @@ def RefreshEvent(request, pk):
             obj1.pk = int(json_data["LOCAL_ID"])
             obj1.eventid = json_data["EVENT_ID"]
             obj1.EventTypeCode = json_data["EVENT_TYPE_CODE"]
+            obj1.EventSubjectId = json_data["EVENT_SUBJECT_ID"]
+            obj1.EventSubjectName = json_data["EVENT_SUBJECT_NAME"]
             obj1.EventTypeReason = json_data["EVENT_TYPE_REASON"]
 
             obj1.creator = User.objects.get(pk=int(json_data["CREATOR"]))
@@ -374,6 +380,8 @@ class SearchEventsList(LoginRequiredMixin, generic.ListView):
                 obj1.pk = int(json_data["LOCAL_ID"])
                 obj1.eventid = json_data["EVENT_ID"]
                 obj1.EventTypeCode = json_data["EVENT_TYPE_CODE"]
+                obj1.EventSubjectId = json_data["EVENT_SUBJECT_ID"]
+                obj1.EventSubjectName = json_data["EVENT_SUBJECT_NAME"]
                 obj1.EventTypeReason = json_data["EVENT_TYPE_REASON"]
 
                 obj1.creator = User.objects.get(pk=int(json_data["CREATOR"]))

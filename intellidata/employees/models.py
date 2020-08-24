@@ -16,6 +16,9 @@ import requests
 from django.shortcuts import get_object_or_404, render
 from apicodes.models import APICodes
 
+from events.forms import EventForm
+from events.models import Event
+
 from django.contrib.auth import get_user_model
 User = get_user_model()
 
@@ -31,7 +34,7 @@ class Employee(models.Model):
     slug = models.SlugField(allow_unicode=True)
     gendercode = models.CharField(max_length=255)
     age = models.PositiveIntegerField(default=0)
-    birthdate = models.DateField()
+    birthdate = models.DateField(null=True, blank=True)
     maritalstatus =  models.CharField(max_length=255)
 
 
@@ -208,6 +211,16 @@ class Employee(models.Model):
             var = str(uuid.uuid4())
             self.employeeid = var[26:36]
 
+            #Log events
+            event = Event()
+            event.EventTypeCode = "EEA"
+            event.EventSubjectId = self.employeeid
+            event.EventSubjectName = self.name
+            event.EventTypeReason = "Employee added"
+            event.source = "Web App"
+            event.creator=self.creator
+            event.save()
+
         self.slug = slugify(self.name)
         self.response='Success'
     #    self.description_html = misaka.html(self.description)
@@ -234,6 +247,18 @@ class Employee(models.Model):
                 self.commit_indicator="Committed"
             else:
                 self.commit_indicator="Not Committed"
+
+
+            #Log events
+            event = Event()
+            event.EventTypeCode = "EEC"
+            event.EventSubjectId = self.employeeid
+            event.EventSubjectName = self.name
+            event.EventTypeReason = "Employee added to ODS"
+            event.source = "Web App"
+            event.creator=self.creator
+            event.save()
+
             super().save(*args, **kwargs)
         else:
             print("not connected to backend!")

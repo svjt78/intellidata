@@ -49,6 +49,9 @@ from botocore.exceptions import NoCredentialsError
 import io
 from django.db.models import Count
 
+from events.forms import EventForm
+from events.models import Event
+
 
 # For Rest rest_framework
 from rest_framework import status
@@ -266,6 +269,16 @@ def RefreshProduct(request, pk):
             obj1.commit_indicator = json_data["COMMIT_INDICATOR"]
             obj1.record_status = json_data["RECORD_STATUS"]
 
+            #Log events
+            event = Event()
+            event.EventTypeCode = "PRR"
+            event.EventSubjectId = obj1.productid
+            event.EventSubjectName = obj1.name
+            event.EventTypeReason = "Product refreshed from ODS"
+            event.source = "Web App"
+            event.creator=obj1.creators
+            event.save()
+
             obj1.save()
 
             context = {'product_details':obj1}
@@ -296,6 +309,17 @@ def VersionProduct(request, pk):
             #form.photo = request.FILES['photo']
             form.instance.creator = request.user
             form.instance.record_status = "Created"
+
+            #Log events
+            event = Event()
+            event.EventTypeCode = "PRV"
+            event.EventSubjectId = form.instance.productid
+            event.EventSubjectName = form.instance.name
+            event.EventTypeReason = "Product versioned"
+            event.source = "Web App"
+            event.creator=request.user
+            event.save()
+
             form.save()
             return HttpResponseRedirect(reverse("products:all"))
 
@@ -322,6 +346,17 @@ class UpdateProduct(LoginRequiredMixin, PermissionRequiredMixin, generic.UpdateV
         else:
             form.instance.creator = self.request.user
             form.instance.record_status = "Updated"
+
+            #Log events
+            event = Event()
+            event.EventTypeCode = "PRU"
+            event.EventSubjectId = form.instance.productid
+            event.EventSubjectName = form.instance.name
+            event.EventTypeReason = "Product updated"
+            event.source = "Web App"
+            event.creator=self.request.user
+            event.save()
+
             return super().form_valid(form)
 
 
@@ -339,6 +374,17 @@ class DeleteProduct(LoginRequiredMixin, PermissionRequiredMixin, generic.DeleteV
             raise HttpResponseForbidden()
         else:
             form.instance.creator = self.request.user
+
+            #Log events
+            event = Event()
+            event.EventTypeCode = "PRD"
+            event.EventSubjectId = form.instance.productid
+            event.EventSubjectName = form.instance.name
+            event.EventTypeReason = "Product deleted"
+            event.source = "Web App"
+            event.creator=self.request.user
+            event.save()
+
             return super().form_valid(form)
 
 
@@ -624,6 +670,16 @@ def BulkUploadProduct(request):
 
                     error_report.save()
 
+                    #Log events
+                    event = Event()
+                    event.EventTypeCode = "PRB"
+                    event.EventSubjectId = "bulkproducts"
+                    event.EventSubjectName = "Bulk processing"
+                    event.EventTypeReason = "Products uploaded in bulk"
+                    event.source = "Web App"
+                    event.creator=request.user
+                    event.save()
+
 
 
                     return HttpResponseRedirect(reverse("products:all"))
@@ -712,6 +768,17 @@ def BulkUploadSOR(request):
         return render(request, "messages.html", context=message)
     else:
         Product.objects.filter(bulk_upload_indicator='Y').update(bulk_upload_indicator=" ")
+
+        #Log events
+        event = Event()
+        event.EventTypeCode = "PRO"
+        event.EventSubjectId = "productodsupload"
+        event.EventSubjectName = "Bulk upload to ODS"
+        event.EventTypeReason = "Products uploaded to ODS in bulk"
+        event.source = "Web App"
+        event.creator=self.request.user
+        event.save()
+
         return HttpResponseRedirect(reverse("products:all"))
 
 
@@ -741,12 +808,15 @@ def ProductList(request):
 
         serializer.is_valid(raise_exception=True)
         product = Product()
+        event = Event()
 
         if serializer.data["productid"] == '':
             product.productid = str(uuid.uuid4())[26:36]
+            event.EventTypeReason = "New product received via API"
         else:
             product.productid = serializer.data["productid"]
-        #transmission.transmissionid = serializer.data["transmissionid"]
+            event.EventTypeReason = "Product added via API"
+
         product.name = serializer.data["name"]
         product.slug=slugify(product.name),
 
@@ -758,11 +828,19 @@ def ProductList(request):
         product.source = "API Call"
 
         product.creator = get_object_or_404(User, pk=serializer.data["creator"])
-        #transmission.create_date = serializer.data["create_date"]
+
         product.backend_SOR_connection = "Disconnected"
         product.response = ""
         product.commit_indicator = "Not Committed"
         product.record_status = ""
+
+        #Log events
+        event.EventTypeCode = "PRW"
+        event.EventSubjectId = product.productid
+        event.EventSubjectName = product.name
+        event.source = "API Call"
+        event.creator=product.creator
+        event.save()
 
         product.save()
         return Response(serializer.data)

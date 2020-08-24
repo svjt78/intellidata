@@ -13,6 +13,8 @@ import uuid
 from django.contrib.auth import get_user_model
 
 from employers.utils import ApiDomains
+from events.forms import EventForm
+from events.models import Event
 
 # For Rest rest_framework
 from rest_framework import status
@@ -90,6 +92,16 @@ class Product(models.Model):
             var = str(uuid.uuid4())
             self.productid = var[26:36]
 
+            #Log events
+            event = Event()
+            event.EventTypeCode = "PRA"
+            event.EventSubjectId = self.productid
+            event.EventSubjectName = self.name
+            event.EventTypeReason = "Product added"
+            event.source = "Web App"
+            event.creator=self.creator
+            event.save()
+
         self.slug = slugify(self.name)
         self.description_html = misaka.html(self.description)
         self.response='Success'
@@ -117,6 +129,18 @@ class Product(models.Model):
                 self.commit_indicator="Committed"
             else:
                 self.commit_indicator="Not Committed"
+
+
+            #Log events
+            event = Event()
+            event.EventTypeCode = "PRC"
+            event.EventSubjectId = self.productid
+            event.EventSubjectName = self.name
+            event.EventTypeReason = "Product added to ODS"
+            event.source = "Web App"
+            event.creator=self.creator
+            event.save()
+
             super().save(*args, **kwargs)
         else:
             print("not connected to backend!")

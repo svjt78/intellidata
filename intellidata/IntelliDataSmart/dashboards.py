@@ -28,6 +28,12 @@ class ProductFeedErrorAnalysis(widgets.ItemList):
     model = ProductErrorAggregate
     list_display = ('total', 'clean', 'error', 'error_date')
 
+class EmployerFeedErrorAnalysis(widgets.ItemList):
+    # This widget displays a list of agreements ordered in the Employer
+    title = 'Employer feed error analysis by Transmission'
+    model = EmployeeErrorAggregate
+    list_display = ('Transmission', 'total', 'clean', 'error', 'error_date')
+
 class EmployeeFeedErrorAnalysis(widgets.ItemList):
     # This widget displays a list of agreements ordered in the Employer
     title = 'Employee feed error analysis by Employer'
@@ -144,6 +150,7 @@ class MyDashboard(Dashboard):
     widgets = (
         TransmissionFeedErrorAnalysis,
         ProductFeedErrorAnalysis,
+        EmployerFeedErrorAnalysis,
         EmployeeFeedErrorAnalysis,
         CoverageLimitsProducts,
         RateByProducts,

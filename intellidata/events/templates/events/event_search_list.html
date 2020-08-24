@@ -7,7 +7,9 @@
 		{% for event in object_list %}
 			<a class="list-group-item" href="{% url 'events:single' pk=event.pk %}">
 			     <h3 class="title list-group-item-heading">Event Descriptyion{{ event.EventTypeReason }}</h3>
-					 <h3 class="title list-group-item-heading">Event Code: {{ event.EventTypeCode }}</h3>
+
+					 <h3 class="title list-group-item-heading">Event Code: {{ event.EventSubjectName }}</h3>
+					  <h3 class="title list-group-item-heading">Event Code: {{ event.EventTypeCode }}</h3>
 					 <h3 class="title list-group-item-heading">Created On: {{ event.EventDate }}</h3>
 					 <br>
 		  </a>

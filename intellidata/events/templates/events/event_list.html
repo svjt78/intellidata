@@ -30,12 +30,6 @@
 	<input type="button" class="btn btn-primary btn-large" value="Go back!" onclick="history.back()">
   &nbsp;
 
-	<!--
-	<a href="{% url 'events:create' %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-plus-sign"></span> Create New event!</a>
-	&nbsp;
-	<a href="{% url 'events:bulk' %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-plus-sign"></span> Upload events!</a>
-	&nbsp;
--->
 	{% if FileNotFound %}
     <div id="some_flag" title="Some Flag">
         <h2>File Does Not Exist!</h2>
@@ -52,9 +46,12 @@
 		{% for event in object_list %}
 			<a class="list-group-item" href="{% url 'events:single' pk=event.pk %}">
 			     <h3 class="title list-group-item-heading">Event Description: {{ event.EventTypeReason }}</h3>
-					 <h3 class="title list-group-item-heading">Event Code: {{ event.EventTypeCode }}</h3>
+
+					 <h3 class="title list-group-item-heading">Event Subject Name: {{ event.EventSubjectName }}</h3>
 
 					 <h3 class="title list-group-item-heading">Event Date: {{ event.EventDate }}</h3>
+
+					 <h3 class="title list-group-item-heading">Event Source: {{ event.source }}</h3>
 
 					 <br>
 		</a>

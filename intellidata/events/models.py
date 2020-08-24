@@ -33,7 +33,10 @@ register = template.Library()
 
 class Event(models.Model):
     eventid = models.CharField(max_length=255, null=True, blank=True)
+    #EventTypeCode = models.CharField(unique=True, max_length=255, null=True, blank=True)
     EventTypeCode = models.CharField(max_length=255, null=True, blank=True)
+    EventSubjectId = models.CharField(max_length=255, null=True, blank=True)
+    EventSubjectName = models.CharField(max_length=255, null=True, blank=True)
     EventTypeReason = models.CharField(max_length=255, null=True, blank=True)
     EventDate = models.DateTimeField(auto_now=True)
 
@@ -50,7 +53,7 @@ class Event(models.Model):
     bulk_upload_indicator = models.CharField(max_length=1, null=True, blank=True)
 
     def __str__(self):
-        return (self.SenderName)
+        return (self.EventTypeReason)
 
     def save(self, *args, **kwargs):
 
@@ -93,6 +96,7 @@ class Event(models.Model):
 
     class Meta:
         ordering = ["-EventDate"]
+        #unique_together = ("EventTypeCode", "purpose", "group_date")
 
 
 class EventSerializer(serializers.ModelSerializer):

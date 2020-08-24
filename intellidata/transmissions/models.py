@@ -13,7 +13,8 @@ import uuid
 from django.contrib.auth import get_user_model
 
 from employers.utils import ApiDomains
-
+from events.forms import EventForm
+from events.models import Event
 
 # For Rest rest_framework
 from rest_framework import status
@@ -60,6 +61,17 @@ class Transmission(models.Model):
             var = str(uuid.uuid4())
             self.transmissionid = var[26:36]
 
+            #Log events
+            event = Event()
+            event.EventTypeCode = "TRA"
+            event.EventSubjectId = self.transmissionid
+            event.EventSubjectName = self.SenderName
+            event.EventTypeReason = "Transmission added"
+            event.source = "Web App"
+            event.creator=self.creator
+            event.save()
+
+
         self.response='Success'
         super().save(*args, **kwargs)
 
@@ -85,6 +97,17 @@ class Transmission(models.Model):
                 self.commit_indicator="Committed"
             else:
                 self.commit_indicator="Not Committed"
+
+            #Log events
+            event = Event()
+            event.EventTypeCode = "TRC"
+            event.EventSubjectId = self.transmissionid
+            event.EventSubjectName = self.SenderName
+            event.EventTypeReason = "Transmission added to ODS"
+            event.source = "Web App"
+            event.creator=self.creator
+            event.save()
+
             super().save(*args, **kwargs)
         else:
             print("not connected to backend!")
@@ -144,11 +167,12 @@ class TransmissionErrorAggregate(models.Model):
     class Meta:
         ordering = ["-error_date"]
 
-class TransmissionSerializer(serializers.ModelSerializer):
+class TransmissionSerializer_deprecated(serializers.ModelSerializer):
 
     class Meta:
         model = Transmission
-        fields = '__all__'
+
+        fields = ['transmissionid', 'SenderName', 'BenefitAdministratorPlatform', 'ReceiverName', 'TestProductionCode', 'TransmissionTypeCode', 'SystemVersionIdentifier', 'source', 'create_date', 'creator', 'backend_SOR_connection', 'commit_indicator', 'record_status', 'response', 'bulk_upload_indicator', 'employer_set']
 
 
 #class for handling built-in API errors

@@ -20,7 +20,7 @@ from django.shortcuts import get_object_or_404
 from django.views import generic
 from django.db.models import Count
 from employers.models import Employer
-from employees.models import Employee
+from employees.models import Employee, EmployeeSerializer
 from django.contrib.auth.models import User
 from bulkuploads.models import BulkUpload
 from apicodes.models import APICodes
@@ -50,12 +50,16 @@ from botocore.exceptions import NoCredentialsError
 import io
 from django.db.models import Count
 
+from events.forms import EventForm
+from events.models import Event
 
 # For Rest rest_framework
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from employers.serializers import EmployerSerializer
+
+from rest_framework import serializers
 
 class SingleEmployer(LoginRequiredMixin, generic.DetailView):
     context_object_name = 'employer_details'
@@ -310,6 +314,17 @@ def RefreshEmployer(request, pk):
             obj1.commit_indicator = json_data["COMMIT_INDICATOR"]
             obj1.record_status = json_data["RECORD_STATUS"]
 
+            #Log events
+            event = Event()
+            event.EventTypeCode = "ERR"
+            event.EventSubjectId = obj1.employerid
+            event.EventSubjectName = obj1.name
+            event.EventTypeReason = "Employer refreshed from ODS"
+            event.source = "Web App"
+            event.creator=obj1.creators
+            event.save()
+
+
             obj1.save()
 
             context = {'employer_details':obj1}
@@ -340,6 +355,18 @@ def VersionEmployer(request, pk):
             #form.photo = request.FILES['photo']
             form.instance.creator = request.user
             form.instance.record_status = "Created"
+
+            #Log events
+            event = Event()
+            event.EventTypeCode = "ERV"
+            event.EventSubjectId = form.instance.employerid
+            event.EventSubjectName = form.instance.name
+            event.EventTypeReason = "Employer versioned"
+            event.source = "Web App"
+            event.creator=request.user
+            event.save()
+
+
             form.save()
             return HttpResponseRedirect(reverse("employers:all"))
 
@@ -366,6 +393,17 @@ class UpdateEmployer(LoginRequiredMixin, PermissionRequiredMixin, generic.Update
         else:
             form.instance.creator = self.request.user
             form.instance.record_status = "Updated"
+
+            #Log events
+            event = Event()
+            event.EventTypeCode = "ERU"
+            event.EventSubjectId = form.instance.employerid
+            event.EventSubjectName = form.instance.name
+            event.EventTypeReason = "Employer updated"
+            event.source = "Web App"
+            event.creator=self.request.user
+            event.save()
+
             return super().form_valid(form)
 
 
@@ -383,6 +421,17 @@ class DeleteEmployer(LoginRequiredMixin, PermissionRequiredMixin, generic.Delete
             raise HttpResponseForbidden()
         else:
             form.instance.creator = self.request.user
+
+            #Log events
+            event = Event()
+            event.EventTypeCode = "ERD"
+            event.EventSubjectId = form.instance.employerid
+            event.EventSubjectName = form.instance.name
+            event.EventTypeReason = "Employer deleted"
+            event.source = "Web App"
+            event.creator=self.request.user
+            event.save()
+
             return super().form_valid(form)
 
 
@@ -769,7 +818,15 @@ def BulkUploadEmployer(request, pk):
 
                     error_report.save()
 
-
+                    #Log events
+                    event = Event()
+                    event.EventTypeCode = "ERB"
+                    event.EventSubjectId = "bulkemployers"
+                    event.EventSubjectName = "Bulk processing"
+                    event.EventTypeReason = "Employers uploaded in bulk"
+                    event.source = "Web App"
+                    event.creator=request.user
+                    event.save()
 
                     return HttpResponseRedirect(reverse("employers:all"))
 
@@ -857,6 +914,17 @@ def BulkUploadSOR(request):
         return render(request, "messages.html", context=message)
     else:
         Employer.objects.filter(bulk_upload_indicator='Y').update(bulk_upload_indicator=" ")
+
+        #Log events
+        event = Event()
+        event.EventTypeCode = "ERO"
+        event.EventSubjectId = "employerodsupload"
+        event.EventSubjectName = "Bulk upload to ODS"
+        event.EventTypeReason = "Employers uploaded to ODS in bulk"
+        event.source = "Web App"
+        event.creator=self.request.user
+        event.save()
+
         return HttpResponseRedirect(reverse("employers:all"))
 
 
@@ -886,11 +954,14 @@ def EmployerList(request):
 
         serializer.is_valid(raise_exception=True)
         employer = Employer()
+        event = Event()
 
         if serializer.data["employerid"] == '':
             employer.employerid = str(uuid.uuid4())[26:36]
+            event.EventTypeReason = "New employer received via API"
         else:
             employer.employerid = serializer.data["employerid"]
+            event.EventTypeReason = "Employer added via API"
         #transmission.transmissionid = serializer.data["transmissionid"]
         employer.name = serializer.data["name"]
         employer.slug=slugify(employer.name),
@@ -915,6 +986,15 @@ def EmployerList(request):
         employer.response = ""
         employer.commit_indicator = "Not Committed"
         employer.record_status = ""
+
+        #Log events
+        event.EventTypeCode = "ERW"
+        event.EventSubjectId = employer.employerid
+        event.EventSubjectName = employer.name
+        event.source = "API Call"
+        event.creator=employer.creator
+        event.save()
+
         employer.save()
         return Response(serializer.data)
 
@@ -940,17 +1020,20 @@ def EmployerListByTransmission(request, pk):
 
         serializer.is_valid(raise_exception=True)
         employer = Employer()
+        event = Event()
 
         if serializer.data["employerid"] == '':
             employer.employerid = str(uuid.uuid4())[26:36]
+            event.EventTypeReason = "New employer received via API"
         else:
             employer.employerid = serializer.data["employerid"]
+            event.EventTypeReason = "Employer received via API"
         #transmission.transmissionid = serializer.data["transmissionid"]
         employer.name = serializer.data["name"]
-        employer.slug=slugify(employer.name),
+        employer.slug=slugify(employer.name)
 
         employer.description = serializer.data["description"]
-        employer.description_html = misaka.html(employer.description),
+        employer.description_html = misaka.html(employer.description)
         employer.FederalEmployerIdentificationNumber = serializer.data["FederalEmployerIdentificationNumber"]
         employer.CarrierMasterAgreementNumber = serializer.data["CarrierMasterAgreementNumber"]
         employer.address_line_1 = serializer.data["address_line_1"]
@@ -969,6 +1052,15 @@ def EmployerListByTransmission(request, pk):
         employer.response = ""
         employer.commit_indicator = "Not Committed"
         employer.record_status = ""
+
+        #Log events
+        event.EventTypeCode = "ERW"
+        event.EventSubjectId = employer.employerid
+        event.EventSubjectName = employer.name
+        event.source = "API Call"
+        event.creator=employer.creator
+        event.save()
+
         employer.save()
         return Response(serializer.data)
 

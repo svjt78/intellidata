@@ -21,4 +21,8 @@ urlpatterns = [
     url(r"^rest/transmissionlist/$",views.TransmissionList, name="rest"),
     url(r"^transmission/error/$",views.ViewTransmissionErrorList.as_view(), name='feederrors'),
     url(r"^(?P<pk>\d+)/employers/show/$", views.ShowEmployersList.as_view(), name="show_employers"),
+    url(r"^rest/transmissionlist/(?P<pk>\d+)/$",views.FullListByTransmission, name="callbytranspk"),
+    url(r"^rest/all/(?P<pk>\d+)/$",views.FullListByTransmission, name="databytransmission"),
+    url(r"^employers/rest/all/(?P<pk>\d+)/$",views.FullListByEmployer, name="databyemployer"),
+    url(r"^rest/byid/$",views.TransmissionListByID, name="callbytransid"),
 ]

@@ -49,6 +49,9 @@ from botocore.exceptions import NoCredentialsError
 import io
 from django.db.models import Count
 
+from events.forms import EventForm
+from events.models import Event
+
 # For Rest rest_framework
 from rest_framework import status
 from rest_framework.decorators import api_view
@@ -100,7 +103,6 @@ class CreateEmployee(LoginRequiredMixin, PermissionRequiredMixin, generic.Create
             """
             Overridden to add the employer relation to the `Employee` instance.
             """
-            #form.instance.employer = self.employer
             form.instance.creator = self.request.user
             form.instance.record_status = "Created"
             form.instance.source = "Web App"
@@ -118,6 +120,8 @@ class CreateEmployee(LoginRequiredMixin, PermissionRequiredMixin, generic.Create
 
             form.instance.sms = "Initial notification sent"
             form.instance.emailer = "Initial notification sent"
+
+            form.instance.employer = self.employer
 
             return super().form_valid(form)
 
@@ -404,6 +408,16 @@ def RefreshEmployee(request, pk):
             obj1.commit_indicator = json_data["COMMIT_INDICATOR"]
             obj1.record_status = json_data["RECORD_STATUS"]
 
+            #Log events
+            event = Event()
+            event.EventTypeCode = "EER"
+            event.EventSubjectId = obj1.employeeid
+            event.EventSubjectName = obj1.name
+            event.EventTypeReason = "Employee refreshed from ODS"
+            event.source = "Web App"
+            event.creator=obj1.creators
+            event.save()
+
             obj1.save()
 
             context = {'employee_details':obj1}
@@ -430,6 +444,18 @@ def VersionEmployee(request, pk):
     if form.is_valid():
             obj.pk = int(round(time.time() * 1000))
             form.instance.creator = request.user
+            form.instance.record_status = "Created"
+
+            #Log events
+            event = Event()
+            event.EventTypeCode = "EEV"
+            event.EventSubjectId = form.instance.employeeid
+            event.EventSubjectName = form.instance.name
+            event.EventTypeReason = "Employee versioned"
+            event.source = "Web App"
+            event.creator=request.user
+            event.save()
+
             form.save()
             return HttpResponseRedirect(reverse("employees:all"))
 
@@ -457,6 +483,17 @@ class UpdateEmployee(LoginRequiredMixin, PermissionRequiredMixin, generic.Update
         else:
             form.instance.creator = self.request.user
             form.instance.record_status = "Updated"
+
+            #Log events
+            event = Event()
+            event.EventTypeCode = "EEU"
+            event.EventSubjectId = form.instance.employeeid
+            event.EventSubjectName = form.instance.name
+            event.EventTypeReason = "Employee updated"
+            event.source = "Web App"
+            event.creator=self.request.user
+            event.save()
+
             return super().form_valid(form)
 
 
@@ -478,6 +515,18 @@ class DeleteEmployee(LoginRequiredMixin, PermissionRequiredMixin, generic.Delete
         if not self.request.user.has_perm('employees.delete_employee'):
             raise HttpResponseForbidden()
         else:
+            form.instance.creator = self.request.user
+
+            #Log events
+            event = Event()
+            event.EventTypeCode = "ERD"
+            event.EventSubjectId = form.instance.employerid
+            event.EventSubjectName = form.instance.name
+            event.EventTypeReason = "Employer deleted"
+            event.source = "Web App"
+            event.creator=self.request.user
+            event.save()
+
             return super().form_valid(form)
 
 
@@ -1125,8 +1174,18 @@ def BulkUploadEmployee(request, pk, *args, **kwargs):
                     #Refresh Error aggregate table for concerned employer
                     EmployeeErrorAggregate.objects.filter(employer_id=pk).delete()
 
+
                     error_report.save()
 
+                    #Log events
+                    event = Event()
+                    event.EventTypeCode = "EEB"
+                    event.EventSubjectId = "bulkemployees"
+                    event.EventSubjectName = "Bulk processing"
+                    event.EventTypeReason = "Employees uploaded in bulk"
+                    event.source = "Web App"
+                    event.creator=request.user
+                    event.save()
 
 
                     return HttpResponseRedirect(reverse("employees:all"))
@@ -1215,6 +1274,17 @@ def BulkUploadSOR(request):
         return render(request, "messages.html", context=message)
     else:
         Employee.objects.filter(bulk_upload_indicator='Y').update(bulk_upload_indicator=" ")
+
+        #Log events
+        event = Event()
+        event.EventTypeCode = "EEO"
+        event.EventSubjectId = "employeeodsupload"
+        event.EventSubjectName = "Bulk upload to ODS"
+        event.EventTypeReason = "Employees uploaded to ODS in bulk"
+        event.source = "Web App"
+        event.creator=self.request.user
+        event.save()
+
         return HttpResponseRedirect(reverse("employees:all"))
 
 
@@ -1460,15 +1530,18 @@ def EmployeeList(request):
 
         serializer.is_valid(raise_exception=True)
         employee = Employee()
+        event = Event()
 
         if serializer.data["employeeid"] == '':
-            employee.employerid = str(uuid.uuid4())[26:36]
+            employee.employeeid = str(uuid.uuid4())[26:36]
+            event.EventTypeReason = "New employee received via API"
         else:
             employee.employeeid = serializer.data["employeeid"]
-        #transmission.transmissionid = serializer.data["transmissionid"]
+            event.EventTypeReason = "Employee added via API"
+
         employee.ssn = serializer.data["ssn"]
         employee.name = serializer.data["name"]
-        employee.slug=slugify(employee.name),
+        employee.slug=slugify(employee.name)
 
         employee.gendercode = serializer.data["gendercode"]
         employee.age = serializer.data["age"]
@@ -1513,6 +1586,16 @@ def EmployeeList(request):
         employee.response = ""
         employee.commit_indicator = "Not Committed"
         employee.record_status = ""
+
+        #Log events
+
+        event.EventTypeCode = "EEW"
+        event.EventSubjectId = employee.employeeid
+        event.EventSubjectName = employee.name
+        event.source = "API Call"
+        event.creator=employee.creator
+        event.save()
+
         employee.save()
         return Response(serializer.data)
 
@@ -1538,11 +1621,14 @@ def EmployeeListByEmployer(request, pk):
 
         serializer.is_valid(raise_exception=True)
         employee = Employee()
+        event = Event()
 
         if serializer.data["employeeid"] == '':
-            employee.employerid = str(uuid.uuid4())[26:36]
+            employee.employeeid = str(uuid.uuid4())[26:36]
+            event.EventTypeReason = "New employee received via API"
         else:
-            employee.employerid = serializer.data["employeeid"]
+            employee.employeeid = serializer.data["employeeid"]
+            event.EventTypeReason = "Employee added via API"
         #transmission.transmissionid = serializer.data["transmissionid"]
         employee.ssn = serializer.data["ssn"]
         employee.name = serializer.data["name"]
@@ -1591,6 +1677,15 @@ def EmployeeListByEmployer(request, pk):
         employee.response = ""
         employee.commit_indicator = "Not Committed"
         employee.record_status = ""
+
+        #Log events
+        event.EventTypeCode = "EEW"
+        event.EventSubjectId = employee.employeeid
+        event.EventSubjectName = employee.name
+        event.source = "API Call"
+        event.creator=employee.creator
+        event.save()
+
         employee.save()
         return Response(serializer.data)
 

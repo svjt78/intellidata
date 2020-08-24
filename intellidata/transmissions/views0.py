@@ -19,8 +19,8 @@ from django.db import IntegrityError
 from django.shortcuts import get_object_or_404
 from django.views import generic
 from django.db.models import Count
-from employers.models import Employer, EmployerSerializer
-from employees.models import Employee, EmployeeSerializer
+from employers.models import Employer
+from employees.models import Employee
 from products.models import Product
 from django.contrib.auth.models import User
 from bulkuploads.models import BulkUpload
@@ -52,8 +52,6 @@ from botocore.exceptions import NoCredentialsError
 import io
 from django.db.models import Count
 
-from django.forms.models import model_to_dict
-
 
 # For Rest rest_framework
 from rest_framework import status
@@ -63,8 +61,6 @@ from transmissions.serializers import TransmissionSerializer
 from employers.serializers import EmployerSerializer
 from employees.serializers import EmployeeSerializer
 from products.serializers import ProductSerializer
-
-from rest_framework import serializers
 
 class SingleTransmission(LoginRequiredMixin, generic.DetailView):
     context_object_name = 'transmission_details'
@@ -871,62 +867,43 @@ def TransmissionList(request):
 
     #    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-@api_view(['GET', 'POST'])
-def TransmissionListByID(request):
-
-    if request.method == 'GET':
-        contacts = Transmission.objects.filter(transmissionid=pk)
-        serializer = TransmissionSerializer(contacts, many=True)
-        return Response(serializer.data)
-
-class EmployerSerializer(serializers.ModelSerializer):
-
-    employee_set = EmployeeSerializer(many=True, read_only=True)
-
-    class Meta:
-        model = Employer
-
-        fields = ['pk', 'employerid', 'name', 'slug', 'description', 'FederalEmployerIdentificationNumber', 'CarrierMasterAgreementNumber', 'address_line_1', 'address_line_2', 'city', 'state', 'zipcode', 'purpose', 'source', 'photo', 'creator', 'employer_date', 'backend_SOR_connection', 'commit_indicator', 'record_status', 'response', 'bulk_upload_indicator', 'employee_set']
-
-class TransmissionSerializer(serializers.ModelSerializer):
-
-    employer_set = EmployerSerializer(many=True, read_only=True)
-
-    class Meta:
-        model = Transmission
-
-        fields = ['pk', 'transmissionid', 'SenderName', 'BenefitAdministratorPlatform', 'ReceiverName', 'TestProductionCode', 'TransmissionTypeCode', 'SystemVersionIdentifier', 'source', 'create_date', 'creator', 'backend_SOR_connection', 'commit_indicator', 'record_status', 'response', 'bulk_upload_indicator', 'employer_set']
-
 
 @api_view(['GET', 'POST'])
-def FullListByTransmission(request, pk):
+def FullListByTransmission(request):
+
+    keys = ['TransmissionHead', 'EmployerHead', 'EmployeeHead']
+    super_array=[]
+    transmission_array=[]
+    employer_array=[]
+    employee_array=[]
 
     if request.method == 'GET':
+        transmissions = Transmission.objects.all()
+        ser_transmissions = TransmissionSerializer(transmissions, many=True)
+        transmission_array.append(ser_transmissions)
 
-        transmission = get_object_or_404(Transmission, pk = pk)
+        for transmission in transmissions:
+            employers = transmission.employer_set.all()
+            ser_employers = EmployerSerializer(employers, many=True)
+            employer_array.append(ser_employers)
 
-        serializer = TransmissionSerializer(instance=transmission)
-
-        return Response(serializer.data)
-
-    elif request.method == 'POST':
-        serializer = TransmissionSerializer(data=request.data)
-         # Raises a ValidatinException which will be sent as a 400 response.
-        serializer.is_valid(raise_exception=True)
-        transmission = Transmission()
-        event = Event()
+            for employer in employers:
+                employees = employer.employee_set.all()
+                ser_employees = EmployeeSerializer(employees, many=True)
+                employee_array.append(ser_employees)
 
 
-@api_view(['GET', 'POST'])
-def FullListByEmployer(request, pk):
+        super_array.append(transmission_array)
+        super_array.append(employer_array)
+        super_array.append(employee_array)
 
-    if request.method == 'GET':
+        data_dict = dict(zip(keys, super_array))
+        data_json = json.dumps(data_dict)
 
-        employer = get_object_or_404(Employer, pk = pk)
 
-        serializer = EmployerSerializer(instance=employer)
+        return HttpResponse(json.simplejson.dumps(data_dict), mimetype="application/json")
 
-        return Response(serializer.data)
+
 
     elif request.method == 'POST':
         serializer = TransmissionSerializer(data=request.data)

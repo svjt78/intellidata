@@ -9,7 +9,13 @@ TRANSMISSION_CHOICES=[('Connected','Connected'),
 class EventForm(forms.ModelForm):
 
     eventid = commit_indicator = forms.CharField(required=False, label='Event ID', widget=forms.TextInput(attrs={'readonly':'readonly'}))
+
     EventTypeCode = forms.CharField(required=False, label='Event Type Code', widget=forms.TextInput(attrs={'readonly':'readonly'}))
+
+    EventSubjectId = forms.CharField(required=False, label='Event Subject ID', widget=forms.TextInput(attrs={'readonly':'readonly'}))
+
+    EventSubjectName = forms.CharField(required=False, label='Event Subject Name', widget=forms.TextInput(attrs={'readonly':'readonly'}))
+
     EventTypeReason = forms.CharField(required=False, label='Event Type Reason', widget=forms.TextInput(attrs={'readonly':'readonly'}))
 
     backend_SOR_connection = forms.ChoiceField(choices=TRANSMISSION_CHOICES, widget=forms.RadioSelect, label='If connected to ODS')

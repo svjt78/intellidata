@@ -13,7 +13,7 @@ PRODUCT_CHOICES = (
     ('CANCER', 'Cancer'),
     ('DENTAL', 'DENTAL'),
     ('VISION', 'Vision'),
-    ('HOSPITAL', 'Hospital;'),
+    ('HOSPITAL', 'Hospital'),
     ('IDI', 'Individual Disability'),
     )
 
