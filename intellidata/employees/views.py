@@ -415,7 +415,7 @@ def RefreshEmployee(request, pk):
             event.EventSubjectName = obj1.name
             event.EventTypeReason = "Employee refreshed from ODS"
             event.source = "Web App"
-            event.creator=obj1.creators
+            event.creator=obj1.creator
             event.save()
 
             obj1.save()
@@ -797,7 +797,7 @@ def BulkUploadEmployee(request, pk, *args, **kwargs):
                                                             array1.append(pk)
                                                             array_bad.append(array1)
                                                       else:
-                                                           array2.append(zipcode)
+                                                           array2.append(home_zipcode)
 
                                                       mail_address_line_1=row[13]
                                                       array2.append(mail_address_line_1)
@@ -857,91 +857,20 @@ def BulkUploadEmployee(request, pk, *args, **kwargs):
                                                           array2.append(email)
 
                                                       alternate_email=row[24]
-                                                      array1=[]
-                                                      if not re.match(r"^[A-Za-z0-9\.\+_-]+@[A-Za-z0-9\._-]+\.[a-zA-Z]*$", alternate_email):
-                                                          bad_ind = 1
-                                                          description = "Invalid alternate email"
-                                                          array1.append(serial)
-                                                          array1.append(employeeid)
-                                                          array1.append(name)
-                                                          array1.append(alternate_email)
-                                                          array1.append(description)
-                                                          array1.append(pk)
-                                                          array_bad.append(array1)
-                                                      else:
-                                                          array2.append(alternate_email)
+                                                      array2.append(alternate_email)
 
                                                       #validate phone
                                                       home_phone=row[25]
-                                                      array1=[]
-                                                      p=[]
-                                                      p = home_phone
-                                                      l=len(p)
-                                                      p1 = p[0]
-                                                      p2=p[1:l]
-                                                      if p.isnumeric() == False:
-                                                          bad_ind=1
-                                                          description = "Home phone must be numbers "
-                                                          array1.append(serial)
-                                                          array1.append(employeeid)
-                                                          array1.append(name)
-                                                          array1.append(home_phone)
-                                                          array1.append(description)
-                                                          array1.append(pk)
-                                                          array_bad.append(array1)
-                                                      elif len(p) != (10 and 11):
-                                                          print(len(p))
-                                                          bad_ind=1
-                                                          description = "Length of home phone number is not correct "
-                                                          array1.append(serial)
-                                                          array1.append(employeeid)
-                                                          array1.append(name)
-                                                          array1.append(home_phone)
-                                                          array1.append(description)
-                                                          array1.append(pk)
-                                                          array_bad.append(array1)
-                                                      else:
-                                                           array2.append(home_phone)
+                                                      array2.append(home_phone)
 
 
                                                       work_phone=row[26]
-                                                      array1=[]
-                                                      p=[]
-                                                      p = work_phone
-                                                      l=len(p)
-                                                      p1 = p[0]
-                                                      p2=p[1:l]
-                                                      if p.isnumeric() == False:
-                                                          bad_ind=1
-                                                          description = "Work phone must be numbers "
-                                                          array1.append(serial)
-                                                          array1.append(employeeid)
-                                                          array1.append(name)
-                                                          array1.append(work_phone)
-                                                          array1.append(description)
-                                                          array1.append(pk)
-                                                          array_bad.append(array1)
-                                                      elif len(p) != (10 and 11):
-                                                          print(len(p))
-                                                          bad_ind=1
-                                                          description = "Length of work phone number is not correct "
-                                                          array1.append(serial)
-                                                          array1.append(employeeid)
-                                                          array1.append(name)
-                                                          array1.append(work_phone)
-                                                          array1.append(description)
-                                                          array1.append(pk)
-                                                          array_bad.append(array1)
-                                                      else:
-                                                           array2.append(work_phone)
+                                                      array2.append(work_phone)
 
                                                       mobile_phone=row[27]
                                                       array1=[]
                                                       p=[]
                                                       p = mobile_phone
-                                                      l=len(p)
-                                                      p1 = p[0]
-                                                      p2=p[1:l]
                                                       if p.isnumeric() == False:
                                                           bad_ind=1
                                                           description = "Mobile phone must be numbers "
@@ -1130,7 +1059,7 @@ def BulkUploadEmployee(request, pk, *args, **kwargs):
                         for ix in csv.reader(csv_file):
 
                                 #NOTIFY Employee
-                                subscription_arn = notification.SubscribeemployeeObj(ix[27])
+                                subscription_arn = notification.SubscribeEmployeeObj(ix[27])
                                 notification.TextEmployeeObj(subscription_arn)
 
                                 notification.EmailEmployeeObj(ix[23])
@@ -1282,7 +1211,7 @@ def BulkUploadSOR(request):
         event.EventSubjectName = "Bulk upload to ODS"
         event.EventTypeReason = "Employees uploaded to ODS in bulk"
         event.source = "Web App"
-        event.creator=self.request.user
+        event.creator=request.user
         event.save()
 
         return HttpResponseRedirect(reverse("employees:all"))

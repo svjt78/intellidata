@@ -18,11 +18,12 @@ urlpatterns = [
     url(r"^posts/in/(?P<pk>\d+)/$",views.SingleTransmission.as_view(),name="single"),
     url(r"^update/(?P<pk>\d+)/$",views.UpdateTransmission.as_view(),name="update"),
     url(r"^delete/(?P<pk>\d+)/$",views.DeleteTransmission.as_view(),name="delete"),
-    url(r"^rest/transmissionlist/$",views.TransmissionList, name="rest"),
     url(r"^transmission/error/$",views.ViewTransmissionErrorList.as_view(), name='feederrors'),
     url(r"^(?P<pk>\d+)/employers/show/$", views.ShowEmployersList.as_view(), name="show_employers"),
-    url(r"^rest/transmissionlist/(?P<pk>\d+)/$",views.FullListByTransmission, name="callbytranspk"),
-    url(r"^rest/all/(?P<pk>\d+)/$",views.FullListByTransmission, name="databytransmission"),
-    url(r"^employers/rest/all/(?P<pk>\d+)/$",views.FullListByEmployer, name="databyemployer"),
-    url(r"^rest/byid/$",views.TransmissionListByID, name="callbytransid"),
+
+    url(r"^rest/transmissionlist/$",views.TransmissionList, name="rest"),
+    url(r"^rest/transmissionlist/parms/$",views.TransmissionListByParm, name="transmissionsbyparms"),
+    url(r"^rest/transmissionlist/(?P<pk>\d+)/$",views.TransmissionListByID, name="databytransmission"),
+    url(r"^rest/employerlist/(?P<pk>\d+)/$",views.EmployerListByID, name="databyemployer"),
+
 ]

@@ -17,6 +17,6 @@ urlpatterns = [
     url(r"^posts/in/(?P<pk>\d+)/$",views.SingleEvent.as_view(),name="single"),
     url(r"^update/(?P<pk>\d+)/$",views.UpdateEvent.as_view(),name="update"),
     url(r"^delete/(?P<pk>\d+)/$",views.DeleteEvent.as_view(),name="delete"),
-    url(r"^rest/eventlist/$",views.ListEvents, name="rest"),
+    #url(r"^rest/eventlist/$",views.ListEvents, name="rest"),
 
 ]

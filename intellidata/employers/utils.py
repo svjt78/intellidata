@@ -100,7 +100,7 @@ class Notification:
 
         topic_arn = 'arn:aws:sns:us-east-1:215632354817:intellidata_notify_topic'
 
-        message = "Start Enrollment using http://www.google.com"
+        message = "Your data has been processed by the IntelliData platform. We will let you know when your enrollment becomes 100% complete!"
         messageJSON = json.dumps({"message":message})
 
         #obj = get_object_or_404(Member, pk = pk)
@@ -166,9 +166,9 @@ class Notification:
         SUBJECT = "Enrollment"
 
             # The email body for recipients with non-HTML email clients.
-        BODY_TEXT = ("Start Enrollment\r\n"
-                         "You are being requested to start "
-                         "Enrollemnt"
+        BODY_TEXT = ("Your data has been processed by the IntelliData platform. We will let you know when your enrollment becomes 100% complete!\r\n"
+                         "Your data has been processed by the IntelliData platform. "
+                         "We will let you know when your enrollment becomes 100% complete!"
                         )
 
             # The HTML body of the email.

@@ -545,13 +545,25 @@ def BulkUploadTransmission(request):
                                                       ReceiverName=row[4]
                                                       array2.append(ReceiverName)
 
-                                                      TestProductionCode=row[6]
+                                                      TestProductionCode=row[5]
                                                       array2.append(TestProductionCode)
 
-                                                      TransmissionTypeCode=row[7]
-                                                      array2.append(TransmissionTypeCode)
+                                                      #validate name
+                                                      TransmissionTypeCode=row[6]
+                                                      array1=[]
+                                                      if TransmissionTypeCode == "":
+                                                             bad_ind = 1
+                                                             description = "Transmission Type Code is mandatory"
+                                                             array1.append(serial)
+                                                             array1.append(transmissionid)
+                                                             array1.append(SenderName)
+                                                             array1.append(TransmissionTypeCode)
+                                                             array1.append(description)
+                                                             array_bad.append(array1)
+                                                      else:
+                                                             array2.append(TransmissionTypeCode)
 
-                                                      SystemVersionIdentifier=row[8]
+                                                      SystemVersionIdentifier=row[7]
                                                       array2.append(SystemVersionIdentifier)
 
                                                       if bad_ind == 0:
@@ -634,10 +646,9 @@ def BulkUploadTransmission(request):
                                                           SenderName=row[2],
                                                           BenefitAdministratorPlatform=row[3],
                                                           ReceiverName=row[4],
-                                                          create_date=row[5],
-                                                          TestProductionCode=row[6],
-                                                          TransmissionTypeCode=row[7],
-                                                          SystemVersionIdentifier=row[8],
+                                                          TestProductionCode=row[5],
+                                                          TransmissionTypeCode=row[6],
+                                                          SystemVersionIdentifier=row[7],
                                                           creator = request.user,
                                                           record_status = "Created",
                                                           bulk_upload_indicator = "Y"
@@ -647,10 +658,9 @@ def BulkUploadTransmission(request):
                                                            SenderName=row[2],
                                                            BenefitAdministratorPlatform=row[3],
                                                            ReceiverName=row[4],
-                                                           create_date=row[5],
-                                                           TestProductionCode=row[6],
-                                                           TransmissionTypeCode=row[7],
-                                                           SystemVersionIdentifier=row[8],
+                                                           TestProductionCode=row[5],
+                                                           TransmissionTypeCode=row[6],
+                                                           SystemVersionIdentifier=row[7],
                                                            creator = request.user,
                                                            record_status = "Created",
                                                            bulk_upload_indicator = "Y"
@@ -670,7 +680,7 @@ def BulkUploadTransmission(request):
                             for row1 in csv.reader(csv_file):
                                 bulk_mgr.add(models.TransmissionError(serial = row1[0],
                                                           transmissionid=row1[1],
-                                                          name=row1[2],
+                                                          SenderName=row1[2],
                                                           errorfield=row1[3],
                                                           error_description=row1[4],
                                                           creator = request.user,
@@ -795,7 +805,7 @@ def BulkUploadSOR(request):
         event.EventSubjectName = "Bulk upload to ODS"
         event.EventTypeReason = "Transmissions uploaded to ODS in bulk"
         event.source = "Web App"
-        event.creator=self.request.user
+        event.creator=request.user
         event.save()
 
         return HttpResponseRedirect(reverse("transmissions:all"))
@@ -813,6 +823,56 @@ class ViewTransmissionErrorList(LoginRequiredMixin, generic.ListView):
     #    return Member.objects.all
         #return models.Member.objects.prefetch_related('employer')
         return models.TransmissionError.objects.all()
+
+
+@api_view(['GET', 'POST'])
+def TransmissionList_BK(request):
+
+    if request.method == 'GET':
+        contacts = Transmission.objects.all()
+        serializer = TransmissionSerializer(contacts, many=True)
+        return Response(serializer.data)
+
+    elif request.method == 'POST':
+        response = request.data
+        print(response)
+        transmission=Transmission()
+        event = Event()
+
+        transmission.transmissionid = str(uuid.uuid4())[26:36]
+
+        #transmission.transmissionid = serializer.data["transmissionid"]
+        transmission.SenderName = response["SenderName"]
+        transmission.BenefitAdministratorPlatform = response["BenefitAdministratorPlatform"]
+        transmission.ReceiverName = response["ReceiverName"]
+        transmission.TestProductionCode = response["TestProductionCode"]
+        transmission.TransmissionTypeCode = response["TransmissionTypeCode"]
+        transmission.SystemVersionIdentifier = response["SystemVersionIdentifier"]
+
+        transmission.source = "API Call"
+
+        transmission.creator = get_object_or_404(User, pk=response["creator"])
+        #transmission.create_date = serializer.data["create_date"]
+        transmission.backend_SOR_connection = "Disconnected"
+        transmission.response = ""
+        transmission.commit_indicator = "Not Committed"
+        transmission.record_status = ""
+        #employers = json.loads["employer_set"]
+        print(transmission)
+
+        employers=response["employer_set"]
+        print(employers)
+
+        #Log events
+        event.EventTypeCode = "TRW"
+        event.EventSubjectId = transmission.transmissionid
+        event.EventSubjectName = transmission.SenderName
+        event.source = "API Call"
+        event.creator=transmission.creator
+        event.save()
+
+        transmission.save()
+        return Response(transmission)
 
 
 @api_view(['GET', 'POST'])
@@ -871,14 +931,6 @@ def TransmissionList(request):
 
     #    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-@api_view(['GET', 'POST'])
-def TransmissionListByID(request):
-
-    if request.method == 'GET':
-        contacts = Transmission.objects.filter(transmissionid=pk)
-        serializer = TransmissionSerializer(contacts, many=True)
-        return Response(serializer.data)
-
 class EmployerSerializer(serializers.ModelSerializer):
 
     employee_set = EmployeeSerializer(many=True, read_only=True)
@@ -899,7 +951,7 @@ class TransmissionSerializer(serializers.ModelSerializer):
 
 
 @api_view(['GET', 'POST'])
-def FullListByTransmission(request, pk):
+def TransmissionListByID(request, pk):
 
     if request.method == 'GET':
 
@@ -918,7 +970,7 @@ def FullListByTransmission(request, pk):
 
 
 @api_view(['GET', 'POST'])
-def FullListByEmployer(request, pk):
+def EmployerListByID(request, pk):
 
     if request.method == 'GET':
 
@@ -934,6 +986,25 @@ def FullListByEmployer(request, pk):
         serializer.is_valid(raise_exception=True)
         transmission = Transmission()
         event = Event()
+
+@api_view(['GET', 'POST'])
+def TransmissionListByParm(request):
+
+    if request.method == 'GET':
+
+        query = request.GET.get('transmissionid', '')
+        query=query.strip()
+        print("my query parameter is " + query)
+        #transmissions = Transmission.objects.filter(transmissionid__icontains=query)
+        #transmissions = Transmission.objects.filter(transmissionid=query)
+        transmissions = Transmission.objects.filter(transmissionid=query)
+        #c72ed27c3b
+        #transmissions = Transmission.objects.all()
+        print(transmissions)
+
+        serializer = TransmissionSerializer(transmissions, many=True)
+
+        return Response(serializer.data)
 
 
 #class for handling built-in API errors

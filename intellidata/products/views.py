@@ -276,7 +276,7 @@ def RefreshProduct(request, pk):
             event.EventSubjectName = obj1.name
             event.EventTypeReason = "Product refreshed from ODS"
             event.source = "Web App"
-            event.creator=obj1.creators
+            event.creator=obj1.creator
             event.save()
 
             obj1.save()
@@ -776,7 +776,7 @@ def BulkUploadSOR(request):
         event.EventSubjectName = "Bulk upload to ODS"
         event.EventTypeReason = "Products uploaded to ODS in bulk"
         event.source = "Web App"
-        event.creator=self.request.user
+        event.creator=request.user
         event.save()
 
         return HttpResponseRedirect(reverse("products:all"))
