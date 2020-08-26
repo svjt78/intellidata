@@ -167,12 +167,12 @@ class TransmissionErrorAggregate(models.Model):
     class Meta:
         ordering = ["-error_date"]
 
-class TransmissionSerializer_deprecated(serializers.ModelSerializer):
+class TransmissionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Transmission
 
-        fields = ['transmissionid', 'SenderName', 'BenefitAdministratorPlatform', 'ReceiverName', 'TestProductionCode', 'TransmissionTypeCode', 'SystemVersionIdentifier', 'source', 'create_date', 'creator', 'backend_SOR_connection', 'commit_indicator', 'record_status', 'response', 'bulk_upload_indicator', 'employer_set']
+        fields = ['id', 'transmissionid', 'SenderName', 'BenefitAdministratorPlatform', 'ReceiverName', 'TestProductionCode', 'TransmissionTypeCode', 'SystemVersionIdentifier', 'source', 'create_date', 'creator', 'backend_SOR_connection', 'commit_indicator', 'record_status', 'response', 'bulk_upload_indicator', 'employer_set']
 
 
 #class for handling built-in API errors

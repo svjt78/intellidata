@@ -1,2 +1,3 @@
-2,,GB TPA,ADP,Unum,,Electronic,
-3,,Group Admin,Benefit Focus,Unum,,Electronic,
+1,transmissionid,SenderName,BenefitAdministratorPlatform,ReceiverName,TestProductionCode,TransmissionTypeCode,SystemVersionIdentifier
+2,ed813e636e,GEB TPA,ADP,Unum,,Electronic,
+3,,Group PAS,Benefit Focus,Unum,,Electronic,

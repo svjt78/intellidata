@@ -7,7 +7,7 @@ AWS_QUERYSTRING_AUTH = True
 
 DEFAULT_FILE_STORAGE = 'IntelliDataSmart.aws.utils.MediaRootS3BotoStorage'
 STATICFILES_STORAGE = 'IntelliDataSmart.aws.utils.StaticRootS3BotoStorage'
-AWS_STORAGE_BUCKET_NAME = 'intellidatastatic'
+AWS_STORAGE_BUCKET_NAME = 'intellidatastatic1'
 S3DIRECT_REGION = 'us-east-1'
 S3_URL = '//%s.s3.amazonaws.com/' % AWS_STORAGE_BUCKET_NAME
 MEDIA_URL = '//%s.s3.amazonaws.com/media/' % AWS_STORAGE_BUCKET_NAME

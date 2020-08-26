@@ -1,4 +1,5 @@
-1,,,CI,Description,2000000,0.01
+serial,productid,name,type,description,coverage_limit,price_per_1000_units
+1,,,CI,This is Critical Illness,2000000,0.01
 2,,,Life,This is a Hardware product,2000001,0.02
 3,,Animal properties,STD,This is a animal insurance,2000002,0.03
 4,,Mobility coverage,LTD,Mobility home,2000003,0.04

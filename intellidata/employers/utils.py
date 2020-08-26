@@ -60,7 +60,7 @@ class Notification:
 
         sns = boto3.client('sns')
 
-        topic_arn = 'arn:aws:sns:us-east-1:215632354817:intellidata_notify_topic'
+        topic_arn = 'arn:aws:sns:us-east-1:321504535921:intellidata-employee-communication-topic'
 
         #obj = get_object_or_404(Member, pk = pk)
 
@@ -98,7 +98,7 @@ class Notification:
 
         sns = boto3.client('sns')
 
-        topic_arn = 'arn:aws:sns:us-east-1:215632354817:intellidata_notify_topic'
+        topic_arn = 'arn:aws:sns:us-east-1:321504535921:intellidata-employee-communication-topic'
 
         message = "Your data has been processed by the IntelliData platform. We will let you know when your enrollment becomes 100% complete!"
         messageJSON = json.dumps({"message":message})
@@ -175,7 +175,7 @@ class Notification:
         BODY_HTML = """<html>
             <head></head>
             <body>
-              <h1>Start Enrollment</h1>
+              <h1>Your data has been processed by the IntelliData platform. We will let you know when your enrollment becomes 100% complete!</h1>
               <p>This email was sent with
                 <a href='https://aws.amazon.com/ses/'>Amazon SES</a> using the
                 <a href='https://aws.amazon.com/sdk-for-python/'>
@@ -232,7 +232,7 @@ class Notification:
 #class built to contain the different API domain names
 class ApiDomains:
 
-    product='https://y4m6unoky2.execute-api.us-east-1.amazonaws.com/Prod/intellidataProductAPI'
-    employee='https://20megz6qvi.execute-api.us-east-1.amazonaws.com/Prod/intellidataEmployeeAPI'
-    employer='https://7u6e6ztbk4.execute-api.us-east-1.amazonaws.com/Prod/intellidataEmployerAPI'
-    transmission='https://1pq1bl1vek.execute-api.us-east-1.amazonaws.com/Prod/intellidataTransmissionAPI'
+    product='https://rna37odp8c.execute-api.us-east-1.amazonaws.com/Prod/intellidataProductAPI'
+    employee='https://xm6m1czaw1.execute-api.us-east-1.amazonaws.com/Prod/intellidataEmployeeAPI'
+    employer='https://2namhksku0.execute-api.us-east-1.amazonaws.com/Prod/intellidataEmployerAPI'
+    transmission='https://0n8cnaspd1.execute-api.us-east-1.amazonaws.com/Prod/intellidataTransmissionAPI'

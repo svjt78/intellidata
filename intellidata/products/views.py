@@ -485,12 +485,13 @@ def BulkUploadProduct(request):
                     form.save()
 
                     s3 = boto3.client('s3')
-                    s3.download_file('intellidatastatic', 'media/products.csv', 'products.csv')
+                    s3.download_file('intellidatastatic1', 'media/products.csv', 'products.csv')
 
                     with open('products.csv', 'rt') as csv_file:
                         array_good =[]
                         array_bad = []
                         #array_bad =[]
+                        next(csv_file) # skip header line
                         for row in csv.reader(csv_file):
                                                       bad_ind = 0
                                                       array1=[]
@@ -518,7 +519,7 @@ def BulkUploadProduct(request):
                                                       else:
                                                           array2.append(name)
 
-                                                      slug=slugify(row[2])
+                                                      slug=slugify(name)
                                                       #array2.append(slug)
 
                                                       type=row[3]
@@ -526,6 +527,8 @@ def BulkUploadProduct(request):
 
                                                       description=row[4]
                                                       array2.append(description)
+
+                                                      description_html = misaka.html(description)
 
                                                       coverage_limit=row[5]
                                                       array2.append(coverage_limit)
@@ -565,8 +568,8 @@ def BulkUploadProduct(request):
 
 # create good file
                     try:
-                        response = s3.delete_object(Bucket='intellidatastatic', Key='media/products1.csv')
-                        s3.upload_fileobj(buff2, 'intellidatastatic', 'media/products1.csv')
+                        response = s3.delete_object(Bucket='intellidatastatic1', Key='media/products1.csv')
+                        s3.upload_fileobj(buff2, 'intellidatastatic1', 'media/products1.csv')
                         print("Good File Upload Successful")
 
                     except FileNotFoundError:
@@ -591,8 +594,8 @@ def BulkUploadProduct(request):
 
                         # save bad file to S3
                     try:
-                        response = s3.delete_object(Bucket='intellidatastatic', Key='media/products_error.csv')
-                        s3.upload_fileobj(buff4, 'intellidatastatic', 'media/products_error.csv')
+                        response = s3.delete_object(Bucket='intellidatastatic1', Key='media/products_error.csv')
+                        s3.upload_fileobj(buff4, 'intellidatastatic1', 'media/products_error.csv')
                         print("Bad File Upload Successful")
 
                     except FileNotFoundError:
@@ -602,7 +605,7 @@ def BulkUploadProduct(request):
                         print("Credentials not available")
 
                     # load the product table
-                    s3.download_file('intellidatastatic', 'media/products1.csv', 'products1.csv')
+                    s3.download_file('intellidatastatic1', 'media/products1.csv', 'products1.csv')
 
                     with open('products1.csv', 'rt') as csv_file:
                         bulk_mgr = BulkCreateManager(chunk_size=20)
@@ -618,6 +621,7 @@ def BulkUploadProduct(request):
                                                           coverage_limit=row[5],
                                                           price_per_1000_units=row[6],
                                                           creator = request.user,
+                                                          source="Web App Bulk Upload",
                                                           record_status = "Created",
                                                           bulk_upload_indicator = "Y"
                                                           ))
@@ -631,6 +635,7 @@ def BulkUploadProduct(request):
                                                            coverage_limit=row[5],
                                                            price_per_1000_units=row[6],
                                                            creator = request.user,
+                                                           source="Web App Bulk Upload",
                                                            record_status = "Created",
                                                            bulk_upload_indicator = "Y"
 
@@ -639,7 +644,7 @@ def BulkUploadProduct(request):
                         bulk_mgr.done()
 
                         # load the product error table
-                        s3.download_file('intellidatastatic', 'media/products_error.csv', 'products_error.csv')
+                        s3.download_file('intellidatastatic1', 'media/products_error.csv', 'products_error.csv')
 
                         #Refresh Error table for concerned employer
                         ProductError.objects.all().delete()
@@ -653,7 +658,7 @@ def BulkUploadProduct(request):
                                                           errorfield=row1[3],
                                                           error_description=row1[4],
                                                           creator = request.user,
-                                                          source = ""
+                                                          source="Web App Bulk Upload"
                                                           ))
                             bulk_mgr.done()
 
@@ -707,10 +712,8 @@ def BulkUploadProduct_deprecated(request):
                 form.instance.creator = request.user
                 form.save()
 
-                #s3_resource = boto3.resource('s3')
-                #s3_resource.Object("intellidatastatic", "media/products.csv").download_file(f'/tmp/{"products.csv"}') # Python 3.6+
                 s3 = boto3.client('s3')
-                s3.download_file('intellidatastatic', 'media/products.csv', 'products.csv')
+                s3.download_file('intellidatastatic1', 'media/products.csv', 'products.csv')
 
                 #with open('/tmp/{"products.csv"}', 'rt') as csv_file:
                 with open('products.csv', 'rt') as csv_file:

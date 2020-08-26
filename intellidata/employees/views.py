@@ -654,12 +654,13 @@ def BulkUploadEmployee(request, pk, *args, **kwargs):
                     form.save()
 
                     s3 = boto3.client('s3')
-                    s3.download_file('intellidatastatic', 'media/employees.csv', 'employees.csv')
+                    s3.download_file('intellidatastatic1', 'media/employees.csv', 'employees.csv')
 
                     with open('employees.csv', 'rt') as csv_file:
                         array_good =[]
                         array_bad = []
                         #array_bad =[]
+                        next(csv_file) # skip header line
                         for row in csv.reader(csv_file):
                                                       bad_ind = 0
                                                       array1=[]
@@ -902,6 +903,9 @@ def BulkUploadEmployee(request, pk, *args, **kwargs):
                                                       employment_information=row[29]
                                                       array2.append(employment_information)
 
+                                                      employer=row[30]
+                                                      array2.append(employer)
+
 
                                                       if bad_ind == 0:
                                                           array_good.append(array2)
@@ -935,8 +939,8 @@ def BulkUploadEmployee(request, pk, *args, **kwargs):
 
 # create good file
                     try:
-                        response = s3.delete_object(Bucket='intellidatastatic', Key='media/employees1.csv')
-                        s3.upload_fileobj(buff2, 'intellidatastatic', 'media/employees1.csv')
+                        response = s3.delete_object(Bucket='intellidatastatic1', Key='media/employees1.csv')
+                        s3.upload_fileobj(buff2, 'intellidatastatic1', 'media/employees1.csv')
                         print("Good File Upload Successful")
 
                     except FileNotFoundError:
@@ -961,8 +965,8 @@ def BulkUploadEmployee(request, pk, *args, **kwargs):
 
                         # save bad file to S3
                     try:
-                        response = s3.delete_object(Bucket='intellidatastatic', Key='media/employees_error.csv')
-                        s3.upload_fileobj(buff4, 'intellidatastatic', 'media/employees_error.csv')
+                        response = s3.delete_object(Bucket='intellidatastatic1', Key='media/employees_error.csv')
+                        s3.upload_fileobj(buff4, 'intellidatastatic1', 'media/employees_error.csv')
                         print("Bad File Upload Successful")
 
                     except FileNotFoundError:
@@ -972,7 +976,7 @@ def BulkUploadEmployee(request, pk, *args, **kwargs):
                         print("Credentials not available")
 
                     # load the employee table
-                    s3.download_file('intellidatastatic', 'media/employees1.csv', 'employees1.csv')
+                    s3.download_file('intellidatastatic1', 'media/employees1.csv', 'employees1.csv')
 
                     with open('employees1.csv', 'rt') as csv_file:
                         bulk_mgr = BulkCreateManager(chunk_size=20)
@@ -1013,6 +1017,7 @@ def BulkUploadEmployee(request, pk, *args, **kwargs):
                                                           creator = request.user,
                                                           sms="Initial notification sent",
                                                           emailer="Initial notification sent",
+                                                          source="Web App Bulk Upload",
                                                           record_status = "Created",
                                                           bulk_upload_indicator = "Y"
                                                           ))
@@ -1051,6 +1056,7 @@ def BulkUploadEmployee(request, pk, *args, **kwargs):
                                                           creator = request.user,
                                                           sms="Initial notification sent",
                                                           emailer="Initial notification sent",
+                                                          source="Web App Bulk Upload",
                                                           record_status = "Created",
                                                           bulk_upload_indicator = "Y"
                                                           ))
@@ -1067,7 +1073,7 @@ def BulkUploadEmployee(request, pk, *args, **kwargs):
                         bulk_mgr.done()
 
                         # load the employee error table
-                        s3.download_file('intellidatastatic', 'media/employees_error.csv', 'employees_error.csv')
+                        s3.download_file('intellidatastatic1', 'media/employees_error.csv', 'employees_error.csv')
 
                         #Refresh Error table for concerned employer
                         EmployeeError.objects.filter(employer_id=pk).delete()
@@ -1082,7 +1088,7 @@ def BulkUploadEmployee(request, pk, *args, **kwargs):
                                                           description=row1[4],
                                                           employer=get_object_or_404(models.Employer, pk=pk),
                                                           creator = request.user,
-                                                          source = ""
+                                                          source="Web App Bulk Upload"
                                                           ))
                             bulk_mgr.done()
 
@@ -1144,7 +1150,7 @@ def BulkUploadEmployee_deprecated(request, pk, *args, **kwargs):
                     form.save()
 
                     s3 = boto3.client('s3')
-                    s3.download_file('intellidatastatic', 'media/employees1.csv', 'employees1.csv')
+                    s3.download_file('intellidatastatic1', 'media/employees1.csv', 'employees1.csv')
 
                     with open('employees1.csv', 'rt') as csv_file:
                         bulk_mgr = BulkCreateManager(chunk_size=20)
@@ -1241,7 +1247,7 @@ def SubscribeEmployee(request, pk):
 
     sns = boto3.client('sns')
 
-    topic_arn = 'arn:aws:sns:us-east-1:215632354817:intellidata_notify_topic'
+    topic_arn = 'arn:aws:sns:us-east-1:321504535921:intellidata-employee-communication-topic'
 
     obj = get_object_or_404(Employee, pk = pk)
 
@@ -1291,7 +1297,7 @@ def TextEmployee(request, pk):
 
     sns = boto3.client('sns')
 
-    topic_arn = 'arn:aws:sns:us-east-1:215632354817:intellidata_notify_topic'
+    topic_arn = 'arn:aws:sns:us-east-1:321504535921:intellidata-employee-communication-topic'
 
     message = "Enrollment complete"
     messageJSON = json.dumps({"message":message})

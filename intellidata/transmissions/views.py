@@ -282,7 +282,7 @@ def RefreshTransmission(request, pk):
             event.EventSubjectName = obj1.SenderName
             event.EventTypeReason = "Transmission refreshed from ODS"
             event.source = "Web App"
-            event.creator=obj1.creators
+            event.creator=obj1.creator
             event.save()
 
             #save data
@@ -506,12 +506,13 @@ def BulkUploadTransmission(request):
                     form.save()
 
                     s3 = boto3.client('s3')
-                    s3.download_file('intellidatastatic', 'media/transmissions.csv', 'transmissions.csv')
+                    s3.download_file('intellidatastatic1', 'media/transmissions.csv', 'transmissions.csv')
 
                     with open('transmissions.csv', 'rt') as csv_file:
                         array_good =[]
                         array_bad = []
                         #array_bad =[]
+                        next(csv_file) # skip header line
                         for row in csv.reader(csv_file):
                                                       bad_ind = 0
                                                       array1=[]
@@ -598,8 +599,8 @@ def BulkUploadTransmission(request):
 
 # create good file
                     try:
-                        response = s3.delete_object(Bucket='intellidatastatic', Key='media/transmissions1.csv')
-                        s3.upload_fileobj(buff2, 'intellidatastatic', 'media/transmissions1.csv')
+                        response = s3.delete_object(Bucket='intellidatastatic1', Key='media/transmissions1.csv')
+                        s3.upload_fileobj(buff2, 'intellidatastatic1', 'media/transmissions1.csv')
                         print("Good File Upload Successful")
 
                     except FileNotFoundError:
@@ -624,8 +625,8 @@ def BulkUploadTransmission(request):
 
                         # save bad file to S3
                     try:
-                        response = s3.delete_object(Bucket='intellidatastatic', Key='media/transmissions_error.csv')
-                        s3.upload_fileobj(buff4, 'intellidatastatic', 'media/transmissions_error.csv')
+                        response = s3.delete_object(Bucket='intellidatastatic1', Key='media/transmissions_error.csv')
+                        s3.upload_fileobj(buff4, 'intellidatastatic1', 'media/transmissions_error.csv')
                         print("Bad File Upload Successful")
 
                     except FileNotFoundError:
@@ -635,7 +636,7 @@ def BulkUploadTransmission(request):
                         print("Credentials not available")
 
                     # load the transmission table
-                    s3.download_file('intellidatastatic', 'media/transmissions1.csv', 'transmissions1.csv')
+                    s3.download_file('intellidatastatic1', 'media/transmissions1.csv', 'transmissions1.csv')
 
                     with open('transmissions1.csv', 'rt') as csv_file:
                         bulk_mgr = BulkCreateManager(chunk_size=20)
@@ -650,6 +651,7 @@ def BulkUploadTransmission(request):
                                                           TransmissionTypeCode=row[6],
                                                           SystemVersionIdentifier=row[7],
                                                           creator = request.user,
+                                                          source="Web App Bulk Upload",
                                                           record_status = "Created",
                                                           bulk_upload_indicator = "Y"
                                                           ))
@@ -662,6 +664,7 @@ def BulkUploadTransmission(request):
                                                            TransmissionTypeCode=row[6],
                                                            SystemVersionIdentifier=row[7],
                                                            creator = request.user,
+                                                           source="Web App Bulk Upload",
                                                            record_status = "Created",
                                                            bulk_upload_indicator = "Y"
 
@@ -670,7 +673,7 @@ def BulkUploadTransmission(request):
                         bulk_mgr.done()
 
                         # load the transmission error table
-                        s3.download_file('intellidatastatic', 'media/transmissions_error.csv', 'transmissions_error.csv')
+                        s3.download_file('intellidatastatic1', 'media/transmissions_error.csv', 'transmissions_error.csv')
 
                         #Refresh Error table for concerned employer
                         TransmissionError.objects.all().delete()
@@ -684,7 +687,7 @@ def BulkUploadTransmission(request):
                                                           errorfield=row1[3],
                                                           error_description=row1[4],
                                                           creator = request.user,
-                                                          source = ""
+                                                          source="Web App Bulk Upload"
                                                           ))
                             bulk_mgr.done()
 
@@ -737,9 +740,9 @@ def BulkUploadTransmission_deprecated(request):
                 form.save()
 
                 #s3_resource = boto3.resource('s3')
-                #s3_resource.Object("intellidatastatic", "media/transmissions.csv").download_file(f'/tmp/{"transmissions.csv"}') # Python 3.6+
+                #s3_resource.Object("intellidatastatic1", "media/transmissions.csv").download_file(f'/tmp/{"transmissions.csv"}') # Python 3.6+
                 s3 = boto3.client('s3')
-                s3.download_file('intellidatastatic', 'media/transmissions.csv', 'transmissions.csv')
+                s3.download_file('intellidatastatic1', 'media/transmissions.csv', 'transmissions.csv')
 
                 #with open('/tmp/{"transmissions.csv"}', 'rt') as csv_file:
                 with open('transmissions.csv', 'rt') as csv_file:
@@ -938,7 +941,7 @@ class EmployerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Employer
 
-        fields = ['pk', 'employerid', 'name', 'slug', 'description', 'FederalEmployerIdentificationNumber', 'CarrierMasterAgreementNumber', 'address_line_1', 'address_line_2', 'city', 'state', 'zipcode', 'purpose', 'source', 'photo', 'creator', 'employer_date', 'backend_SOR_connection', 'commit_indicator', 'record_status', 'response', 'bulk_upload_indicator', 'employee_set']
+        fields = ['id', 'employerid', 'name', 'slug', 'description', 'FederalEmployerIdentificationNumber', 'CarrierMasterAgreementNumber', 'address_line_1', 'address_line_2', 'city', 'state', 'zipcode', 'purpose', 'source', 'photo', 'creator', 'employer_date', 'backend_SOR_connection', 'commit_indicator', 'record_status', 'response', 'bulk_upload_indicator', 'employee_set']
 
 class TransmissionSerializer(serializers.ModelSerializer):
 
@@ -947,7 +950,7 @@ class TransmissionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Transmission
 
-        fields = ['pk', 'transmissionid', 'SenderName', 'BenefitAdministratorPlatform', 'ReceiverName', 'TestProductionCode', 'TransmissionTypeCode', 'SystemVersionIdentifier', 'source', 'create_date', 'creator', 'backend_SOR_connection', 'commit_indicator', 'record_status', 'response', 'bulk_upload_indicator', 'employer_set']
+        fields = ['id', 'transmissionid', 'SenderName', 'BenefitAdministratorPlatform', 'ReceiverName', 'TestProductionCode', 'TransmissionTypeCode', 'SystemVersionIdentifier', 'source', 'create_date', 'creator', 'backend_SOR_connection', 'commit_indicator', 'record_status', 'response', 'bulk_upload_indicator', 'employer_set']
 
 
 @api_view(['GET', 'POST'])

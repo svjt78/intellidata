@@ -321,7 +321,7 @@ def RefreshEmployer(request, pk):
             event.EventSubjectName = obj1.name
             event.EventTypeReason = "Employer refreshed from ODS"
             event.source = "Web App"
-            event.creator=obj1.creators
+            event.creator=obj1.creator
             event.save()
 
 
@@ -555,7 +555,7 @@ class ShowAgreementsList(LoginRequiredMixin, generic.ListView):
 
 @permission_required("employers.add_employer")
 @login_required
-def BulkUploadEmployer(request, pk):
+def BulkUploadEmployer(request):
 
         context ={}
 
@@ -566,12 +566,13 @@ def BulkUploadEmployer(request, pk):
                     form.save()
 
                     s3 = boto3.client('s3')
-                    s3.download_file('intellidatastatic', 'media/employers.csv', 'employers.csv')
+                    s3.download_file('intellidatastatic1', 'media/employers.csv', 'employers.csv')
 
                     with open('employers.csv', 'rt') as csv_file:
                         array_good =[]
                         array_bad = []
                         #array_bad =[]
+                        next(csv_file) # skip header line
                         for row in csv.reader(csv_file):
                                                       bad_ind = 0
                                                       array1=[]
@@ -599,8 +600,13 @@ def BulkUploadEmployer(request, pk):
                                                       else:
                                                           array2.append(name)
 
-                                                      slug=slugify(row[2])
+                                                      slug=slugify(name)
                                                       #array2.append(slug)
+
+                                                      description=row[3]
+                                                      array2.append(description)
+
+                                                      description_html = misaka.html(description)
 
                                                       FederalEmployerIdentificationNumber=row[4]
                                                       array2.append(FederalEmployerIdentificationNumber)
@@ -609,7 +615,7 @@ def BulkUploadEmployer(request, pk):
                                                       array2.append(CarrierMasterAgreementNumber)
 
                                                       #validate address
-                                                      address_line_1=int(row[6])
+                                                      address_line_1=row[6]
                                                       array1=[]
                                                       if address_line_1 == "":
                                                           bad_ind=1
@@ -621,7 +627,7 @@ def BulkUploadEmployer(request, pk):
                                                           array1.append(error_description)
                                                           array_bad.append(array1)
                                                       else:
-                                                           array2.append(age)
+                                                           array2.append(address_line_1)
 
                                                       address_line_2=row[7]
                                                       array2.append(address_line_2)
@@ -664,9 +670,20 @@ def BulkUploadEmployer(request, pk):
                                                       purpose=row[11]
                                                       array2.append(purpose)
 
-                                                      transmission=row[12]
-                                                      array2.append(transmission)
 
+                                                      transmission_pk=row[12]
+                                                      array1=[]
+                                                      if transmission_pk == "":
+                                                           bad_ind=1
+                                                           error_description = "Transmission Code is mandatory "
+                                                           array1.append(serial)
+                                                           array1.append(employerid)
+                                                           array1.append(name)
+                                                           array1.append(transmission_pk)
+                                                           array1.append(error_description)
+                                                           array_bad.append(array1)
+                                                      else:
+                                                           array2.append(transmission_pk)
 
                                                       if bad_ind == 0:
                                                           array_good.append(array2)
@@ -700,8 +717,8 @@ def BulkUploadEmployer(request, pk):
 
 # create good file
                     try:
-                        response = s3.delete_object(Bucket='intellidatastatic', Key='media/employers1.csv')
-                        s3.upload_fileobj(buff2, 'intellidatastatic', 'media/employers1.csv')
+                        response = s3.delete_object(Bucket='intellidatastatic1', Key='media/employers1.csv')
+                        s3.upload_fileobj(buff2, 'intellidatastatic1', 'media/employers1.csv')
                         print("Good File Upload Successful")
 
                     except FileNotFoundError:
@@ -726,8 +743,8 @@ def BulkUploadEmployer(request, pk):
 
                         # save bad file to S3
                     try:
-                        response = s3.delete_object(Bucket='intellidatastatic', Key='media/employers_error.csv')
-                        s3.upload_fileobj(buff4, 'intellidatastatic', 'media/employers_error.csv')
+                        response = s3.delete_object(Bucket='intellidatastatic1', Key='media/employers_error.csv')
+                        s3.upload_fileobj(buff4, 'intellidatastatic1', 'media/employers_error.csv')
                         print("Bad File Upload Successful")
 
                     except FileNotFoundError:
@@ -737,7 +754,7 @@ def BulkUploadEmployer(request, pk):
                         print("Credentials not available")
 
                     # load the employer table
-                    s3.download_file('intellidatastatic', 'media/employers1.csv', 'employers1.csv')
+                    s3.download_file('intellidatastatic1', 'media/employers1.csv', 'employers1.csv')
 
                     with open('employers1.csv', 'rt') as csv_file:
                         bulk_mgr = BulkCreateManager(chunk_size=20)
@@ -757,8 +774,9 @@ def BulkUploadEmployer(request, pk):
                                                           state=row[9],
                                                           zipcode=row[10],
                                                           purpose=row[11],
-                                                          transmission=get_object_or_404(models.Transmission, pk=pk),
+                                                          transmission=get_object_or_404(models.Transmission, pk=transmission_pk),
                                                           creator = request.user,
+                                                          source="Web App Bulk Upload",
                                                           record_status = "Created",
                                                           bulk_upload_indicator = "Y"
                                                           ))
@@ -776,8 +794,9 @@ def BulkUploadEmployer(request, pk):
                                                            state=row[9],
                                                            zipcode=row[10],
                                                            purpose=row[11],
-                                                           transmission=get_object_or_404(models.Transmission, pk=pk),
+                                                           transmission=get_object_or_404(models.Transmission, pk=transmission_pk),
                                                            creator = request.user,
+                                                           source="Web App Bulk Upload",
                                                            record_status = "Created",
                                                            bulk_upload_indicator = "Y"
                                                           ))
@@ -785,7 +804,7 @@ def BulkUploadEmployer(request, pk):
                         bulk_mgr.done()
 
                         # load the employer error table
-                        s3.download_file('intellidatastatic', 'media/employers_error.csv', 'employers_error.csv')
+                        s3.download_file('intellidatastatic1', 'media/employers_error.csv', 'employers_error.csv')
 
                         #Refresh Error table for concerned employer
                         EmployerError.objects.all().delete()
@@ -798,16 +817,16 @@ def BulkUploadEmployer(request, pk):
                                                           name=row1[2],
                                                           errorfield=row1[3],
                                                           error_description=row1[4],
-                                                          transmission=get_object_or_404(models.Transmission, pk=pk),
+                                                          transmission=get_object_or_404(models.Transmission, pk=transmission_pk),
                                                           creator = request.user,
-                                                          source = ""
+                                                          source="Web App Bulk Upload"
                                                           ))
                             bulk_mgr.done()
 
 
                     error_report = EmployerErrorAggregate()
 
-                    error_report.transmission = get_object_or_404(Transmission, pk=pk)
+                    error_report.transmission = get_object_or_404(Transmission, pk=transmission_pk)
                     error_report.clean=Employer.objects.count()
                     error_report.error=EmployerError.objects.count()
 
@@ -854,9 +873,9 @@ def BulkUploadEmployer_deprecated(request):
                 form.save()
 
                 #s3_resource = boto3.resource('s3')
-                #s3_resource.Object("intellidatastatic", "media/employers.csv").download_file(f'/tmp/{"employers.csv"}') # Python 3.6+
+                #s3_resource.Object("intellidatastatic1", "media/employers.csv").download_file(f'/tmp/{"employers.csv"}') # Python 3.6+
                 s3 = boto3.client('s3')
-                s3.download_file('intellidatastatic', 'media/employers.csv', 'employers.csv')
+                s3.download_file('intellidatastatic1', 'media/employers.csv', 'employers.csv')
 
                 #with open('/tmp/{"employers.csv"}', 'rt') as csv_file:
                 with open('employers.csv', 'rt') as csv_file:
@@ -918,11 +937,11 @@ def BulkUploadSOR(request):
         #Log events
         event = Event()
         event.EventTypeCode = "ERO"
-        event.EventSubjectId = "employerodsupload"
+        event.EventSubjectId = "employerod  supload"
         event.EventSubjectName = "Bulk upload to ODS"
         event.EventTypeReason = "Employers uploaded to ODS in bulk"
         event.source = "Web App"
-        event.creator=self.request.user
+        event.creator=request.user
         event.save()
 
         return HttpResponseRedirect(reverse("employers:all"))
@@ -939,7 +958,8 @@ class ViewEmployerErrorList(LoginRequiredMixin, generic.ListView):
     #    return Member.objects.filter(employer=employer_name)
     #    return Member.objects.all
         #return models.Member.objects.prefetch_related('employer')
-        return models.EmployerError.objects.filter(transmission_id=self.kwargs['pk'])
+        #return models.EmployerError.objects.filter(transmission_id=self.kwargs['pk'])
+        return models.EmployerError.objects.all()
 
 
 @api_view(['GET', 'POST'])
