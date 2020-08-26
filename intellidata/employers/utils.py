@@ -127,7 +127,7 @@ class Notification:
 
         context = {}
 
-        message = "Start Enrollment"
+        message = "Member enrollment"
         messageJSON = json.dumps({"message":message})
 
         #obj = get_object_or_404(Member, pk = pk)
@@ -232,7 +232,7 @@ class Notification:
 #class built to contain the different API domain names
 class ApiDomains:
 
-    product='https://rna37odp8c.execute-api.us-east-1.amazonaws.com/Prod/intellidataProductAPI'
-    employee='https://xm6m1czaw1.execute-api.us-east-1.amazonaws.com/Prod/intellidataEmployeeAPI'
-    employer='https://2namhksku0.execute-api.us-east-1.amazonaws.com/Prod/intellidataEmployerAPI'
-    transmission='https://0n8cnaspd1.execute-api.us-east-1.amazonaws.com/Prod/intellidataTransmissionAPI'
+    product='https://em6hzw5v68.execute-api.us-east-1.amazonaws.com/Prod/intellidataProductAPI'
+    employee='https://em6hzw5v68.execute-api.us-east-1.amazonaws.com/Prod/intellidataEmployeeAPI'
+    employer='https://em6hzw5v68.execute-api.us-east-1.amazonaws.com/Prod/intellidataEmployerAPI'
+    transmission='https://em6hzw5v68.execute-api.us-east-1.amazonaws.com/Prod/intellidataTransmissionAPI'

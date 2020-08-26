@@ -29,7 +29,9 @@
 		 <div class="dropdown-content">
 				<a href="{% url 'employers:create' %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-plus-sign"></span>Create New!</a>
 				&nbsp;
-				<a href="{% url 'employers:bulk' %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-plus-sign"></span>Upload file!</a>
+				<a href="{% url 'employers:bulk' %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-plus-sign"></span>Upload standard file!</a>
+				&nbsp;
+				<a href="{% url 'employers:spl_bulk' %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-plus-sign"></span>Upload non-standard file!</a>
 				&nbsp;
 				<a href="{% url 'employers:feederrors' %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-fire"></span>View Errors</a>
 				&nbsp;

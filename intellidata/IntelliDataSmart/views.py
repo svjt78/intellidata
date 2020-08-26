@@ -18,5 +18,10 @@ class HomePage(TemplateView):
             return HttpResponseRedirect(reverse("test"))
         return super().get(request, *args, **kwargs)
 
+class FileUploadPage(TemplateView):
+    template_name = "fileupload_form.html"
+
+    
+
 def GotoAdmin(request):
     return HttpResponseRedirect(reverse("admin:index"))

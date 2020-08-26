@@ -860,41 +860,6 @@ def BulkUploadEmployer(request):
                     return render(request, "bulkuploads/bulkupload_form.html", context)
 
 
-
-@permission_required("employers.add_employer")
-@login_required
-def NonStdBulkUploadEmployer(request):
-
-        context ={}
-
-        form = BulkUploadForm(request.POST, request.FILES)
-
-        if form.is_valid():
-                    form.instance.creator = request.user
-                    form.save()
-
-
-
-        #add standardization process start
-
-                    s3 = boto3.resource('s3')
-                    obj_to_read = s3.Object('intellidatastatic1', 'media/employers.csv')
-                    body = obj_to_read.get()['Body'].read()
-
-                    obj_to_write = s3.Object('intellidatastack-s3bucket-c44s68vu7tdc', 'employers/employers.csv')
-                    obj_to_write.put(Body=body)
-
-
-                    return HttpResponseRedirect(reverse("employers:all"))
-
-
-        else:
-                            # add form dictionary to context
-                    context["form"] = form
-
-                    return render(request, "bulkuploads/bulkupload_form.html", context)
-
-
 @permission_required("employers.add_employer")
 @login_required
 def BulkUploadEmployer_deprecated(request):
