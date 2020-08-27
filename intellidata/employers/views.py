@@ -881,18 +881,297 @@ def NonStdBulkUploadEmployer(request):
                     obj_to_read = s3.Object('intellidatastatic1', 'media/employers.csv')
                     body = obj_to_read.get()['Body'].read()
 
-                    obj_to_write = s3.Object('intellidatastack-s3bucket-c44s68vu7tdc', 'employers/employers.csv')
+                    obj_to_write = s3.Object('intellidatastack-s3bucket1-digncfllaejn', 'employers/employers.csv')
                     obj_to_write.put(Body=body)
 
 
+@permission_required("employers.add_employer")
+@login_required
+def NonStdRefresh(request):
+                    #refresh
+                    s3.download_file('intellidatastatic1', 'media/employers_nonstd.csv', 'employers.csv')
+
+                    with open('employers.csv', 'rt') as csv_file:
+                        array_good =[]
+                        array_bad = []
+                        #array_bad =[]
+                        next(csv_file) # skip header line
+                        for row in csv.reader(csv_file):
+                                                      bad_ind = 0
+                                                      array1=[]
+                                                      array2=[]
+
+                                                      #populate serial number
+                                                      serial=row[0]
+                                                      array2.append(serial)
+
+                                                    #pass employee:
+                                                      employerid=row[1]
+                                                      array2.append(employerid)
+                                                       #validate name
+                                                      name=row[2]
+                                                      if name == "":
+                                                          bad_ind = 1
+                                                          error_description = "Name is mandatory"
+                                                          array1.append(serial)
+                                                          array1.append(employerid)
+                                                          array1.append(name)
+                                                          array1.append(name)
+                                                          array1.append(error_description)
+                                                          array_bad.append(array1)
+
+                                                      else:
+                                                          array2.append(name)
+
+                                                      slug=slugify(name)
+                                                      #array2.append(slug)
+
+                                                      description=row[3]
+                                                      array2.append(description)
+
+                                                      description_html = misaka.html(description)
+
+                                                      FederalEmployerIdentificationNumber=row[4]
+                                                      array2.append(FederalEmployerIdentificationNumber)
+
+                                                      CarrierMasterAgreementNumber=row[5]
+                                                      array2.append(CarrierMasterAgreementNumber)
+
+                                                      #validate address
+                                                      address_line_1=row[6]
+                                                      array1=[]
+                                                      if address_line_1 == "":
+                                                          bad_ind=1
+                                                          error_description = "Address line 1 is mandatory "
+                                                          array1.append(serial)
+                                                          array1.append(employerid)
+                                                          array1.append(name)
+                                                          array1.append(address_line_1)
+                                                          array1.append(error_description)
+                                                          array_bad.append(array1)
+                                                      else:
+                                                           array2.append(address_line_1)
+
+                                                      address_line_2=row[7]
+                                                      array2.append(address_line_2)
+
+                                                      #validate address line 1
+                                                      city=row[8]
+                                                      array1=[]
+                                                      if city == "":
+                                                           bad_ind=1
+                                                           error_description = "City is mandatory "
+                                                           array1.append(serial)
+                                                           array1.append(employerid)
+                                                           array1.append(name)
+                                                           array1.append(city)
+                                                           array1.append(error_description)
+                                                           array_bad.append(array1)
+                                                      else:
+                                                          array2.append(city)
+
+
+                                                      #validate address line 2
+                                                      state=row[9]
+                                                      array2.append(state)
+
+                                                           #validate city
+                                                      zipcode=row[10]
+                                                      array1=[]
+                                                      if zipcode == "":
+                                                           bad_ind=1
+                                                           error_description = "Zipcode is mandatory "
+                                                           array1.append(serial)
+                                                           array1.append(employerid)
+                                                           array1.append(name)
+                                                           array1.append(zipcode)
+                                                           array1.append(error_description)
+                                                           array_bad.append(array1)
+                                                      else:
+                                                           array2.append(zipcode)
+
+                                                      purpose=row[11]
+                                                      array2.append(purpose)
+
+
+                                                      transmission_pk=row[12]
+                                                      array1=[]
+                                                      if transmission_pk == "":
+                                                           bad_ind=1
+                                                           error_description = "Transmission Code is mandatory "
+                                                           array1.append(serial)
+                                                           array1.append(employerid)
+                                                           array1.append(name)
+                                                           array1.append(transmission_pk)
+                                                           array1.append(error_description)
+                                                           array_bad.append(array1)
+                                                      else:
+                                                           array2.append(transmission_pk)
+
+                                                      if bad_ind == 0:
+                                                          array_good.append(array2)
+
+
+
+                        # create good file
+                    #with open('employers1.csv', 'w', newline='') as clean_file:
+                    ##    writer = csv.writer(clean_file)
+                    #    writer.writerows(array_good)
+
+                    buff1 = io.StringIO()
+
+                    writer = csv.writer(buff1, dialect='excel', delimiter=',')
+                    writer.writerows(array_good)
+
+                    buff2 = io.BytesIO(buff1.getvalue().encode())
+
+                        # check if a version of the good file already exists
+                #    try:
+                #        s3.Object('my-bucket', 'dootdoot.jpg').load()
+                #    except botocore.exceptions.ClientError as e:
+                #        if e.response['Error']['Code'] == "404":
+                #            # The object does not exist.
+                #            ...
+                #        else:
+                #            # Something else has gone wrong.
+                #            raise
+                #    else:
+                #        # do something
+
+# create good file
+                    try:
+                        response = s3.delete_object(Bucket='intellidatastatic1', Key='media/employers1.csv')
+                        s3.upload_fileobj(buff2, 'intellidatastatic1', 'media/employers1.csv')
+                        print("Good File Upload Successful")
+
+                    except FileNotFoundError:
+                         print("The good file was not found")
+
+                    except NoCredentialsError:
+                         print("Credentials not available")
+
+
+                           # create bad file
+                    #with open('employer_error.csv', 'w', newline='') as error_file:
+                    #       writer = csv.writer(error_file)
+                    #       writer.writerows(array1)
+
+                    buff3 = io.StringIO()
+
+                    writer = csv.writer(buff3, dialect='excel', delimiter=',')
+                    writer.writerows(array_bad)
+
+                    buff4 = io.BytesIO(buff3.getvalue().encode())
+
+
+                        # save bad file to S3
+                    try:
+                        response = s3.delete_object(Bucket='intellidatastatic1', Key='media/employers_error.csv')
+                        s3.upload_fileobj(buff4, 'intellidatastatic1', 'media/employers_error.csv')
+                        print("Bad File Upload Successful")
+
+                    except FileNotFoundError:
+                        print("The bad file was not found")
+
+                    except NoCredentialsError:
+                        print("Credentials not available")
+
+                    # load the employer table
+                    s3.download_file('intellidatastatic1', 'media/employers1.csv', 'employers1.csv')
+
+                    with open('employers1.csv', 'rt') as csv_file:
+                        bulk_mgr = BulkCreateManager(chunk_size=20)
+
+                        for row in csv.reader(csv_file):
+                            if row[1] == "":
+                                bulk_mgr.add(models.Employer(employerid = str(uuid.uuid4())[26:36],
+                                                          name=row[2],
+                                                          slug=slugify(row[2]),
+                                                          description=row[3],
+                                                          description_html = misaka.html(row[3]),
+                                                          FederalEmployerIdentificationNumber=row[4],
+                                                          CarrierMasterAgreementNumber=row[5],
+                                                          address_line_1=row[6],
+                                                          address_line_2=row[7],
+                                                          city=row[8],
+                                                          state=row[9],
+                                                          zipcode=row[10],
+                                                          purpose=row[11],
+                                                          transmission=get_object_or_404(models.Transmission, pk=transmission_pk),
+                                                          creator = request.user,
+                                                          source="Web App Bulk Upload",
+                                                          record_status = "Created",
+                                                          bulk_upload_indicator = "Y"
+                                                          ))
+                            else:
+                                bulk_mgr.add(models.Employer(employerid = row[1],
+                                                           name=row[2],
+                                                           slug=slugify(row[2]),
+                                                           description=row[3],
+                                                           description_html = misaka.html(row[3]),
+                                                           FederalEmployerIdentificationNumber=row[4],
+                                                           CarrierMasterAgreementNumber=row[5],
+                                                           address_line_1=row[6],
+                                                           address_line_2=row[7],
+                                                           city=row[8],
+                                                           state=row[9],
+                                                           zipcode=row[10],
+                                                           purpose=row[11],
+                                                           transmission=get_object_or_404(models.Transmission, pk=transmission_pk),
+                                                           creator = request.user,
+                                                           source="Web App Bulk Upload",
+                                                           record_status = "Created",
+                                                           bulk_upload_indicator = "Y"
+                                                          ))
+
+                        bulk_mgr.done()
+
+                        # load the employer error table
+                        s3.download_file('intellidatastatic1', 'media/employers_error.csv', 'employers_error.csv')
+
+                        #Refresh Error table for concerned employer
+                        EmployerError.objects.all().delete()
+
+                        with open('employers_error.csv', 'rt') as csv_file:
+                            bulk_mgr = BulkCreateManager(chunk_size=20)
+                            for row1 in csv.reader(csv_file):
+                                bulk_mgr.add(models.EmployerError(serial = row1[0],
+                                                          employerid=row1[1],
+                                                          name=row1[2],
+                                                          errorfield=row1[3],
+                                                          error_description=row1[4],
+                                                          transmission=get_object_or_404(models.Transmission, pk=transmission_pk),
+                                                          creator = request.user,
+                                                          source="Web App Bulk Upload"
+                                                          ))
+                            bulk_mgr.done()
+
+
+                    error_report = EmployerErrorAggregate()
+
+                    error_report.transmission = get_object_or_404(Transmission, pk=transmission_pk)
+                    error_report.clean=Employer.objects.count()
+                    error_report.error=EmployerError.objects.count()
+
+                    error_report.total=(error_report.clean + error_report.error)
+
+                    #Refresh Error aggregate table for concerned employer
+                    EmployerErrorAggregate.objects.all().delete()
+
+                    error_report.save()
+
+                    #Log events
+                    event = Event()
+                    event.EventTypeCode = "ERB"
+                    event.EventSubjectId = "bulkemployers"
+                    event.EventSubjectName = "Bulk processing"
+                    event.EventTypeReason = "Employers uploaded in bulk"
+                    event.source = "Web App"
+                    event.creator=request.user
+                    event.save()
+
+
                     return HttpResponseRedirect(reverse("employers:all"))
-
-
-        else:
-                            # add form dictionary to context
-                    context["form"] = form
-
-                    return render(request, "bulkuploads/bulkupload_form.html", context)
 
 
 @permission_required("employers.add_employer")

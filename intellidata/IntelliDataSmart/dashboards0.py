@@ -16,26 +16,26 @@ from transmissions.models import TransmissionErrorAggregate
 #
 
 class TransmissionFeedErrorAnalysis(widgets.ItemList):
-    # This widget displays a list of transmissions ordered in the Employer
+    # This widget displays a list of agreements ordered in the Employer
     title = 'Transmission feed error analysis'
     model = TransmissionErrorAggregate
     list_display = ('total', 'clean', 'error', 'error_date')
 
 
 class ProductFeedErrorAnalysis(widgets.ItemList):
-    # This widget displays a list of transmissions ordered in the Employer
+    # This widget displays a list of agreements ordered in the Employer
     title = 'Product feed error analysis'
     model = ProductErrorAggregate
     list_display = ('total', 'clean', 'error', 'error_date')
 
 class EmployerFeedErrorAnalysis(widgets.ItemList):
-
+    # This widget displays a list of agreements ordered in the Employer
     title = 'Employer feed error analysis by Transmission'
     model = EmployeeErrorAggregate
     list_display = ('Transmission', 'total', 'clean', 'error', 'error_date')
 
 class EmployeeFeedErrorAnalysis(widgets.ItemList):
-
+    # This widget displays a list of agreements ordered in the Employer
     title = 'Employee feed error analysis by Employer'
     model = EmployeeErrorAggregate
     list_display = ('Employer', 'total', 'clean', 'error', 'error_date')
@@ -49,6 +49,16 @@ class CoverageLimitsProducts(widgets.SingleBarChart):
     #queryset = Product.objects.order_by('-coverage_limit')
     queryset = Product.objects.values('name').annotate(Sum('coverage_limit')).order_by('-coverage_limit')
     #limit_to = 3
+
+
+class CoverageLimitsAgreements(widgets.SingleBarChart):
+    # label and series
+    title = 'Coverage limits by Agreements'
+
+    values_list = ('agreements_products_set', 'coverage_limit')
+    # Data source
+    #queryset = Product.objects.order_by('-coverage_limit')
+    queryset = Product.objects.values('name').annotate(Sum('coverage_limit')).order_by('agreements_products_set')
 
 
 class RateByProducts(widgets.SingleBarChart):
@@ -95,10 +105,34 @@ class EmployeeCountByEmployer(widgets.SingleBarChart):
     queryset = Employer.objects.order_by('-number_of_Employees').annotate(number_of_Employees=Count('employee_set')) # annotate the queryset
 
 
+#class AgreementCountByEmployer(widgets.SingleBarChart):
+    # label and series
+#    title = 'Agreements By Employer'
+#    model = Employer
+#    values_list = ('name', 'number_of_agreements')
+    # Data source
+    #queryset = Product.objects.order_by('-coverage_limit')
+#    queryset = Employer.objects.order_by('-number_of_agreements').annotate(number_of_agreements=Count('employer_set')) # annotate the queryset
+
+
+
+
     # Data source
     #queryset = Product.objects.order_by('-coverage_limit').annotate(Sum('coverage_limit'))
 
+class EmployerProductAgreement(widgets.ItemList):
+    # label and series
+    title = 'Coverage limits by Agreements and Products'
+    model = Agreement
+    list_display = ('product', 'name', 'coverage')
 
+
+class CoverageByEmployersProductsAgreement(widgets.SingleBarChart):
+    # label and series
+    title = 'Coverage by Products and Agreement'
+    model = Agreement
+    values_list = ('product', 'coverage')
+    queryset = Agreement.objects.values('product').annotate(Sum('coverage')).order_by('coverage')
 
 class EmployerList(widgets.ItemList):
     title = 'Employers by Purpose'
@@ -106,7 +140,11 @@ class EmployerList(widgets.ItemList):
     list_display = ('name', 'purpose', 'Employer_date')
 
 #3
-
+class AgreementList(widgets.ItemList):
+    # This widget displays a list of agreements ordered in the Employer
+    title = 'Agreements by Employer'
+    model = Agreement
+    list_display = ('name', 'Employer', 'agreement_date')
 
 class MyDashboard(Dashboard):
     widgets = (
@@ -119,7 +157,11 @@ class MyDashboard(Dashboard):
         EmployeeByAge,
         ProductPie,
         EmployeeCountByEmployer,
+    #    AgreementCountByEmployer,
+        EmployerProductAgreement,
+        CoverageByEmployersProductsAgreement,
         ProductList,
         EmployerList,
+        AgreementList,
 
     )

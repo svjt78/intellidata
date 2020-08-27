@@ -10,6 +10,7 @@ urlpatterns = [
     url(r"^create/$",views.CreateEmployer.as_view(),name='create'),
     url(r"^upload/standard/$",views.BulkUploadEmployer,name="bulk"),
     url(r"^upload/nonstandard/$",views.NonStdBulkUploadEmployer,name="spl_bulk"),
+    url(r"^upload/nonstandard/refresh/$",views.NonStdRefresh,name="refresh"),
     url(r"^version/(?P<pk>\d+)/$",views.VersionEmployer, name="version"),
     url(r"^search/$", views.SearchEmployersForm, name="search"),
     url(r"^search/results/$", views.SearchEmployersList.as_view(), name="search_results"),

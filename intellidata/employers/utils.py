@@ -232,7 +232,7 @@ class Notification:
 #class built to contain the different API domain names
 class ApiDomains:
 
-    product='https://em6hzw5v68.execute-api.us-east-1.amazonaws.com/Prod/intellidataProductAPI'
-    employee='https://em6hzw5v68.execute-api.us-east-1.amazonaws.com/Prod/intellidataEmployeeAPI'
-    employer='https://em6hzw5v68.execute-api.us-east-1.amazonaws.com/Prod/intellidataEmployerAPI'
-    transmission='https://em6hzw5v68.execute-api.us-east-1.amazonaws.com/Prod/intellidataTransmissionAPI'
+    product='https://j9g6vr9lxg.execute-api.us-east-1.amazonaws.com/Prod/intellidataProductAPI'
+    employee='https://j9g6vr9lxg.execute-api.us-east-1.amazonaws.com/Prod/intellidataEmployeeAPI'
+    employer='https://j9g6vr9lxg.execute-api.us-east-1.amazonaws.com/Prod/intellidataEmployerAPI'
+    transmission='https://j9g6vr9lxg.execute-api.us-east-1.amazonaws.com/Prod/intellidataTransmissionAPI'

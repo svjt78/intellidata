@@ -29,15 +29,16 @@
 		 <div class="dropdown-content">
 				<a href="{% url 'employers:create' %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-plus-sign"></span>Create New!</a>
 				&nbsp;
-				<a href="{% url 'employers:bulk' %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-plus-sign"></span>Upload standard file!</a>
+				<a href="{% url 'employers:bulk' %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-arrow-up"></span>Upload standard file!</a>
 				&nbsp;
-				<a href="{% url 'employers:spl_bulk' %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-plus-sign"></span>Upload non-standard file!</a>
+				<a href="{% url 'employers:spl_bulk' %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-arrow-up"></span>Upload non-standard file!</a>
 				&nbsp;
 				<a href="{% url 'employers:feederrors' %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-fire"></span>View Errors</a>
 				&nbsp;
-				<a href="{% url 'employers:bulksor' %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-plus-sign"></span>Upload To ODS!</a>
+				<a href="{% url 'employers:bulksor' %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-arrow-up"></span>Upload To ODS!</a>
 		 </div>
 		 &nbsp;
+		<a href="{% url 'employers:refresh' %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-arrow-down"></span>Refresh!</a>
 		  &nbsp;
 		 <input type="button" class="btn btn-primary btn-large" value="Go back!" onclick="history.back()">
 				{% if FileNotFound %}
