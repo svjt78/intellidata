@@ -35,6 +35,10 @@
     &nbsp;
     <a href="{% url 'employees:upload' pk=employer_details.pk %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-upload"></span>Upload Members</a>
     &nbsp;
+    <a href="{% url 'employees:spl_bulk' %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-arrow-up"></span>Upload non-standard file!</a>
+    &nbsp;
+    <a href="{% url 'employees:refresh' %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-arrow-down"></span>Ingest non-standard data!</a>
+    &nbsp;
     <a href="{% url 'employees:bulksor' %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-upload"></span>Load To ODS</a>
     &nbsp;
     <a href="{% url 'employees:feederrors' pk=employer_details.pk %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-fire"></span>View Feed Errors</a>

@@ -105,7 +105,7 @@ class CreateEmployee(LoginRequiredMixin, PermissionRequiredMixin, generic.Create
             """
             form.instance.creator = self.request.user
             form.instance.record_status = "Created"
-            form.instance.source = "Web App"
+            form.instance.source = "Online Transaction"
 
             email_addr = form.instance.email
             phone_num = form.instance.mobile_phone
@@ -114,9 +114,41 @@ class CreateEmployee(LoginRequiredMixin, PermissionRequiredMixin, generic.Create
             #NOTIFY Employee
             notification = Notification()
             subscription_arn = notification.SubscribeEmployeeObj(phone_num)
+
+            #Log events
+            event = Event()
+            event.EventTypeCode = "SUB"
+            event.EventSubjectId = ""
+            event.EventSubjectName = "Phone number: " + phone_num
+            event.EventTypeReason = "Auto subscribed for push notification"
+            event.source = "Online Transaction"
+            event.creator=self.request.user
+            event.save()
+
             notification.TextEmployeeObj(subscription_arn)
 
+            #Log events
+            event = Event()
+            event.EventTypeCode = "SMS"
+            event.EventSubjectId = ""
+            event.EventSubjectName = ""
+            event.EventTypeReason = "Auto push notification sent for the above auto subscription"
+            event.source = "Online Transaction"
+            event.creator=self.request.user
+            event.save()
+
+
             notification.EmailEmployeeObj(email_addr)
+
+            #Log events
+            event = Event()
+            event.EventTypeCode = "EML"
+            event.EventSubjectId = ""
+            event.EventSubjectName = email_addr
+            event.EventTypeReason = "Auto email notification sent"
+            event.source = "Online Transaction"
+            event.creator=self.request.user
+            event.save()
 
             form.instance.sms = "Initial notification sent"
             form.instance.emailer = "Initial notification sent"
@@ -196,6 +228,8 @@ def BackendPull(request, pk):
             employer_id = json_data["EMPLOYER"]
             employer_obj = get_object_or_404(Employer, pk = employer_id)
             obj.employer = employer_obj
+
+            obj.source = json_data["SOURCE"]
 
             obj.creator = User.objects.get(pk=int(json_data["CREATOR"]))
             obj.employee_date = json_data["EMPLOYEE_DATE"]
@@ -294,6 +328,7 @@ def ListEmployeesHistory(request, pk):
                      employer_id = json_data[ix]["EMPLOYER"]
                      employer_obj = get_object_or_404(Employer, pk = employer_id)
                      obj.employer = employer_obj
+                     obj.source = json_data[ix]["SOURCE"]
 
                      obj.creator = User.objects.get(pk=int(json_data[ix]["CREATOR"]))
                      obj.employee_date = json_data[ix]["EMPLOYEE_DATE"]
@@ -395,6 +430,7 @@ def RefreshEmployee(request, pk):
             employer_id = json_data["EMPLOYER"]
             employer_obj = get_object_or_404(Employer, pk = employer_id)
             obj1.employer = employer_obj
+            obj1.source = json_data["SOURCE"]
 
             obj1.creator = User.objects.get(pk=int(json_data["CREATOR"]))
             obj1.employee_date = json_data["EMPLOYEE_DATE"]
@@ -414,7 +450,7 @@ def RefreshEmployee(request, pk):
             event.EventSubjectId = obj1.employeeid
             event.EventSubjectName = obj1.name
             event.EventTypeReason = "Employee refreshed from ODS"
-            event.source = "Web App"
+            event.source = "Online Transaction"
             event.creator=obj1.creator
             event.save()
 
@@ -452,7 +488,7 @@ def VersionEmployee(request, pk):
             event.EventSubjectId = form.instance.employeeid
             event.EventSubjectName = form.instance.name
             event.EventTypeReason = "Employee versioned"
-            event.source = "Web App"
+            event.source = "Online Transaction"
             event.creator=request.user
             event.save()
 
@@ -490,7 +526,7 @@ class UpdateEmployee(LoginRequiredMixin, PermissionRequiredMixin, generic.Update
             event.EventSubjectId = form.instance.employeeid
             event.EventSubjectName = form.instance.name
             event.EventTypeReason = "Employee updated"
-            event.source = "Web App"
+            event.source = "Online Transaction"
             event.creator=self.request.user
             event.save()
 
@@ -522,8 +558,8 @@ class DeleteEmployee(LoginRequiredMixin, PermissionRequiredMixin, generic.Delete
             event.EventTypeCode = "ERD"
             event.EventSubjectId = form.instance.employerid
             event.EventSubjectName = form.instance.name
-            event.EventTypeReason = "Employer deleted"
-            event.source = "Web App"
+            event.EventTypeReason = "Employee deleted"
+            event.source = "Online Transaction"
             event.creator=self.request.user
             event.save()
 
@@ -616,6 +652,7 @@ class SearchEmployeesList(LoginRequiredMixin, generic.ListView):
                 employer_id = json_data["EMPLOYER"]
                 employer_obj = get_object_or_404(Employer, pk = employer_id)
                 obj1.employer = employer_obj
+                obj1.source = json_data["SOURCE"]
 
                 obj1.creator = User.objects.get(pk=int(json_data["CREATOR"]))
                 obj1.employee_date = json_data["EMPLOYEE_DATE"]
@@ -1017,7 +1054,7 @@ def BulkUploadEmployee(request, pk, *args, **kwargs):
                                                           creator = request.user,
                                                           sms="Initial notification sent",
                                                           emailer="Initial notification sent",
-                                                          source="Web App Bulk Upload",
+                                                          source="Standard Feed Bulk Upload",
                                                           record_status = "Created",
                                                           bulk_upload_indicator = "Y"
                                                           ))
@@ -1056,7 +1093,7 @@ def BulkUploadEmployee(request, pk, *args, **kwargs):
                                                           creator = request.user,
                                                           sms="Initial notification sent",
                                                           emailer="Initial notification sent",
-                                                          source="Web App Bulk Upload",
+                                                          source="Standard Feed Bulk Upload",
                                                           record_status = "Created",
                                                           bulk_upload_indicator = "Y"
                                                           ))
@@ -1065,10 +1102,41 @@ def BulkUploadEmployee(request, pk, *args, **kwargs):
                         for ix in csv.reader(csv_file):
 
                                 #NOTIFY Employee
-                                subscription_arn = notification.SubscribeEmployeeObj(ix[27])
+                                subscription_arn = notification.SubscribeEmployeeObj(mobile_phone)
+
+                                #Log events
+                                event = Event()
+                                event.EventTypeCode = "SUB"
+                                event.EventSubjectId = ""
+                                event.EventSubjectName = "Phone number: " + mobile_phone
+                                event.EventTypeReason = "Auto subscribed for push notification"
+                                event.source = "Standard Feed Bulk Upload"
+                                event.creator=request.user
+                                event.save()
+
                                 notification.TextEmployeeObj(subscription_arn)
 
-                                notification.EmailEmployeeObj(ix[23])
+                                #Log events
+                                event = Event()
+                                event.EventTypeCode = "SMS"
+                                event.EventSubjectId = ""
+                                event.EventSubjectName = ""
+                                event.EventTypeReason = "Auto push notification sent for the above auto subscription"
+                                event.source = "Standard Feed Bulk Upload"
+                                event.creator=request.user
+                                event.save()
+
+                                notification.EmailEmployeeObj(email)
+
+                                #Log events
+                                event = Event()
+                                event.EventTypeCode = "EML"
+                                event.EventSubjectId = ""
+                                event.EventSubjectName = email
+                                event.EventTypeReason = "Auto email notification sent"
+                                event.source = "Standard Feed Bulk Upload"
+                                event.creator=request.user
+                                event.save()
 
                         bulk_mgr.done()
 
@@ -1088,7 +1156,7 @@ def BulkUploadEmployee(request, pk, *args, **kwargs):
                                                           description=row1[4],
                                                           employer=get_object_or_404(models.Employer, pk=pk),
                                                           creator = request.user,
-                                                          source="Web App Bulk Upload"
+                                                          source="Standard Feed Bulk Upload"
                                                           ))
                             bulk_mgr.done()
 
@@ -1118,7 +1186,7 @@ def BulkUploadEmployee(request, pk, *args, **kwargs):
                     event.EventSubjectId = "bulkemployees"
                     event.EventSubjectName = "Bulk processing"
                     event.EventTypeReason = "Employees uploaded in bulk"
-                    event.source = "Web App"
+                    event.source = "Standard Feed Bulk Upload"
                     event.creator=request.user
                     event.save()
 
@@ -1135,6 +1203,590 @@ def BulkUploadEmployee(request, pk, *args, **kwargs):
 
                     return render(request, "bulkuploads/bulkupload_form.html", context)
 
+
+@permission_required("employees.add_employee")
+@login_required
+def NonStdBulkUploadEmployee(request):
+
+        context ={}
+
+        form = BulkUploadForm(request.POST, request.FILES)
+
+        if form.is_valid():
+                    form.instance.creator = request.user
+                    form.save()
+
+                    s3 = boto3.resource('s3')
+
+        #add standardization process start
+                    #process csv
+                    try:
+                        print("I am here")
+                        #s3.head_object(Bucket='intellidatastatic1', Key='media/employees.csv')
+                        obj_to_read1 = s3.Object('intellidatastatic1', 'media/google-employees-nonstandard-csv.csv')
+                        body = obj_to_read1.get()['Body'].read()
+                        obj_to_write1 = s3.Object('intellidatastack-s3bucket3-1ezrm28ljj9z9', 'employees/google-employees-nonstandard-csv.csv')
+                        obj_to_write1.put(Body=body)
+                        obj_to_read1.delete()
+                    except ClientError:
+                        print("Or I am here")
+                        # Not found
+                        print("media/google-employees-nonstandard-csv.csv key does not exist")
+
+                    #process json
+                    try:
+                        #s3.head_object(Bucket='intellidatastatic1', Key='media/employers-nonstandard-json.rtf')
+                        obj_to_read2 = s3.Object('intellidatastatic1', 'media/google-employees-nonstandard-json')
+                        body = obj_to_read2.get()['Body'].read()
+                        obj_to_write2 = s3.Object('intellidatastack-s3bucket3-1ezrm28ljj9z9', 'employees/google-employees-nonstandard-json')
+                        obj_to_write2.put(Body=body)
+                        obj_to_read2.delete()
+                    except ClientError:
+                        # Not found
+                        print("media/google-employees-nonstandard-json key does not exist")
+
+                    #process xml
+                    try:
+                        #s3.head_object(Bucket='intellidatastatic1', Key='media/employers-nonstandard-json.rtf')
+                        obj_to_read2 = s3.Object('intellidatastatic1', 'media/google-employees-nonstandard-xml')
+                        body = obj_to_read2.get()['Body'].read()
+                        obj_to_write2 = s3.Object('intellidatastack-s3bucket3-1ezrm28ljj9z9', 'employees/google-employees-nonstandard-xml')
+                        obj_to_write2.put(Body=body)
+                        obj_to_read2.delete()
+                    except ClientError:
+                        # Not found
+                        print("media/google-employees-nonstandard-xml key does not exist")
+
+
+                    return HttpResponseRedirect(reverse("employers:all"))
+        else:
+                           # add form dictionary to context
+                   context["form"] = form
+
+                   return render(request, "bulkuploads/bulkupload_form.html", context)
+
+
+@permission_required("employees.add_employee")
+@login_required
+def NonStdRefresh(request):
+                    #refresh
+                    s3 = boto3.client('s3')
+
+                    try:
+                        s3.head_object(Bucket='intellidatastatic1', Key='media/employees_nonstd.csv')
+
+
+                        s3.download_file('intellidatastatic1', 'media/employees_nonstd.csv', 'employees.csv')
+
+                        if os.stat("employees.csv").st_size != 0:
+
+                            with open('employees.csv', 'rt') as csv_file:
+                                array_good =[]
+                                array_bad = []
+                                #array_bad =[]
+                                next(csv_file) # skip header line
+                                #start here
+                                for row in csv.reader(csv_file):
+                                                              bad_ind = 0
+                                                              array1=[]
+                                                              array2=[]
+
+                                                              #populate serial number
+                                                              serial=row[0]
+                                                              array2.append(serial)
+
+                                                            #pass employee:
+                                                              employeeid=row[1]
+                                                              array2.append(employeeid)
+
+                                                              ssn=row[2]
+                                                              array2.append(ssn)
+
+                                                               #validate name
+                                                              name=row[3]
+                                                              if name == "":
+                                                                  bad_ind = 1
+                                                                  description = "Name is mandatory"
+                                                                  array1.append(serial)
+                                                                  array1.append(employeeid)
+                                                                  array1.append(name)
+                                                                  array1.append(name)
+                                                                  array1.append(description)
+                                                                  array1.append(pk)
+                                                                  array_bad.append(array1)
+
+                                                              else:
+                                                                  array2.append(name)
+
+                                                              slug=slugify(row[3])
+                                                              #array2.append(slug)
+
+                                                              gendercode=row[4]
+                                                              array2.append(gendercode)
+
+                                                              #validate age
+                                                              age=int(row[5])
+                                                              array1=[]
+                                                              if age == "":
+                                                                  bad_ind=1
+                                                                  description = "Age must be numeric "
+                                                                  array1.append(serial)
+                                                                  array1.append(employeeid)
+                                                                  array1.append(name)
+                                                                  array1.append(age)
+                                                                  array1.append(description)
+                                                                  array1.append(pk)
+                                                                  array_bad.append(array1)
+                                                              elif (age <= 0 or age >= 100):
+                                                                  bad_ind=1
+                                                                  description = "Age must be between 1 and 99 years "
+                                                                  array1.append(serial)
+                                                                  array1.append(employeeid)
+                                                                  array1.append(name)
+                                                                  array1.append(age)
+                                                                  array1.append(description)
+                                                                  array1.append(pk)
+                                                                  array_bad.append(array1)
+                                                              else:
+                                                                   array2.append(age)
+
+                                                              birthdate=row[6]
+                                                              array2.append(birthdate)
+
+                                                              maritalstatus=row[7]
+                                                              array2.append(maritalstatus)
+
+                                                              #validate address line 1
+                                                              home_address_line_1=row[8]
+                                                              array1=[]
+                                                              if home_address_line_1 == "":
+                                                                  bad_ind = 1
+                                                                  description = "Home address line 1 is mandatory"
+                                                                  array1.append(serial)
+                                                                  array1.append(employeeid)
+                                                                  array1.append(name)
+                                                                  array1.append(home_address_line_1)
+                                                                  array1.append(description)
+                                                                  array1.append(pk)
+                                                                  array_bad.append(array1)
+                                                              else:
+                                                                  array2.append(home_address_line_1)
+
+
+                                                              #validate address line 2
+                                                              home_address_line_2=row[9]
+                                                              array2.append(home_address_line_2)
+
+                                                                   #validate city
+                                                              home_city=row[10]
+                                                              array1=[]
+                                                              if home_city == "":
+                                                                   bad_ind = 1
+                                                                   description = "Home city is mandatory"
+                                                                   array1.append(serial)
+                                                                   array1.append(employeeid)
+                                                                   array1.append(name)
+                                                                   array1.append(home_city)
+                                                                   array1.append(description)
+                                                                   array1.append(pk)
+                                                                   array_bad.append(array1)
+                                                              else:
+                                                                   array2.append(home_city)
+
+                                                                   #validate state
+                                                              home_state=row[11]
+                                                              array1=[]
+                                                              if home_state == "":
+                                                                   bad_ind = 1
+                                                                   description = "Home state is mandatory"
+                                                                   array1.append(serial)
+                                                                   array1.append(employeeid)
+                                                                   array1.append(name)
+                                                                   array1.append(home_state)
+                                                                   array1.append(description)
+                                                                   array1.append(pk)
+                                                                   array_bad.append(array1)
+                                                              else:
+                                                                  array2.append(home_state)
+
+                                                                  #validate zipcode
+                                                              home_zipcode=row[12]
+                                                              array1=[]
+                                                              if home_zipcode == "":
+                                                                    bad_ind = 1
+                                                                    description = "Zipcode is mandatory"
+                                                                    array1.append(serial)
+                                                                    array1.append(employeeid)
+                                                                    array1.append(name)
+                                                                    array1.append(zipcode)
+                                                                    array1.append(description)
+                                                                    array1.append(pk)
+                                                                    array_bad.append(array1)
+                                                              else:
+                                                                   array2.append(home_zipcode)
+
+                                                              mail_address_line_1=row[13]
+                                                              array2.append(mail_address_line_1)
+
+                                                              mail_address_line_2=row[14]
+                                                              array2.append(mail_address_line_2)
+
+                                                              mail_city=row[15]
+                                                              array2.append(mail_city)
+
+                                                              mail_state=row[16]
+                                                              array2.append(mail_state)
+
+                                                              mail_zipcode=row[17]
+                                                              array2.append(mail_zipcode)
+
+                                                              work_address_line_1=row[18]
+                                                              array2.append(work_address_line_1)
+
+                                                              work_address_line_2=row[19]
+                                                              array2.append(work_address_line_2)
+
+                                                              work_city=row[20]
+                                                              array2.append(work_city)
+
+                                                              work_state=row[21]
+                                                              array2.append(work_state)
+
+                                                              work_zipcode=row[22]
+                                                              array2.append(work_zipcode)
+
+
+                                                                    #validate email
+                                                              email=row[23]
+                                                              array1=[]
+                                                              if email == "":
+                                                                  bad_ind=1
+                                                                  description = "Email is mandatory "
+                                                                  array1.append(serial)
+                                                                  array1.append(employeeid)
+                                                                  array1.append(name)
+                                                                  array1.append(email)
+                                                                  array1.append(description)
+                                                                  array1.append(pk)
+                                                                  array_bad.append(array1)
+                                                              elif not re.match(r"^[A-Za-z0-9\.\+_-]+@[A-Za-z0-9\._-]+\.[a-zA-Z]*$", email):
+                                                                  bad_ind = 1
+                                                                  description = "Invalid email"
+                                                                  array1.append(serial)
+                                                                  array1.append(employeeid)
+                                                                  array1.append(name)
+                                                                  array1.append(email)
+                                                                  array1.append(description)
+                                                                  array1.append(pk)
+                                                                  array_bad.append(array1)
+                                                              else:
+                                                                  array2.append(email)
+
+                                                              alternate_email=row[24]
+                                                              array2.append(alternate_email)
+
+                                                              #validate phone
+                                                              home_phone=row[25]
+                                                              array2.append(home_phone)
+
+
+                                                              work_phone=row[26]
+                                                              array2.append(work_phone)
+
+                                                              mobile_phone=row[27]
+                                                              array1=[]
+                                                              p=[]
+                                                              p = mobile_phone
+                                                              if p.isnumeric() == False:
+                                                                  bad_ind=1
+                                                                  description = "Mobile phone must be numbers "
+                                                                  array1.append(serial)
+                                                                  array1.append(employeeid)
+                                                                  array1.append(name)
+                                                                  array1.append(mobile_phone)
+                                                                  array1.append(description)
+                                                                  array1.append(pk)
+                                                                  array_bad.append(array1)
+                                                              elif len(p) != (10 and 11):
+                                                                  print(len(p))
+                                                                  bad_ind=1
+                                                                  description = "Length of mobile phone number is not correct "
+                                                                  array1.append(serial)
+                                                                  array1.append(employeeid)
+                                                                  array1.append(name)
+                                                                  array1.append(mobile_phone)
+                                                                  array1.append(description)
+                                                                  array1.append(pk)
+                                                                  array_bad.append(array1)
+                                                              else:
+                                                                   array2.append(mobile_phone)
+
+
+                                                              enrollment_method=row[28]
+                                                              array2.append(enrollment_method)
+
+                                                              employment_information=row[29]
+                                                              array2.append(employment_information)
+
+                                                              employer=row[30]
+                                                              array2.append(employer)
+                                                              pk=employer
+
+
+                                                              if bad_ind == 0:
+                                                                  array_good.append(array2)
+
+
+
+                                # create good file
+                            #with open('employees1.csv', 'w', newline='') as clean_file:
+                            ##    writer = csv.writer(clean_file)
+                            #    writer.writerows(array_good)
+
+                            buff1 = io.StringIO()
+
+                            writer = csv.writer(buff1, dialect='excel', delimiter=',')
+                            writer.writerows(array_good)
+
+                            buff2 = io.BytesIO(buff1.getvalue().encode())
+
+                                # check if a version of the good file already exists
+                        #    try:
+                        #        s3.Object('my-bucket', 'dootdoot.jpg').load()
+                        #    except botocore.exceptions.ClientError as e:
+                        #        if e.response['Error']['Code'] == "404":
+                        #            # The object does not exist.
+                        #            ...
+                        #        else:
+                        #            # Something else has gone wrong.
+                        #            raise
+                        #    else:
+                        #        # do something
+
+        # create good file
+                            try:
+                                response = s3.delete_object(Bucket='intellidatastatic1', Key='media/employees1.csv')
+                                s3.upload_fileobj(buff2, 'intellidatastatic1', 'media/employees1.csv')
+                                print("Good File Upload Successful")
+
+                            except FileNotFoundError:
+                                 print("The good file was not found")
+
+                            except NoCredentialsError:
+                                 print("Credentials not available")
+
+
+                                   # create bad file
+                            #with open('employee_error.csv', 'w', newline='') as error_file:
+                            #       writer = csv.writer(error_file)
+                            #       writer.writerows(array1)
+
+                            buff3 = io.StringIO()
+
+                            writer = csv.writer(buff3, dialect='excel', delimiter=',')
+                            writer.writerows(array_bad)
+
+                            buff4 = io.BytesIO(buff3.getvalue().encode())
+
+
+                                # save bad file to S3
+                            try:
+                                response = s3.delete_object(Bucket='intellidatastatic1', Key='media/employees_error.csv')
+                                s3.upload_fileobj(buff4, 'intellidatastatic1', 'media/employees_error.csv')
+                                print("Bad File Upload Successful")
+
+                            except FileNotFoundError:
+                                print("The bad file was not found")
+
+                            except NoCredentialsError:
+                                print("Credentials not available")
+
+                            # load the employee table
+                            s3.download_file('intellidatastatic1', 'media/employees1.csv', 'employees1.csv')
+
+                            with open('employees1.csv', 'rt') as csv_file:
+                                bulk_mgr = BulkCreateManager(chunk_size=20)
+                                notification = Notification()
+                                for row in csv.reader(csv_file):
+                                    if row[1] == "":
+                                        bulk_mgr.add(models.Employee(employeeid = str(uuid.uuid4())[26:36],
+                                                                  ssn=row[2],
+                                                                  name=row[3],
+                                                                  slug=slugify(row[3]),
+                                                                  gendercode=row[4],
+                                                                  age=int(row[5]),
+                                                                  birthdate=row[6],
+                                                                  maritalstatus=row[7],
+                                                                  home_address_line_1=row[8],
+                                                                  home_address_line_2=row[9],
+                                                                  home_city=row[10],
+                                                                  home_state=row[11],
+                                                                  home_zipcode=row[12],
+                                                                  mail_address_line_1=row[13],
+                                                                  mail_address_line_2=row[14],
+                                                                  mail_city=row[15],
+                                                                  mail_state=row[16],
+                                                                  mail_zipcode=row[17],
+                                                                  work_address_line_1=row[18],
+                                                                  work_address_line_2=row[19],
+                                                                  work_city=row[20],
+                                                                  work_state=row[21],
+                                                                  work_zipcode=row[22],
+                                                                  email=row[23],
+                                                                  alternate_email=row[24],
+                                                                  home_phone=row[25],
+                                                                  work_phone=row[26],
+                                                                  mobile_phone=row[27],
+                                                                  enrollment_method=row[28],
+                                                                  employment_information=row[29],
+                                                                  employer=get_object_or_404(models.Employer, pk=pk),
+                                                                  creator = request.user,
+                                                                  sms="Initial notification sent",
+                                                                  emailer="Initial notification sent",
+                                                                  source="Non-Standard Feed Bulk Upload",
+                                                                  record_status = "Created",
+                                                                  bulk_upload_indicator = "Y"
+                                                                  ))
+                                    else:
+                                        bulk_mgr.add(models.Employee(employeeid = row[1],
+                                                                  ssn=row[2],
+                                                                  name=row[3],
+                                                                  slug=slugify(row[3]),
+                                                                  gendercode=row[4],
+                                                                  age=int(row[5]),
+                                                                  birthdate=row[6],
+                                                                  maritalstatus=row[7],
+                                                                  home_address_line_1=row[8],
+                                                                  home_address_line_2=row[9],
+                                                                  home_city=row[10],
+                                                                  home_state=row[11],
+                                                                  home_zipcode=row[12],
+                                                                  mail_address_line_1=row[13],
+                                                                  mail_address_line_2=row[14],
+                                                                  mail_city=row[15],
+                                                                  mail_state=row[16],
+                                                                  mail_zipcode=row[17],
+                                                                  work_address_line_1=row[18],
+                                                                  work_address_line_2=row[19],
+                                                                  work_city=row[20],
+                                                                  work_state=row[21],
+                                                                  work_zipcode=row[22],
+                                                                  email=row[23],
+                                                                  alternate_email=row[24],
+                                                                  home_phone=row[25],
+                                                                  work_phone=row[26],
+                                                                  mobile_phone=row[27],
+                                                                  enrollment_method=row[28],
+                                                                  employment_information=row[29],
+                                                                  employer=get_object_or_404(models.Employer, pk=pk),
+                                                                  creator = request.user,
+                                                                  sms="Initial notification sent",
+                                                                  emailer="Initial notification sent",
+                                                                  source="Non-Standard Feed Bulk Upload",
+                                                                  record_status = "Created",
+                                                                  bulk_upload_indicator = "Y"
+                                                                  ))
+
+                            with open('employees1.csv', 'rt') as csv_file:
+                                for ix in csv.reader(csv_file):
+
+                                        #NOTIFY Employee
+                                        subscription_arn = notification.SubscribeEmployeeObj(mobile_phone)
+
+                                        #Log events
+                                        event = Event()
+                                        event.EventTypeCode = "SUB"
+                                        event.EventSubjectId = ""
+                                        event.EventSubjectName = "Phone number: " + mobile_phone
+                                        event.EventTypeReason = "Auto subscribed for push notification"
+                                        event.source = "Non-Standard Feed Bulk Upload"
+                                        event.creator=request.user
+                                        event.save()
+
+                                        notification.TextEmployeeObj(subscription_arn)
+
+                                        #Log events
+                                        event = Event()
+                                        event.EventTypeCode = "SMS"
+                                        event.EventSubjectId = ""
+                                        event.EventSubjectName = ""
+                                        event.EventTypeReason = "Auto push notification sent for the above auto subscription"
+                                        event.source = "Non-Standard Feed Bulk Upload"
+                                        event.creator=request.user
+                                        event.save()
+
+
+                                        notification.EmailEmployeeObj(email)
+
+                                        #Log events
+                                        event = Event()
+                                        event.EventTypeCode = "EML"
+                                        event.EventSubjectId = ""
+                                        event.EventSubjectName = email
+                                        event.EventTypeReason = "Auto email notification sent"
+                                        event.source = "Non-Standard Feed Bulk Upload"
+                                        event.creator=request.user
+                                        event.save()
+
+                                bulk_mgr.done()
+
+                                # load the employee error table
+                                s3.download_file('intellidatastatic1', 'media/employees_error.csv', 'employees_error.csv')
+
+                                #Refresh Error table for concerned employer
+                                EmployeeError.objects.filter(employer_id=pk).delete()
+
+                                with open('employees_error.csv', 'rt') as csv_file:
+                                    bulk_mgr = BulkCreateManager(chunk_size=20)
+                                    for row1 in csv.reader(csv_file):
+                                        bulk_mgr.add(models.EmployeeError(serial = row1[0],
+                                                                  employeeid=row1[1],
+                                                                  name=row1[2],
+                                                                  errorfield=row1[3],
+                                                                  description=row1[4],
+                                                                  employer=get_object_or_404(models.Employer, pk=pk),
+                                                                  creator = request.user,
+                                                                  source="Non-Standard Feed Bulk Upload"
+                                                                  ))
+                                    bulk_mgr.done()
+
+
+                            error_report = EmployeeErrorAggregate()
+                            error_report.employer = get_object_or_404(Employer, pk=pk)
+
+                            error_report.clean=Employee.objects.filter(employer_id=pk).count()
+                            error_report.error=EmployeeError.objects.filter(employer_id=pk).count()
+
+                            #distinct = EmployeeError.objects.filter(employer_id=pk).values('serial').annotate(serial_count=Count('serial')).filter(serial_count=1)
+                            #records = EmployeeError.objects.filter(serial__in=[item['serial'] for item in distinct]).count()
+                            #error_report.error=records
+
+
+                            error_report.total=(error_report.clean + error_report.error)
+
+                            #Refresh Error aggregate table for concerned employer
+                            EmployeeErrorAggregate.objects.filter(employer_id=pk).delete()
+
+
+                            error_report.save()
+
+                            #Log events
+                            event = Event()
+                            event.EventTypeCode = "EEB"
+                            event.EventSubjectId = "bulkemployees"
+                            event.EventSubjectName = "Bulk processing"
+                            event.EventTypeReason = "Non-Standard Feed Bulk Upload"
+                            event.source = "Web App"
+                            event.creator=request.user
+                            event.save()
+                            #end here
+                        response = s3.delete_object(Bucket='intellidatastatic1', Key='media/employees_nonstd.csv')
+
+                    except ClientError:
+                        # Not found
+                        print("media/employers_nonstd.csv does not exist")
+
+                    return HttpResponseRedirect(reverse("employers:all"))
 
 
 @permission_required("employees.add_employee")
@@ -1216,7 +1868,7 @@ def BulkUploadSOR(request):
         event.EventSubjectId = "employeeodsupload"
         event.EventSubjectName = "Bulk upload to ODS"
         event.EventTypeReason = "Employees uploaded to ODS in bulk"
-        event.source = "Web App"
+        event.source = "Online Transaction"
         event.creator=request.user
         event.save()
 
@@ -1278,6 +1930,17 @@ def SubscribeEmployee(request, pk):
             obj.sms = "Phone Number Subscribed On " + str(datetime.date.today())
         #form.emailer = "Email Notification Sent on " + str(datetime.date.today())
         form.save()
+
+        #Log events
+        event = Event()
+        event.EventTypeCode = "SUB"
+        event.EventSubjectId = ""
+        event.EventSubjectName = "Phone number: " + number
+        event.EventTypeReason = "Manually subscribed for push notification"
+        event.source = "Online Transaction"
+        event.creator=request.user
+        event.save()
+
         return HttpResponseRedirect(reverse("employees:all"))
 
     else:
@@ -1322,6 +1985,17 @@ def TextEmployee(request, pk):
             obj.sms = "SMS Notification Sent on " + str(datetime.date.today())
 
         form.save()
+
+        #Log events
+        event = Event()
+        event.EventTypeCode = "SMS"
+        event.EventSubjectId = obj.employeeid
+        event.EventSubjectName = obj.name
+        event.EventTypeReason = "Manual push notification sent"
+        event.source = "Online Transaction"
+        event.creator=request.user
+        event.save()
+
         return HttpResponseRedirect(reverse("employees:all"))
 
     else:
@@ -1347,7 +2021,7 @@ def EmailEmployee(request, pk):
     form = EmployeeForm(request.POST or None, instance = obj)
 
     if form.is_valid():
-        to_email = str(form["alternate_email"]).strip()
+        to_email = str(form["email"]).strip()
         to_email_array = to_email.split()
         to_email_value = to_email_array[3]
         to_email_address=to_email_value.split("=")[1]
@@ -1442,6 +2116,17 @@ def EmailEmployee(request, pk):
 
         #form.emailer = "Email Notification Sent on " + str(datetime.date.today())
         form.save()
+
+        #Log events
+        event = Event()
+        event.EventTypeCode = "EML"
+        event.EventSubjectId = ""
+        event.EventSubjectName = RECIPIENT
+        event.EventTypeReason = "Manual email notification sent"
+        event.source = "Online Transaction"
+        event.creator=request.user
+        event.save()
+
         return HttpResponseRedirect(reverse("employees:all"))
 
     else:
@@ -1513,7 +2198,7 @@ def EmployeeList(request):
 
         employee.employer = get_object_or_404(Employer, pk=serializer.data["employer"])
 
-        employee.source = "API Call"
+        employee.source = "API Post"
 
         employee.creator = get_object_or_404(User, pk=serializer.data["creator"])
         #transmission.create_date = serializer.data["create_date"]
@@ -1521,13 +2206,14 @@ def EmployeeList(request):
         employee.response = ""
         employee.commit_indicator = "Not Committed"
         employee.record_status = ""
+        employee.bulk_upload_indicator = "Y"
 
         #Log events
 
         event.EventTypeCode = "EEW"
         event.EventSubjectId = employee.employeeid
         event.EventSubjectName = employee.name
-        event.source = "API Call"
+        event.source = "API Post"
         event.creator=employee.creator
         event.save()
 
@@ -1604,7 +2290,7 @@ def EmployeeListByEmployer(request, pk):
 
         employee.employer = get_object_or_404(Employer, pk=serializer.data["employer"])
 
-        employee.source = "API Call"
+        employee.source = "API Post"
 
         employee.creator = get_object_or_404(User, pk=serializer.data["creator"])
         #transmission.create_date = serializer.data["create_date"]
@@ -1612,12 +2298,13 @@ def EmployeeListByEmployer(request, pk):
         employee.response = ""
         employee.commit_indicator = "Not Committed"
         employee.record_status = ""
+        employee.bulk_upload_indicator = "Y"
 
         #Log events
         event.EventTypeCode = "EEW"
         event.EventSubjectId = employee.employeeid
         event.EventSubjectName = employee.name
-        event.source = "API Call"
+        event.source = "API Post"
         event.creator=employee.creator
         event.save()
 

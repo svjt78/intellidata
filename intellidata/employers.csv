@@ -1,5 +1,5 @@
-serial,employerid,name,description,FederalEmployerIdentificationNumber,CarrierMasterAgreementNumber,address_line_1,address_line_2,city,state,zipcode,purpose,transmission
-1,,Google,We are a tech company,,,1 Amphitheater Road,,San Jose,CA,12345,Technology,1598381372380
-2,,Apple,,,,"2, Sussex Blvd.",,Boston,MA,12345,Technology,1598381372380
-3,,Oracle,,,,"3, Canyon Rd.",,Saltlake City,UT,12345,Technology,1598381372380
-4,,Facebook,,,,,,,TX,12345,Technology,1598381372380
+serial,employerid,name,description,"federalemployeridentificationnumber","carriermasteragreementnumber",address_line_1,address_line_2,city,state,zipcode,purpose,transmission
+1,,Walmart,"We are a tech company",,,"1 Amphitheater Road",,"San Jose",CA,12345,Technology,1598381372380
+2,,Target,,,,"2, Sussex Blvd.",,Boston,MA,12345,Technology,1598381372380
+3,,Ralph’s,,,,"3, Canyon Rd.",,"Saltlake City",UT,12345,Technology,1598381372380
+4,,"Sam’s Club",,,,,,,TX,12345,Technology,1598381372380
