@@ -299,6 +299,13 @@ class EmployerSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class EmployerErrorSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = EmployerError
+        fields = '__all__'
+
+
 #class for handling built-in API errors
 class APIError(Exception):
     """An API Error Exception"""

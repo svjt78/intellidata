@@ -20,7 +20,7 @@ from django.shortcuts import get_object_or_404
 from django.views import generic
 from django.db.models import Count
 from employers.models import Employer
-from employees.models import Employee, EmployeeSerializer, EmployeeErrorSerializer
+from employees.models import Employee, EmployeeSerializer
 from django.contrib.auth.models import User
 from bulkuploads.models import BulkUpload
 from apicodes.models import APICodes
@@ -1300,11 +1300,6 @@ def EmployerList(request):
         serializer.is_valid(raise_exception=True)
         employer = Employer()
         event = Event()
-        s3 = boto3.client('s3')
-
-        bad_ind = 0
-        array_bad=[]
-        array1=[]
 
         if serializer.data["employerid"] == '':
             employer.employerid = str(uuid.uuid4())[26:36]
@@ -1314,84 +1309,21 @@ def EmployerList(request):
             event.EventTypeReason = "Employer added via API"
         #transmission.transmissionid = serializer.data["transmissionid"]
         employer.name = serializer.data["name"]
-        if employer.name == "":
-            bad_ind = 1
-            error_description = "Name is mandatory"
-            array1.append(employerid)
-            array1.append(employer.name)
-            array1.append(employer.name)
-            array1.append(error_description)
-            array_bad.append(array1)
-
-        employer.slug=slugify(employer.name)
+        employer.slug=slugify(employer.name),
 
         employer.description = serializer.data["description"]
         employer.description_html = misaka.html(employer.description),
         employer.FederalEmployerIdentificationNumber = serializer.data["FederalEmployerIdentificationNumber"]
         employer.CarrierMasterAgreementNumber = serializer.data["CarrierMasterAgreementNumber"]
-
         employer.address_line_1 = serializer.data["address_line_1"]
-        array1=[]
-        if employer.address_line_1 == "":
-            bad_ind=1
-            error_description = "Address line 1 is mandatory "
-            array1.append(employer.employerid)
-            array1.append(employer.name)
-            array1.append(employer.address_line_1)
-            array1.append(error_description)
-            array_bad.append(array1)
-
         employer.address_line_2 = serializer.data["address_line_2"]
-
         employer.city = serializer.data["city"]
-        array1=[]
-        if employer.city == "":
-            bad_ind=1
-            error_description = "City is mandatory "
-            array1.append(employer.employerid)
-            array1.append(employer.name)
-            array1.append(employer.city)
-            array1.append(error_description)
-            array_bad.append(array1)
-
         employer.state = serializer.data["state"]
-        array1=[]
-        if employer.state == "":
-            bad_ind=1
-            error_description = "State is mandatory "
-            array1.append(employer.employerid)
-            array1.append(employer.name)
-            array1.append(employer.state)
-            array1.append(error_description)
-            array_bad.append(array1)
-
         employer.zipcode = serializer.data["zipcode"]
-        array1=[]
-        if employer.zipcode == "":
-            bad_ind=1
-            error_description = "Zipcode is mandatory "
-            array1.append(employer.employerid)
-            array1.append(employer.name)
-            array1.append(employer.zipcode)
-            array1.append(error_description)
-            array_bad.append(array1)
-
         employer.purpose = serializer.data["purpose"]
+        employer.transmission = get_object_or_404(Transmission, pk=serializer.data["transmission"])
 
-        transmission_ident = serializer.data["transmission"]
-        array1=[]
-        if transmission_ident == "":
-            bad_ind=1
-            error_description = "Transmission Code is mandatory "
-            array1.append(employer.employerid)
-            array1.append(employer.name)
-            array1.append(transmission_ident)
-            array1.append(error_description)
-            array_bad.append(array1)
-        else:
-            employer.transmission = get_object_or_404(Transmission, pk=serializer.data["transmission"])
-
-        employer.source = "Post API"
+        employer.source = "API Post"
 
         employer.creator = get_object_or_404(User, pk=serializer.data["creator"])
         #transmission.create_date = serializer.data["create_date"]
@@ -1401,58 +1333,16 @@ def EmployerList(request):
         employer.record_status = ""
         employer.bulk_upload_indicator="Y"
 
-        if bad_ind==1:
-            buff3 = io.StringIO()
-            writer = csv.writer(buff3, dialect='excel', delimiter=',')
-            writer.writerows(array_bad)
-            buff4 = io.BytesIO(buff3.getvalue().encode())
+        #Log events
+        event.EventTypeCode = "ERW"
+        event.EventSubjectId = employer.employerid
+        event.EventSubjectName = employer.name
+        event.source = "API Post"
+        event.creator=employer.creator
+        event.save()
 
-                        # save bad file to S3
-            try:
-                        response = s3.delete_object(Bucket='intellidatastatic1', Key='media/employers_api_error.csv')
-                        s3.upload_fileobj(buff4, 'intellidatastatic1', 'media/employers_api_error.csv')
-                        print("Bad File Upload Successful")
-
-            except FileNotFoundError:
-                        print("The bad file was not found")
-
-            except NoCredentialsError:
-                        print("Credentials not available")
-
-                        # load the employer error table
-            s3.download_file('intellidatastatic1', 'media/employers_api_error.csv', 'employers_api_error.csv')
-
-                        #Refresh Error table for concerned employer
-            EmployerError.objects.all().delete()
-
-            with open('employers_api_error.csv', 'rt') as csv_file:
-                            bulk_mgr = BulkCreateManager(chunk_size=20)
-                            for row1 in csv.reader(csv_file):
-                                bulk_mgr.add(models.EmployerError(employerid=row1[0],
-                                                          name=row1[1],
-                                                          errorfield=row1[2],
-                                                          error_description=row1[3],
-                                                          transmission=get_object_or_404(models.Transmission, pk=serializer.data["transmission"]),
-                                                          creator = request.user,
-                                                          source="Post API"
-                                                          ))
-                            bulk_mgr.done()
-
-            error_response = EmployerError.objects.all()
-            serializer = EmployerErrorSerializer(error_response, many=True)
-            return Response(serializer.data)
-        else:
-            #Log events
-            event.EventTypeCode = "ERW"
-            event.EventSubjectId = employer.employerid
-            event.EventSubjectName = employer.name
-            event.source = "Post API"
-            event.creator=employer.creator
-            event.save()
-
-            employer.save()
-
-            return Response(serializer.data)
+        employer.save()
+        return Response(serializer.data)
 
 
     #if serializer.is_valid():
@@ -1470,6 +1360,55 @@ def EmployerListByTransmission(request, pk):
     if request.method == 'GET':
         contacts = Employer.objects.filter(transmission_id = pk)
         serializer = EmployerSerializer(contacts, many=True)
+        return Response(serializer.data)
+    elif request.method == 'POST':
+        serializer = EmployerSerializer(data=request.data)
+
+        serializer.is_valid(raise_exception=True)
+        employer = Employer()
+        event = Event()
+
+        if serializer.data["employerid"] == '':
+            employer.employerid = str(uuid.uuid4())[26:36]
+            event.EventTypeReason = "New employer received via API"
+        else:
+            employer.employerid = serializer.data["employerid"]
+            event.EventTypeReason = "Employer received via API"
+        #transmission.transmissionid = serializer.data["transmissionid"]
+        employer.name = serializer.data["name"]
+        employer.slug=slugify(employer.name)
+
+        employer.description = serializer.data["description"]
+        employer.description_html = misaka.html(employer.description)
+        employer.FederalEmployerIdentificationNumber = serializer.data["FederalEmployerIdentificationNumber"]
+        employer.CarrierMasterAgreementNumber = serializer.data["CarrierMasterAgreementNumber"]
+        employer.address_line_1 = serializer.data["address_line_1"]
+        employer.address_line_2 = serializer.data["address_line_2"]
+        employer.city = serializer.data["city"]
+        employer.state = serializer.data["state"]
+        employer.zipcode = serializer.data["zipcode"]
+        employer.purpose = serializer.data["purpose"]
+        employer.transmission = get_object_or_404(Transmission, pk=serializer.data["transmission"])
+
+        employer.source = "API Post"
+
+        employer.crerator = get_object_or_404(User, pk=serializer.data["creator"])
+        #transmission.create_date = serializer.data["create_date"]
+        employer.backend_SOR_connection = "Disconnected"
+        employer.response = ""
+        employer.commit_indicator = "Not Committed"
+        employer.record_status = ""
+        employer.bulk_upload_indicator="Y"
+
+        #Log events
+        event.EventTypeCode = "ERW"
+        event.EventSubjectId = employer.employerid
+        event.EventSubjectName = employer.name
+        event.source = "API Post"
+        event.creator=employer.creator
+        event.save()
+
+        employer.save()
         return Response(serializer.data)
 
 

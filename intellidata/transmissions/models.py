@@ -34,7 +34,7 @@ register = template.Library()
 
 class Transmission(models.Model):
     transmissionid = models.CharField(max_length=255, null=True, blank=True)
-    SenderName = models.CharField(max_length=255, null=True, blank=True)
+    SenderName = models.CharField(max_length=255)
     BenefitAdministratorPlatform = models.CharField(max_length=255, null=True, blank=True)
     ReceiverName = models.CharField(max_length=255, null=True, blank=True)
 

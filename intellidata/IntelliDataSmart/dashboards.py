@@ -31,14 +31,14 @@ class ProductFeedErrorAnalysis(widgets.ItemList):
 class EmployerFeedErrorAnalysis(widgets.ItemList):
 
     title = 'Employer feed error analysis by Transmission'
-    model = EmployeeErrorAggregate
-    list_display = ('Transmission', 'total', 'clean', 'error', 'error_date')
+    model = EmployerErrorAggregate
+    list_display = ('transmission', 'total', 'clean', 'error', 'error_date')
 
 class EmployeeFeedErrorAnalysis(widgets.ItemList):
 
     title = 'Employee feed error analysis by Employer'
     model = EmployeeErrorAggregate
-    list_display = ('Employer', 'total', 'clean', 'error', 'error_date')
+    list_display = ('employer', 'total', 'clean', 'error', 'error_date')
 
 class CoverageLimitsProducts(widgets.SingleBarChart):
     # label and series

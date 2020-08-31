@@ -26,21 +26,22 @@
 &nbsp;
 
 <h1>{{product_details.name}}</h1>
-<h2>ID: {{product_details.productid}}</h2>
-<h2>Type: {{product_details.type}}</h2>
-<h2>Coverage Limit: {{product_details.coverage_limit}}</h2>
-<h2>Rate: {{product_details.price_per_1000_units}}</h2>
-<h2>Created On: {{product_details.product_date}}</h2>
-<h2>Created By: {{product_details.creator}}</h2>
-<h2>Origin: {{product_details.source}}</h2>
-<h2>ODS Connection: {{product_details.backend_SOR_connection}}</h2>
-<h2>Commit Indicator: {{product_details.commit_indicator}}</h2>
-<h2>Record Status: {{product_details.record_status}}</h2>
-<h2>Response: {{product_details.response}}</h2>
-
-<div style="background-color: rgba(255, 255, 255, 0.8);" data-spy="scroll" data-target=".navbar">
+<h3>ID: {{product_details.productid}}</h3>
+<h3>Type: {{product_details.type}}</h3>
+<h3>Coverage Limit: {{product_details.coverage_limit}}</h3>
+<h3>Rate: {{product_details.price_per_1000_units}}</h3>
+<h3>Created On: {{product_details.product_date}}</h3>
+<h3>Created By: {{product_details.creator}}</h3>
+<h3>Origin: {{product_details.source}}</h3>
+<h3>ODS Connection: {{product_details.backend_SOR_connection}}</h3>
+<h3>Commit Indicator: {{product_details.commit_indicator}}</h3>
+<h3>Record Status: {{product_details.record_status}}</h3>
+<h3>Response: {{product_details.response}}</h3>
+<br>
+<br>
+<div style="background-color: rgba(0, 0, 0, 0.5);" data-spy="scroll" data-target=".navbar">
   <div class="list-group-item-text container-fluid">
-    <h4 style="color:black;">{{ product_details.description_html|safe }}</h4>
+    {{ product_details.description_html|safe }}
   </div>
 </div>
 

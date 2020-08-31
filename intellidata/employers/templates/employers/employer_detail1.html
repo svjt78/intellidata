@@ -65,37 +65,37 @@
 &nbsp;
 
 <h1>{{employer_details.name}}</h1>
-<h3>Employer PK: {{employer_details.pk}}</h3>
-<h3>Employer ID: {{employer_details.employerid}}</h3>
-<h3>Federal Employer Identification Number: {{employer_details.FederalEmployerIdentificationNumber}}</h3>
-<h3>Carrier Master Agreement Number: {{employer_details.CarrierMasterAgreementNumber}}</h3>
-<h3>Purpose: {{employer_details.purpose}}</h3>
-<h3>Sender Name: {{employer_details.transmission}}</h3>
-<h3>Created On: {{employer_details.employer_date}}</h3>
-<h3>Created By: {{employer_details.creator}}</h3>
-<h3>Employee Count: {{employer_details.employee_set.count}}</h3>
-<h3>Origin: {{employer_details.source}}</h3>
+<h2>Employer ID: {{employer_details.employerid}}</h2>
+<h2>Federal Employer Identification Number: {{employer_details.FederalEmployerIdentificationNumber}}</h2>
+<h2>Carrier Master Agreement Number: {{employer_details.CarrierMasterAgreementNumber}}</h2>
+<h2>Purpose: {{employer_details.purpose}}</h2>
+<h2>Sender Name: {{employer_details.transmission}}</h2>
+<h2>Created On: {{employer_details.employer_date}}</h2>
+<h2>Created By: {{employer_details.creator}}</h2>
+<h2>Employee Count: {{employer_details.employee_set.count}}</h2>
+<h2>Origin: {{employer_details.source}}</h2>
 
 &nbsp;
 
-<h3>Postal Address Line 1: {{employer_details.address_line_1}}</h3>
-<h3>Postal Address Line 2: {{employer_details.address_line_2}}</h3>
-<h3>Postal City: {{employer_details.city}}</h3>
-<h3>Postal State: {{employer_details.state}}</h3>
-<h3>Postal Zipcode: {{employer_details.zipcode}}</h3>
+<h2>Postal Address Line 1: {{employer_details.address_line_1}}</h2>
+<h2>Postal Address Line 2: {{employer_details.address_line_2}}</h2>
+<h2>Postal City: {{employer_details.city}}</h2>
+<h2>Postal State: {{employer_details.state}}</h2>
+<h2>Postal Zipcode: {{employer_details.zipcode}}</h2>
 
   &nbsp;
-<h3>Orgin: {{employer_details.source}}</h3>
-<h3>ODS Connection: {{employer_details.backend_SOR_connection}}</h3>
-<h3>Commit Indicator: {{employer_details.commit_indicator}}</h3>
-<h3>Record Status: {{employer_details.record_status}}</h3>
-<h3>Response: {{employer_details.response}}</h3>
-<br>
-<br>
-<div style="background-color: rgb(0, 0, 0, 0.5);" data-spy="scroll" data-target=".navbar">
+<h2>Orgin: {{employer_details.source}}</h2>
+<h2>ODS Connection: {{employer_details.backend_SOR_connection}}</h2>
+<h2>Commit Indicator: {{employer_details.commit_indicator}}</h2>
+<h2>Record Status: {{employer_details.record_status}}</h2>
+<h2>Response: {{employer_details.response}}</h2>
+
+<div class="list-group-item-text container-fluid">
+<div style="background-color: rgba(255, 255, 255, 0.8);" data-spy="scroll" data-target=".navbar">
   <div class="list-employer-item-text container-fluid">
-    {{ employer_details.description_html|safe }}
+    <h4 style="color:black;">{{ employer_details.description_html|safe }}</h4>
   </div>
+</div>
 </div>
 
 {% if employer_details.photo %}

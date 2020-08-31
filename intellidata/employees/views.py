@@ -23,6 +23,7 @@ from django.views import generic
 from employers.models import Employer
 from employees.models import Employee
 from employees.models import EmployeeError
+from employees.models import EmployeeErrorSerializer
 from employees.models import EmployeeErrorAggregate
 from . import models
 from . import forms
@@ -714,8 +715,11 @@ def BulkUploadEmployee(request, pk, *args, **kwargs):
                                                       ssn=row[2]
                                                       array2.append(ssn)
 
+                                                      employer=row[30]
+
                                                        #validate name
                                                       name=row[3]
+                                                      array1=[]
                                                       if name == "":
                                                           bad_ind = 1
                                                           description = "Name is mandatory"
@@ -939,9 +943,6 @@ def BulkUploadEmployee(request, pk, *args, **kwargs):
 
                                                       employment_information=row[29]
                                                       array2.append(employment_information)
-
-                                                      employer=row[30]
-                                                      array2.append(employer)
 
 
                                                       if bad_ind == 0:
@@ -1302,8 +1303,22 @@ def NonStdRefresh(request):
                                                               ssn=row[2]
                                                               array2.append(ssn)
 
+                                                              employer=row[30]
+                                                              pk=employer
+                                                              if employer == "":
+                                                                   bad_ind = 1
+                                                                   description = "employer is mandatory"
+                                                                   array1.append(serial)
+                                                                   array1.append(employeeid)
+                                                                   array1.append(name)
+                                                                   array1.append(pk)
+                                                                   array1.append(description)
+                                                                   array1.append(pk)
+                                                                   array_bad.append(array1)
+
                                                                #validate name
                                                               name=row[3]
+                                                              array1=[]
                                                               if name == "":
                                                                   bad_ind = 1
                                                                   description = "Name is mandatory"
@@ -1527,10 +1542,6 @@ def NonStdRefresh(request):
 
                                                               employment_information=row[29]
                                                               array2.append(employment_information)
-
-                                                              employer=row[30]
-                                                              array2.append(employer)
-                                                              pk=employer
 
 
                                                               if bad_ind == 0:
@@ -2145,12 +2156,17 @@ def EmployeeList(request):
         contacts = Employee.objects.all()
         serializer = EmployeeSerializer(contacts, many=True)
         return Response(serializer.data)
+
     elif request.method == 'POST':
         serializer = EmployeeSerializer(data=request.data)
 
         serializer.is_valid(raise_exception=True)
         employee = Employee()
         event = Event()
+        s3 = boto3.client('s3')
+        bad_ind=0
+        array_bad=[]
+        array1=[]
 
         if serializer.data["employeeid"] == '':
             employee.employeeid = str(uuid.uuid4())[26:36]
@@ -2160,19 +2176,111 @@ def EmployeeList(request):
             event.EventTypeReason = "Employee added via API"
 
         employee.ssn = serializer.data["ssn"]
+
+        employer_ident=serializer.data["employer"]
+        pk=employer_ident
+        if pk == "":
+             bad_ind = 1
+             description = "employer is mandatory"
+             array1.append(employee.employeeid)
+             array1.append(employee.name)
+             array1.append(pk)
+             array1.append(description)
+             array1.append(pk)
+             array_bad.append(array1)
+        else:
+            employee.employer = get_object_or_404(Employer, pk=pk)
+
+
         employee.name = serializer.data["name"]
+        array1=[]
+        if employee.name == "":
+            bad_ind = 1
+            description = "Name is mandatory"
+            array1.append(employee.employeeid)
+            array1.append(employee.name)
+            array1.append(employee.name)
+            array1.append(description)
+            array1.append(pk)
+            array_bad.append(array1)
+
         employee.slug=slugify(employee.name)
 
         employee.gendercode = serializer.data["gendercode"]
+
         employee.age = serializer.data["age"]
+        array1=[]
+        if employee.age == "":
+            bad_ind=1
+            description = "Age must be numeric "
+            array1.append(employeeid)
+            array1.append(employee.name)
+            array1.append(employee.age)
+            array1.append(description)
+            array1.append(pk)
+            array_bad.append(array1)
+        elif (employee.age <= 0 or employee.age >= 100):
+            bad_ind=1
+            description = "Age must be between 1 and 99 years "
+            array1.append(employee.employeeid)
+            array1.append(employee.name)
+            array1.append(employee.age)
+            array1.append(description)
+            array1.append(pk)
+            array_bad.append(array1)
+
         employee.birthdate = serializer.data["birthdate"]
         employee.maritalstatus = serializer.data["maritalstatus"]
 
         employee.home_address_line_1 = serializer.data["home_address_line_1"]
+        array1=[]
+        if employee.home_address_line_1 == "":
+            bad_ind = 1
+            description = "Home address line 1 is mandatory"
+            array1.append(employee.employeeid)
+            array1.append(employee.name)
+            array1.append(employee.home_address_line_1)
+            array1.append(description)
+            array1.append(pk)
+            array_bad.append(array1)
+
         employee.home_address_line_2 = serializer.data["home_address_line_2"]
+
         employee.home_city = serializer.data["home_city"]
+        array1=[]
+        if employee.home_city == "":
+            bad_ind = 1
+            description = "Home city is mandatory"
+            array1.append(employee.employeeid)
+            array1.append(employee.name)
+            array1.append(employee.home_city)
+            array1.append(description)
+            array1.append(pk)
+            array_bad.append(array1)
+
         employee.home_state = serializer.data["home_state"]
+        array1=[]
+        if employee.home_state == "":
+            bad_ind = 1
+            description = "Home state is mandatory"
+            array1.append(employee.employeeid)
+            array1.append(employee.name)
+            array1.append(employee.home_state)
+            array1.append(description)
+            array1.append(pk)
+            array_bad.append(array1)
+
         employee.home_zipcode = serializer.data["home_zipcode"]
+        array1=[]
+        if employee.home_zipcode == "":
+            bad_ind = 1
+            description = "Zipcode is mandatory"
+            array1.append(employee.employeeid)
+            array1.append(employee.name)
+            array1.append(employee.zipcode)
+            array1.append(description)
+            array1.append(pk)
+            array_bad.append(array1)
 
         employee.mail_address_line_1 = serializer.data["mail_address_line_1"]
         employee.mail_address_line_2 = serializer.data["mail_address_line_2"]
@@ -2187,18 +2295,37 @@ def EmployeeList(request):
         employee.work_zipcode = serializer.data["work_zipcode"]
 
         employee.email = serializer.data["email"]
+        array1=[]
+        if employee.email == "":
+            bad_ind=1
+            description = "Email is mandatory "
+            array1.append(employee.employeeid)
+            array1.append(employee.name)
+            array1.append(employee.email)
+            array1.append(description)
+            array1.append(pk)
+            array_bad.append(array1)
+        elif not re.match(r"^[A-Za-z0-9\.\+_-]+@[A-Za-z0-9\._-]+\.[a-zA-Z]*$", employee.email):
+            bad_ind = 1
+            description = "Invalid email"
+            array1.append(employee.employeeid)
+            array1.append(employee.name)
+            array1.append(employee.email)
+            array1.append(description)
+            array1.append(pk)
+            array_bad.append(array1)
+
         employee.alternate_email = serializer.data["alternate_email"]
 
         employee.home_phone = serializer.data["home_phone"]
         employee.work_phone = serializer.data["work_phone"]
+
         employee.mobile_phone = serializer.data["mobile_phone"]
 
         employee.enrollment_method = serializer.data["enrollment_method"]
         employee.employment_information = serializer.data["employment_information"]
 
-        employee.employer = get_object_or_404(Employer, pk=serializer.data["employer"])
-
-        employee.source = "API Post"
+        employee.source = "Post API"
 
         employee.creator = get_object_or_404(User, pk=serializer.data["creator"])
         #transmission.create_date = serializer.data["create_date"]
@@ -2207,18 +2334,69 @@ def EmployeeList(request):
         employee.commit_indicator = "Not Committed"
         employee.record_status = ""
         employee.bulk_upload_indicator = "Y"
+        print("array_bad is ")
+        print(array_bad)
+        print("employer pk is " + str(pk))
 
-        #Log events
+        if bad_ind==1:
+            buff3 = io.StringIO()
 
-        event.EventTypeCode = "EEW"
-        event.EventSubjectId = employee.employeeid
-        event.EventSubjectName = employee.name
-        event.source = "API Post"
-        event.creator=employee.creator
-        event.save()
+            writer = csv.writer(buff3, dialect='excel', delimiter=',')
+            writer.writerows(array_bad)
 
-        employee.save()
-        return Response(serializer.data)
+            buff4 = io.BytesIO(buff3.getvalue().encode())
+
+
+                # save bad file to S3
+            try:
+                response = s3.delete_object(Bucket='intellidatastatic1', Key='media/employees_api_error.csv')
+                s3.upload_fileobj(buff4, 'intellidatastatic1', 'media/employees_api_error.csv')
+                print("Bad File Upload Successful")
+
+            except FileNotFoundError:
+                print("The bad file was not found")
+
+            except NoCredentialsError:
+                print("Credentials not available")
+
+                # load the employee error table
+                s3.download_file('intellidatastatic1', 'media/employees_api_error.csv', 'employees_api_error.csv')
+
+                #Refresh Error table for concerned employer
+                EmployeeError.objects.filter(employer_id=pk).delete()
+
+                with open('employees_api_error.csv', 'rt') as csv_file:
+                    bulk_mgr = BulkCreateManager(chunk_size=20)
+                    for row1 in csv.reader(csv_file):
+                        bulk_mgr.add(models.EmployeeError(serial=0,
+                                                  employeeid=row1[0],
+                                                  name=row1[1],
+                                                  errorfield=row1[2],
+                                                  description=row1[3],
+                                                  employer=get_object_or_404(models.Employer, pk=pk),
+                                                  creator = request.user,
+                                                  source="Post API"
+                                                  ))
+                    bulk_mgr.done()
+
+            #error_response = EmployeeError.objects.filter(employer_id=pk)
+            error_response = EmployeeError.objects.all()
+            print(error_response)
+            serializer = EmployeeErrorSerializer(error_response, many=True)
+            return Response(serializer.data)
+
+        else:
+            #Log events
+
+            event.EventTypeCode = "EEW"
+            event.EventSubjectId = employee.employeeid
+            event.EventSubjectName = employee.name
+            event.source = "Post API"
+            event.creator=employee.creator
+            event.save()
+
+            employee.save()
+            return Response(serializer.data)
 
     #if serializer.is_valid():
     #    serializer.save()
@@ -2237,89 +2415,6 @@ def EmployeeListByEmployer(request, pk):
         contacts = Employee.objects.filter(employer_id = pk)
         serializer = EmployeeSerializer(contacts, many=True)
         return Response(serializer.data)
-    elif request.method == 'POST':
-        serializer = EmployeeSerializer(data=request.data)
-
-        serializer.is_valid(raise_exception=True)
-        employee = Employee()
-        event = Event()
-
-        if serializer.data["employeeid"] == '':
-            employee.employeeid = str(uuid.uuid4())[26:36]
-            event.EventTypeReason = "New employee received via API"
-        else:
-            employee.employeeid = serializer.data["employeeid"]
-            event.EventTypeReason = "Employee added via API"
-        #transmission.transmissionid = serializer.data["transmissionid"]
-        employee.ssn = serializer.data["ssn"]
-        employee.name = serializer.data["name"]
-        employee.slug=slugify(employee.name),
-
-        employee.gendercode = serializer.data["gendercode"]
-        employee.age = serializer.data["age"]
-        employee.birthdate = serializer.data["birthdate"]
-        employee.maritalstatus = serializer.data["maritalstatus"]
-
-        employee.home_address_line_1 = serializer.data["home_address_line_1"]
-        employee.home_address_line_2 = serializer.data["home_address_line_2"]
-        employee.home_city = serializer.data["home_city"]
-        employee.home_state = serializer.data["home_state"]
-        employee.home_zipcode = serializer.data["home_zipcode"]
-
-        employee.mail_address_line_1 = serializer.data["mail_address_line_1"]
-        employee.mail_address_line_2 = serializer.data["mail_address_line_2"]
-        employee.mail_city = serializer.data["mail_city"]
-        employee.mail_state = serializer.data["mail_state"]
-        employee.mail_zipcode = serializer.data["mail_zipcode"]
-
-        employee.work_address_line_1 = serializer.data["work_address_line_1"]
-        employee.work_address_line_2 = serializer.data["work_address_line_2"]
-        employee.work_city = serializer.data["work_city"]
-        employee.work_state = serializer.data["work_state"]
-        employee.work_zipcode = serializer.data["work_zipcode"]
-
-        employee.email = serializer.data["email"]
-        employee.alternate_email = serializer.data["alternate_email"]
-
-        employee.home_phone = serializer.data["home_phone"]
-        employee.work_phone = serializer.data["work_phone"]
-        employee.mobile_phone = serializer.data["mobile_phone"]
-
-        employee.enrollment_method = serializer.data["enrollment_method"]
-        employee.employment_information = serializer.data["employment_information"]
-
-        employee.employer = get_object_or_404(Employer, pk=serializer.data["employer"])
-
-        employee.source = "API Post"
-
-        employee.creator = get_object_or_404(User, pk=serializer.data["creator"])
-        #transmission.create_date = serializer.data["create_date"]
-        employee.backend_SOR_connection = "Disconnected"
-        employee.response = ""
-        employee.commit_indicator = "Not Committed"
-        employee.record_status = ""
-        employee.bulk_upload_indicator = "Y"
-
-        #Log events
-        event.EventTypeCode = "EEW"
-        event.EventSubjectId = employee.employeeid
-        event.EventSubjectName = employee.name
-        event.source = "API Post"
-        event.creator=employee.creator
-        event.save()
-
-        employee.save()
-        return Response(serializer.data)
-
-    #if serializer.is_valid():
-    #    serializer.save()
-
-    #    return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-    #    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-
 
 #notify employees in email and text message on phone
 
