@@ -207,6 +207,13 @@ class ProductSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class ProductErrorSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = ProductError
+        fields = '__all__'
+
+
 #class for handling built-in API errors
 class APIError(Exception):
     """An API Error Exception"""

@@ -95,7 +95,7 @@ class CreateTransmission(LoginRequiredMixin, PermissionRequiredMixin, generic.Cr
         else:
             form.instance.creator = self.request.user
             form.instance.record_status = "Created"
-            form.instance.source = "Web App"
+            form.instance.source = "Online Transaction"
 
             return super().form_valid(form)
 
@@ -281,7 +281,7 @@ def RefreshTransmission(request, pk):
             event.EventSubjectId = obj1.transmissionid
             event.EventSubjectName = obj1.SenderName
             event.EventTypeReason = "Transmission refreshed from ODS"
-            event.source = "Web App"
+            event.source = "Online Transaction"
             event.creator=obj1.creator
             event.save()
 
@@ -324,7 +324,7 @@ def VersionTransmission(request, pk):
             event.EventSubjectId = form.instance.transmissionid
             event.EventSubjectName = form.instance.SenderName
             event.EventTypeReason = "Transmission versioned"
-            event.source = "Web App"
+            event.source = "Online Transaction"
             event.creator=request.user
             event.save()
 
@@ -362,7 +362,7 @@ class UpdateTransmission(LoginRequiredMixin, PermissionRequiredMixin, generic.Up
             event.EventSubjectId = form.instance.transmissionid
             event.EventSubjectName = form.instance.SenderName
             event.EventTypeReason = "Transmission updated"
-            event.source = "Web App"
+            event.source = "Online Transaction"
             event.creator=self.request.user
             event.save()
 
@@ -391,7 +391,7 @@ class DeleteTransmission(LoginRequiredMixin, PermissionRequiredMixin, generic.De
             event.EventSubjectId = form.instance.transmissionid
             event.EventSubjectName = form.instance.SenderName
             event.EventTypeReason = "Transmission deleted"
-            event.source = "Web App"
+            event.source = "Online Transaction"
             event.creator=self.request.user
             event.save()
 
@@ -651,7 +651,7 @@ def BulkUploadTransmission(request):
                                                           TransmissionTypeCode=row[6],
                                                           SystemVersionIdentifier=row[7],
                                                           creator = request.user,
-                                                          source="Web App Bulk Upload",
+                                                          source="Standard Feed Bulk Upload",
                                                           record_status = "Created",
                                                           bulk_upload_indicator = "Y"
                                                           ))
@@ -664,7 +664,7 @@ def BulkUploadTransmission(request):
                                                            TransmissionTypeCode=row[6],
                                                            SystemVersionIdentifier=row[7],
                                                            creator = request.user,
-                                                           source="Web App Bulk Upload",
+                                                           source="Standard Feed Bulk Upload",
                                                            record_status = "Created",
                                                            bulk_upload_indicator = "Y"
 
@@ -672,13 +672,13 @@ def BulkUploadTransmission(request):
 
                         bulk_mgr.done()
 
-                        # load the transmission error table
-                        s3.download_file('intellidatastatic1', 'media/transmissions_error.csv', 'transmissions_error.csv')
+                    # load the transmission error table
+                    s3.download_file('intellidatastatic1', 'media/transmissions_error.csv', 'transmissions_error.csv')
 
-                        #Refresh Error table for concerned employer
-                        TransmissionError.objects.all().delete()
+                    #Refresh Error table for concerned employer
+                    TransmissionError.objects.all().delete()
 
-                        with open('transmissions_error.csv', 'rt') as csv_file:
+                    with open('transmissions_error.csv', 'rt') as csv_file:
                             bulk_mgr = BulkCreateManager(chunk_size=20)
                             for row1 in csv.reader(csv_file):
                                 bulk_mgr.add(models.TransmissionError(serial = row1[0],
@@ -687,7 +687,7 @@ def BulkUploadTransmission(request):
                                                           errorfield=row1[3],
                                                           error_description=row1[4],
                                                           creator = request.user,
-                                                          source="Web App Bulk Upload"
+                                                          source="Standard Feed Bulk Upload"
                                                           ))
                             bulk_mgr.done()
 
@@ -710,7 +710,7 @@ def BulkUploadTransmission(request):
                     event.EventSubjectId = "bulktransmission"
                     event.EventSubjectName = "Bulk processing"
                     event.EventTypeReason = "Transmissions uploaded in bulk"
-                    event.source = "Web App"
+                    event.source = "Standard Feed Bulk Upload"
                     event.creator=request.user
                     event.save()
 
@@ -726,50 +726,6 @@ def BulkUploadTransmission(request):
 
                     return render(request, "bulkuploads/bulkupload_form.html", context)
 
-
-@permission_required("transmissions.add_transmission")
-@login_required
-def BulkUploadTransmission_deprecated(request):
-
-    context ={}
-
-    form = BulkUploadForm(request.POST, request.FILES)
-
-    if form.is_valid():
-                form.instance.creator = request.user
-                form.save()
-
-                #s3_resource = boto3.resource('s3')
-                #s3_resource.Object("intellidatastatic1", "media/transmissions.csv").download_file(f'/tmp/{"transmissions.csv"}') # Python 3.6+
-                s3 = boto3.client('s3')
-                s3.download_file('intellidatastatic1', 'media/transmissions.csv', 'transmissions.csv')
-
-                #with open('/tmp/{"transmissions.csv"}', 'rt') as csv_file:
-                with open('transmissions.csv', 'rt') as csv_file:
-                    bulk_mgr = BulkCreateManager(chunk_size=20)
-                    for row in csv.reader(csv_file):
-                        bulk_mgr.add(models.Transmission(
-
-                                                  transmissionid = str(uuid.uuid4())[26:36],
-                                                  name=row[0],
-                                                  slug=slugify(row[0]),
-                                                  type=row[1],
-                                                  description=row[2],
-                                                  description_html = misaka.html(row[2]),
-                                                  coverage_limit=row[3],
-                                                  price_per_1000_units=row[4],
-                                                  creator = request.user,
-                                                  record_status = "Created",
-                                                  bulk_upload_indicator = "Y"
-                                                  ))
-                    bulk_mgr.done()
-
-                return HttpResponseRedirect(reverse("transmissions:all"))
-    else:
-            # add form dictionary to context
-            context["form"] = form
-
-            return render(request, "bulkuploads/bulkupload_form.html", context)
 
 
 @permission_required("transmissions.add_transmission")
@@ -807,7 +763,7 @@ def BulkUploadSOR(request):
         event.EventSubjectId = "transmissionodsupload"
         event.EventSubjectName = "Bulk upload to ODS"
         event.EventTypeReason = "Transmissions uploaded to ODS in bulk"
-        event.source = "Web App"
+        event.source = "Online Transaction"
         event.creator=request.user
         event.save()
 
@@ -828,55 +784,6 @@ class ViewTransmissionErrorList(LoginRequiredMixin, generic.ListView):
         return models.TransmissionError.objects.all()
 
 
-@api_view(['GET', 'POST'])
-def TransmissionList_BK(request):
-
-    if request.method == 'GET':
-        contacts = Transmission.objects.all()
-        serializer = TransmissionSerializer(contacts, many=True)
-        return Response(serializer.data)
-
-    elif request.method == 'POST':
-        response = request.data
-        print(response)
-        transmission=Transmission()
-        event = Event()
-
-        transmission.transmissionid = str(uuid.uuid4())[26:36]
-
-        #transmission.transmissionid = serializer.data["transmissionid"]
-        transmission.SenderName = response["SenderName"]
-        transmission.BenefitAdministratorPlatform = response["BenefitAdministratorPlatform"]
-        transmission.ReceiverName = response["ReceiverName"]
-        transmission.TestProductionCode = response["TestProductionCode"]
-        transmission.TransmissionTypeCode = response["TransmissionTypeCode"]
-        transmission.SystemVersionIdentifier = response["SystemVersionIdentifier"]
-
-        transmission.source = "API Call"
-
-        transmission.creator = get_object_or_404(User, pk=response["creator"])
-        #transmission.create_date = serializer.data["create_date"]
-        transmission.backend_SOR_connection = "Disconnected"
-        transmission.response = ""
-        transmission.commit_indicator = "Not Committed"
-        transmission.record_status = ""
-        #employers = json.loads["employer_set"]
-        print(transmission)
-
-        employers=response["employer_set"]
-        print(employers)
-
-        #Log events
-        event.EventTypeCode = "TRW"
-        event.EventSubjectId = transmission.transmissionid
-        event.EventSubjectName = transmission.SenderName
-        event.source = "API Call"
-        event.creator=transmission.creator
-        event.save()
-
-        transmission.save()
-        return Response(transmission)
-
 
 @api_view(['GET', 'POST'])
 def TransmissionList(request):
@@ -885,6 +792,7 @@ def TransmissionList(request):
         contacts = Transmission.objects.all()
         serializer = TransmissionSerializer(contacts, many=True)
         return Response(serializer.data)
+
     elif request.method == 'POST':
         serializer = TransmissionSerializer(data=request.data)
          # Raises a ValidatinException which will be sent as a 400 response.
@@ -906,7 +814,7 @@ def TransmissionList(request):
         transmission.TransmissionTypeCode = serializer.data["TransmissionTypeCode"]
         transmission.SystemVersionIdentifier = serializer.data["SystemVersionIdentifier"]
 
-        transmission.source = "API Call"
+        transmission.source = "Post API"
 
         transmission.creator = get_object_or_404(User, pk=serializer.data["creator"])
         #transmission.create_date = serializer.data["create_date"]
@@ -914,13 +822,14 @@ def TransmissionList(request):
         transmission.response = ""
         transmission.commit_indicator = "Not Committed"
         transmission.record_status = ""
+        transmission.bulk_upload_indicator="Y"
         print(transmission)
 
         #Log events
         event.EventTypeCode = "TRW"
         event.EventSubjectId = transmission.transmissionid
         event.EventSubjectName = transmission.SenderName
-        event.source = "API Call"
+        event.source = "Post API"
         event.creator=transmission.creator
         event.save()
 
@@ -964,12 +873,6 @@ def TransmissionListByID(request, pk):
 
         return Response(serializer.data)
 
-    elif request.method == 'POST':
-        serializer = TransmissionSerializer(data=request.data)
-         # Raises a ValidatinException which will be sent as a 400 response.
-        serializer.is_valid(raise_exception=True)
-        transmission = Transmission()
-        event = Event()
 
 
 @api_view(['GET', 'POST'])
@@ -983,12 +886,6 @@ def EmployerListByID(request, pk):
 
         return Response(serializer.data)
 
-    elif request.method == 'POST':
-        serializer = TransmissionSerializer(data=request.data)
-         # Raises a ValidatinException which will be sent as a 400 response.
-        serializer.is_valid(raise_exception=True)
-        transmission = Transmission()
-        event = Event()
 
 @api_view(['GET', 'POST'])
 def TransmissionListByParm(request):

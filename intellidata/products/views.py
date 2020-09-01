@@ -88,7 +88,7 @@ class CreateProduct(LoginRequiredMixin, PermissionRequiredMixin, generic.CreateV
         else:
             form.instance.creator = self.request.user
             form.instance.record_status = "Created"
-            form.instance.source = "Web App"
+            form.instance.source = "Online Transaction"
 
             return super().form_valid(form)
 
@@ -275,7 +275,7 @@ def RefreshProduct(request, pk):
             event.EventSubjectId = obj1.productid
             event.EventSubjectName = obj1.name
             event.EventTypeReason = "Product refreshed from ODS"
-            event.source = "Web App"
+            event.source = "Online Transaction"
             event.creator=obj1.creator
             event.save()
 
@@ -316,7 +316,7 @@ def VersionProduct(request, pk):
             event.EventSubjectId = form.instance.productid
             event.EventSubjectName = form.instance.name
             event.EventTypeReason = "Product versioned"
-            event.source = "Web App"
+            event.source = "Online Transaction"
             event.creator=request.user
             event.save()
 
@@ -353,7 +353,7 @@ class UpdateProduct(LoginRequiredMixin, PermissionRequiredMixin, generic.UpdateV
             event.EventSubjectId = form.instance.productid
             event.EventSubjectName = form.instance.name
             event.EventTypeReason = "Product updated"
-            event.source = "Web App"
+            event.source = "Online Transaction"
             event.creator=self.request.user
             event.save()
 
@@ -381,7 +381,7 @@ class DeleteProduct(LoginRequiredMixin, PermissionRequiredMixin, generic.DeleteV
             event.EventSubjectId = form.instance.productid
             event.EventSubjectName = form.instance.name
             event.EventTypeReason = "Product deleted"
-            event.source = "Web App"
+            event.source = "Online Transaction"
             event.creator=self.request.user
             event.save()
 
@@ -621,7 +621,7 @@ def BulkUploadProduct(request):
                                                           coverage_limit=row[5],
                                                           price_per_1000_units=row[6],
                                                           creator = request.user,
-                                                          source="Web App Bulk Upload",
+                                                          source="Standard Feed Bulk Upload",
                                                           record_status = "Created",
                                                           bulk_upload_indicator = "Y"
                                                           ))
@@ -635,7 +635,7 @@ def BulkUploadProduct(request):
                                                            coverage_limit=row[5],
                                                            price_per_1000_units=row[6],
                                                            creator = request.user,
-                                                           source="Web App Bulk Upload",
+                                                           source="Standard Feed Bulk Upload",
                                                            record_status = "Created",
                                                            bulk_upload_indicator = "Y"
 
@@ -658,7 +658,7 @@ def BulkUploadProduct(request):
                                                           errorfield=row1[3],
                                                           error_description=row1[4],
                                                           creator = request.user,
-                                                          source="Web App Bulk Upload"
+                                                          source="Standard Feed Bulk Upload"
                                                           ))
                             bulk_mgr.done()
 
@@ -681,7 +681,7 @@ def BulkUploadProduct(request):
                     event.EventSubjectId = "bulkproducts"
                     event.EventSubjectName = "Bulk processing"
                     event.EventTypeReason = "Products uploaded in bulk"
-                    event.source = "Web App"
+                    event.source = "Standard Feed Bulk Upload"
                     event.creator=request.user
                     event.save()
 
@@ -698,49 +698,6 @@ def BulkUploadProduct(request):
                     context["form"] = form
 
                     return render(request, "bulkuploads/bulkupload_form.html", context)
-
-
-@permission_required("products.add_product")
-@login_required
-def BulkUploadProduct_deprecated(request):
-
-    context ={}
-
-    form = BulkUploadForm(request.POST, request.FILES)
-
-    if form.is_valid():
-                form.instance.creator = request.user
-                form.save()
-
-                s3 = boto3.client('s3')
-                s3.download_file('intellidatastatic1', 'media/products.csv', 'products.csv')
-
-                #with open('/tmp/{"products.csv"}', 'rt') as csv_file:
-                with open('products.csv', 'rt') as csv_file:
-                    bulk_mgr = BulkCreateManager(chunk_size=20)
-                    for row in csv.reader(csv_file):
-                        bulk_mgr.add(models.Product(
-
-                                                  productid = str(uuid.uuid4())[26:36],
-                                                  name=row[0],
-                                                  slug=slugify(row[0]),
-                                                  type=row[1],
-                                                  description=row[2],
-                                                  description_html = misaka.html(row[2]),
-                                                  coverage_limit=row[3],
-                                                  price_per_1000_units=row[4],
-                                                  creator = request.user,
-                                                  record_status = "Created",
-                                                  bulk_upload_indicator = "Y"
-                                                  ))
-                    bulk_mgr.done()
-
-                return HttpResponseRedirect(reverse("products:all"))
-    else:
-            # add form dictionary to context
-            context["form"] = form
-
-            return render(request, "bulkuploads/bulkupload_form.html", context)
 
 
 @permission_required("products.add_product")
@@ -778,7 +735,7 @@ def BulkUploadSOR(request):
         event.EventSubjectId = "productodsupload"
         event.EventSubjectName = "Bulk upload to ODS"
         event.EventTypeReason = "Products uploaded to ODS in bulk"
-        event.source = "Web App"
+        event.source = "Online Transaction"
         event.creator=request.user
         event.save()
 
@@ -828,7 +785,7 @@ def ProductList(request):
         product.coverage_limit = serializer.data["coverage_limit"]
         product.price_per_1000_units = serializer.data["price_per_1000_units"]
 
-        product.source = "API Call"
+        product.source = "Post API"
 
         product.creator = get_object_or_404(User, pk=serializer.data["creator"])
 
@@ -836,12 +793,13 @@ def ProductList(request):
         product.response = ""
         product.commit_indicator = "Not Committed"
         product.record_status = ""
+        product.bulk_upload_indicator="Y"
 
         #Log events
         event.EventTypeCode = "PRW"
         event.EventSubjectId = product.productid
         event.EventSubjectName = product.name
-        event.source = "API Call"
+        event.source = "Post API"
         event.creator=product.creator
         event.save()
 

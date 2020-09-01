@@ -1099,10 +1099,13 @@ def BulkUploadEmployee(request, pk, *args, **kwargs):
                                                           bulk_upload_indicator = "Y"
                                                           ))
 
+                        bulk_mgr.done()
+
                     with open('employees1.csv', 'rt') as csv_file:
                         for ix in csv.reader(csv_file):
 
                                 #NOTIFY Employee
+                                mobile_phone=ix[27]
                                 subscription_arn = notification.SubscribeEmployeeObj(mobile_phone)
 
                                 #Log events
@@ -1122,14 +1125,17 @@ def BulkUploadEmployee(request, pk, *args, **kwargs):
                                 event.EventTypeCode = "SMS"
                                 event.EventSubjectId = ""
                                 event.EventSubjectName = ""
-                                event.EventTypeReason = "Auto push notification sent for the above auto subscription"
+                                event.EventTypeReason = "Auto push notification sent for the below auto subscription"
                                 event.source = "Standard Feed Bulk Upload"
                                 event.creator=request.user
                                 event.save()
 
+                                #send email
+                                email=ix[23]
                                 notification.EmailEmployeeObj(email)
 
                                 #Log events
+
                                 event = Event()
                                 event.EventTypeCode = "EML"
                                 event.EventSubjectId = ""
@@ -1139,15 +1145,15 @@ def BulkUploadEmployee(request, pk, *args, **kwargs):
                                 event.creator=request.user
                                 event.save()
 
-                        bulk_mgr.done()
 
-                        # load the employee error table
-                        s3.download_file('intellidatastatic1', 'media/employees_error.csv', 'employees_error.csv')
 
-                        #Refresh Error table for concerned employer
-                        EmployeeError.objects.filter(employer_id=pk).delete()
+                    # load the employee error table
+                    s3.download_file('intellidatastatic1', 'media/employees_error.csv', 'employees_error.csv')
 
-                        with open('employees_error.csv', 'rt') as csv_file:
+                    #Refresh Error table for concerned employer
+                    EmployeeError.objects.filter(employer_id=pk).delete()
+
+                    with open('employees_error.csv', 'rt') as csv_file:
                             bulk_mgr = BulkCreateManager(chunk_size=20)
                             for row1 in csv.reader(csv_file):
                                 bulk_mgr.add(models.EmployeeError(serial = row1[0],
@@ -1697,11 +1703,14 @@ def NonStdRefresh(request):
                                                                   record_status = "Created",
                                                                   bulk_upload_indicator = "Y"
                                                                   ))
+                                bulk_mgr.done()
+
 
                             with open('employees1.csv', 'rt') as csv_file:
                                 for ix in csv.reader(csv_file):
 
                                         #NOTIFY Employee
+                                        mobile_phone=ix[27]
                                         subscription_arn = notification.SubscribeEmployeeObj(mobile_phone)
 
                                         #Log events
@@ -1721,12 +1730,12 @@ def NonStdRefresh(request):
                                         event.EventTypeCode = "SMS"
                                         event.EventSubjectId = ""
                                         event.EventSubjectName = ""
-                                        event.EventTypeReason = "Auto push notification sent for the above auto subscription"
+                                        event.EventTypeReason = "Auto push notification sent for the below auto subscription"
                                         event.source = "Non-Standard Feed Bulk Upload"
                                         event.creator=request.user
                                         event.save()
 
-
+                                        email=ix[23]
                                         notification.EmailEmployeeObj(email)
 
                                         #Log events
@@ -1739,18 +1748,18 @@ def NonStdRefresh(request):
                                         event.creator=request.user
                                         event.save()
 
-                                bulk_mgr.done()
 
-                                # load the employee error table
-                                s3.download_file('intellidatastatic1', 'media/employees_error.csv', 'employees_error.csv')
 
-                                #Refresh Error table for concerned employer
-                                EmployeeError.objects.filter(employer_id=pk).delete()
+                            # load the employee error table
+                            s3.download_file('intellidatastatic1', 'media/employees_error.csv', 'employees_error.csv')
 
-                                with open('employees_error.csv', 'rt') as csv_file:
-                                    bulk_mgr = BulkCreateManager(chunk_size=20)
-                                    for row1 in csv.reader(csv_file):
-                                        bulk_mgr.add(models.EmployeeError(serial = row1[0],
+                            #Refresh Error table for concerned employer
+                            EmployeeError.objects.filter(employer_id=pk).delete()
+
+                            with open('employees_error.csv', 'rt') as csv_file:
+                                bulk_mgr = BulkCreateManager(chunk_size=20)
+                                for row1 in csv.reader(csv_file):
+                                    bulk_mgr.add(models.EmployeeError(serial = row1[0],
                                                                   employeeid=row1[1],
                                                                   name=row1[2],
                                                                   errorfield=row1[3],
@@ -1759,9 +1768,10 @@ def NonStdRefresh(request):
                                                                   creator = request.user,
                                                                   source="Non-Standard Feed Bulk Upload"
                                                                   ))
-                                    bulk_mgr.done()
+                                bulk_mgr.done()
 
 
+                            #Create the aggregate report
                             error_report = EmployeeErrorAggregate()
                             error_report.employer = get_object_or_404(Employer, pk=pk)
 
@@ -2359,13 +2369,13 @@ def EmployeeList(request):
             except NoCredentialsError:
                 print("Credentials not available")
 
-                # load the employee error table
-                s3.download_file('intellidatastatic1', 'media/employees_api_error.csv', 'employees_api_error.csv')
+            # load the employee error table
+            s3.download_file('intellidatastatic1', 'media/employees_api_error.csv', 'employees_api_error.csv')
 
-                #Refresh Error table for concerned employer
-                EmployeeError.objects.filter(employer_id=pk).delete()
+            #Refresh Error table for concerned employer
+            EmployeeError.objects.filter(employer_id=pk).delete()
 
-                with open('employees_api_error.csv', 'rt') as csv_file:
+            with open('employees_api_error.csv', 'rt') as csv_file:
                     bulk_mgr = BulkCreateManager(chunk_size=20)
                     for row1 in csv.reader(csv_file):
                         bulk_mgr.add(models.EmployeeError(serial=0,
@@ -2374,13 +2384,13 @@ def EmployeeList(request):
                                                   errorfield=row1[2],
                                                   description=row1[3],
                                                   employer=get_object_or_404(models.Employer, pk=pk),
-                                                  creator = request.user,
+                                                  creator = get_object_or_404(User, pk=serializer.data["creator"]),
                                                   source="Post API"
                                                   ))
                     bulk_mgr.done()
 
-            #error_response = EmployeeError.objects.filter(employer_id=pk)
-            error_response = EmployeeError.objects.all()
+            error_response = EmployeeError.objects.filter(employer_id=pk)
+            #error_response = EmployeeError.objects.all()
             print(error_response)
             serializer = EmployeeErrorSerializer(error_response, many=True)
             return Response(serializer.data)

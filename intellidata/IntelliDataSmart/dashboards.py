@@ -17,26 +17,26 @@ from transmissions.models import TransmissionErrorAggregate
 
 class TransmissionFeedErrorAnalysis(widgets.ItemList):
     # This widget displays a list of transmissions ordered in the Employer
-    title = 'Transmission feed error analysis'
+    title = 'Transmission bulk feed error analysis'
     model = TransmissionErrorAggregate
     list_display = ('total', 'clean', 'error', 'error_date')
 
 
 class ProductFeedErrorAnalysis(widgets.ItemList):
     # This widget displays a list of transmissions ordered in the Employer
-    title = 'Product feed error analysis'
+    title = 'Product bulk feed error analysis'
     model = ProductErrorAggregate
     list_display = ('total', 'clean', 'error', 'error_date')
 
 class EmployerFeedErrorAnalysis(widgets.ItemList):
 
-    title = 'Employer feed error analysis by Transmission'
+    title = 'Employer bulk feed error analysis by Transmission'
     model = EmployerErrorAggregate
     list_display = ('transmission', 'total', 'clean', 'error', 'error_date')
 
 class EmployeeFeedErrorAnalysis(widgets.ItemList):
 
-    title = 'Employee feed error analysis by Employer'
+    title = 'Employee bulk feed error analysis by Employer'
     model = EmployeeErrorAggregate
     list_display = ('employer', 'total', 'clean', 'error', 'error_date')
 

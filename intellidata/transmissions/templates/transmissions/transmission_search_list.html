@@ -8,6 +8,7 @@
 			<a class="list-group-item" href="{% url 'transmissions:single' pk=transmission.pk %}">
 			     <h3 class="title list-group-item-heading">Sender Name: {{ transmission.SenderName }}</h3>
 					 <h4 class="title list-group-item-heading">ID: {{ transmission.transmissionid }}</h4>
+					 <h4 class="title list-group-item-heading">Benefit Admin Platform: {{ transmission.BenefitAdministratorPlatform }}</h4>
 					 <h4 class="title list-group-item-heading">Created On: {{ transmission.create_date }}</h4>
 					 <h4 class="title list-group-item-heading">Created By: {{ transmission.creator }}</h4>
 					 <br>
