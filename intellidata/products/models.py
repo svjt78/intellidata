@@ -105,6 +105,10 @@ class Product(models.Model):
         self.slug = slugify(self.name)
         self.description_html = misaka.html(self.description)
         self.response='Success'
+
+        if (self.bulk_upload_indicator == "Y" and self.backend_SOR_connection != "Disconnected"):
+            self.bulk_upload_indicator=""
+
         super().save(*args, **kwargs)
 
         #connect to backend

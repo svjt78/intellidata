@@ -107,10 +107,10 @@ class CreateEmployee(LoginRequiredMixin, PermissionRequiredMixin, generic.Create
             form.instance.creator = self.request.user
             form.instance.record_status = "Created"
             form.instance.source = "Online Transaction"
+            form.instance.employerid=self.employer.employerid
 
             email_addr = form.instance.email
             phone_num = form.instance.mobile_phone
-            print(phone_num)
 
             #NOTIFY Employee
             notification = Notification()
@@ -120,7 +120,7 @@ class CreateEmployee(LoginRequiredMixin, PermissionRequiredMixin, generic.Create
             event = Event()
             event.EventTypeCode = "SUB"
             event.EventSubjectId = ""
-            event.EventSubjectName = "Phone number: " + phone_num
+            event.EventSubjectName = phone_num
             event.EventTypeReason = "Auto subscribed for push notification"
             event.source = "Online Transaction"
             event.creator=self.request.user
@@ -133,7 +133,7 @@ class CreateEmployee(LoginRequiredMixin, PermissionRequiredMixin, generic.Create
             event.EventTypeCode = "SMS"
             event.EventSubjectId = ""
             event.EventSubjectName = ""
-            event.EventTypeReason = "Auto push notification sent for the above auto subscription"
+            event.EventTypeReason = "Auto push notification sent for the below auto subscription"
             event.source = "Online Transaction"
             event.creator=self.request.user
             event.save()
@@ -231,6 +231,7 @@ def BackendPull(request, pk):
             obj.employer = employer_obj
 
             obj.source = json_data["SOURCE"]
+            obj.employerid = json_data["EMPLOYERID"]
 
             obj.creator = User.objects.get(pk=int(json_data["CREATOR"]))
             obj.employee_date = json_data["EMPLOYEE_DATE"]
@@ -330,6 +331,7 @@ def ListEmployeesHistory(request, pk):
                      employer_obj = get_object_or_404(Employer, pk = employer_id)
                      obj.employer = employer_obj
                      obj.source = json_data[ix]["SOURCE"]
+                     obj.employerid = json_data[ix]["EMPLOYERID"]
 
                      obj.creator = User.objects.get(pk=int(json_data[ix]["CREATOR"]))
                      obj.employee_date = json_data[ix]["EMPLOYEE_DATE"]
@@ -432,6 +434,7 @@ def RefreshEmployee(request, pk):
             employer_obj = get_object_or_404(Employer, pk = employer_id)
             obj1.employer = employer_obj
             obj1.source = json_data["SOURCE"]
+            obj1.employerid = json_data["EMPLOYERID"]
 
             obj1.creator = User.objects.get(pk=int(json_data["CREATOR"]))
             obj1.employee_date = json_data["EMPLOYEE_DATE"]
@@ -482,6 +485,7 @@ def VersionEmployee(request, pk):
             obj.pk = int(round(time.time() * 1000))
             form.instance.creator = request.user
             form.instance.record_status = "Created"
+            form.instance.employerid=form.instance.employer.employerid
 
             #Log events
             event = Event()
@@ -654,6 +658,7 @@ class SearchEmployeesList(LoginRequiredMixin, generic.ListView):
                 employer_obj = get_object_or_404(Employer, pk = employer_id)
                 obj1.employer = employer_obj
                 obj1.source = json_data["SOURCE"]
+                obj1.employerid = json_data["EMPLOYERID"]
 
                 obj1.creator = User.objects.get(pk=int(json_data["CREATOR"]))
                 obj1.employee_date = json_data["EMPLOYEE_DATE"]
@@ -715,7 +720,7 @@ def BulkUploadEmployee(request, pk, *args, **kwargs):
                                                       ssn=row[2]
                                                       array2.append(ssn)
 
-                                                      employer=row[30]
+                                                      #employerid=row[30]
 
                                                        #validate name
                                                       name=row[3]
@@ -1052,6 +1057,7 @@ def BulkUploadEmployee(request, pk, *args, **kwargs):
                                                           enrollment_method=row[28],
                                                           employment_information=row[29],
                                                           employer=get_object_or_404(models.Employer, pk=pk),
+                                                          employerid=(models.Employer.objects.get(pk=pk).employerid),
                                                           creator = request.user,
                                                           sms="Initial notification sent",
                                                           emailer="Initial notification sent",
@@ -1091,6 +1097,7 @@ def BulkUploadEmployee(request, pk, *args, **kwargs):
                                                           enrollment_method=row[28],
                                                           employment_information=row[29],
                                                           employer=get_object_or_404(models.Employer, pk=pk),
+                                                          employerid=(models.Employer.objects.get(pk=pk).employerid),
                                                           creator = request.user,
                                                           sms="Initial notification sent",
                                                           emailer="Initial notification sent",
@@ -1112,7 +1119,7 @@ def BulkUploadEmployee(request, pk, *args, **kwargs):
                                 event = Event()
                                 event.EventTypeCode = "SUB"
                                 event.EventSubjectId = ""
-                                event.EventSubjectName = "Phone number: " + mobile_phone
+                                event.EventSubjectName = mobile_phone
                                 event.EventTypeReason = "Auto subscribed for push notification"
                                 event.source = "Standard Feed Bulk Upload"
                                 event.creator=request.user
@@ -1230,39 +1237,39 @@ def NonStdBulkUploadEmployee(request):
                     try:
                         print("I am here")
                         #s3.head_object(Bucket='intellidatastatic1', Key='media/employees.csv')
-                        obj_to_read1 = s3.Object('intellidatastatic1', 'media/google-employees-nonstandard-csv.csv')
+                        obj_to_read1 = s3.Object('intellidatastatic1', 'media/employees-nonstandard-csv.csv')
                         body = obj_to_read1.get()['Body'].read()
-                        obj_to_write1 = s3.Object('intellidatastack-s3bucket3-1ezrm28ljj9z9', 'employees/google-employees-nonstandard-csv.csv')
+                        obj_to_write1 = s3.Object('intellidatastack-s3bucket3-1ezrm28ljj9z9', 'employees/employees-nonstandard-csv.csv')
                         obj_to_write1.put(Body=body)
                         obj_to_read1.delete()
                     except ClientError:
                         print("Or I am here")
                         # Not found
-                        print("media/google-employees-nonstandard-csv.csv key does not exist")
+                        print("media/employees-nonstandard-csv.csv key does not exist")
 
                     #process json
                     try:
                         #s3.head_object(Bucket='intellidatastatic1', Key='media/employers-nonstandard-json.rtf')
-                        obj_to_read2 = s3.Object('intellidatastatic1', 'media/google-employees-nonstandard-json')
+                        obj_to_read2 = s3.Object('intellidatastatic1', 'media/employees-nonstandard-json')
                         body = obj_to_read2.get()['Body'].read()
-                        obj_to_write2 = s3.Object('intellidatastack-s3bucket3-1ezrm28ljj9z9', 'employees/google-employees-nonstandard-json')
+                        obj_to_write2 = s3.Object('intellidatastack-s3bucket3-1ezrm28ljj9z9', 'employees/employees-nonstandard-json')
                         obj_to_write2.put(Body=body)
                         obj_to_read2.delete()
                     except ClientError:
                         # Not found
-                        print("media/google-employees-nonstandard-json key does not exist")
+                        print("media/employees-nonstandard-json key does not exist")
 
                     #process xml
                     try:
                         #s3.head_object(Bucket='intellidatastatic1', Key='media/employers-nonstandard-json.rtf')
-                        obj_to_read2 = s3.Object('intellidatastatic1', 'media/google-employees-nonstandard-xml')
+                        obj_to_read2 = s3.Object('intellidatastatic1', 'media/employees-nonstandard-xml')
                         body = obj_to_read2.get()['Body'].read()
-                        obj_to_write2 = s3.Object('intellidatastack-s3bucket3-1ezrm28ljj9z9', 'employees/google-employees-nonstandard-xml')
+                        obj_to_write2 = s3.Object('intellidatastack-s3bucket3-1ezrm28ljj9z9', 'employees/employees-nonstandard-xml')
                         obj_to_write2.put(Body=body)
                         obj_to_read2.delete()
                     except ClientError:
                         # Not found
-                        print("media/google-employees-nonstandard-xml key does not exist")
+                        print("media/employees-nonstandard-xml key does not exist")
 
 
                     return HttpResponseRedirect(reverse("employers:all"))
@@ -1310,7 +1317,9 @@ def NonStdRefresh(request):
                                                               array2.append(ssn)
 
                                                               employer=row[30]
-                                                              pk=employer
+                                                              employer_instance=Employer.objects.filter(employerid=employer)[0]
+                                                              employer_ident=employer_instance.pk
+                                                              pk=employer_ident
                                                               if employer == "":
                                                                    bad_ind = 1
                                                                    description = "employer is mandatory"
@@ -1321,6 +1330,8 @@ def NonStdRefresh(request):
                                                                    array1.append(description)
                                                                    array1.append(pk)
                                                                    array_bad.append(array1)
+                                                              else:
+                                                                  array2.append(pk)
 
                                                                #validate name
                                                               name=row[3]
@@ -1628,35 +1639,36 @@ def NonStdRefresh(request):
                                     if row[1] == "":
                                         bulk_mgr.add(models.Employee(employeeid = str(uuid.uuid4())[26:36],
                                                                   ssn=row[2],
-                                                                  name=row[3],
-                                                                  slug=slugify(row[3]),
-                                                                  gendercode=row[4],
-                                                                  age=int(row[5]),
-                                                                  birthdate=row[6],
-                                                                  maritalstatus=row[7],
-                                                                  home_address_line_1=row[8],
-                                                                  home_address_line_2=row[9],
-                                                                  home_city=row[10],
-                                                                  home_state=row[11],
-                                                                  home_zipcode=row[12],
-                                                                  mail_address_line_1=row[13],
-                                                                  mail_address_line_2=row[14],
-                                                                  mail_city=row[15],
-                                                                  mail_state=row[16],
-                                                                  mail_zipcode=row[17],
-                                                                  work_address_line_1=row[18],
-                                                                  work_address_line_2=row[19],
-                                                                  work_city=row[20],
-                                                                  work_state=row[21],
-                                                                  work_zipcode=row[22],
-                                                                  email=row[23],
-                                                                  alternate_email=row[24],
-                                                                  home_phone=row[25],
-                                                                  work_phone=row[26],
-                                                                  mobile_phone=row[27],
-                                                                  enrollment_method=row[28],
-                                                                  employment_information=row[29],
-                                                                  employer=get_object_or_404(models.Employer, pk=pk),
+                                                                  name=row[4],
+                                                                  slug=slugify(row[4]),
+                                                                  gendercode=row[5],
+                                                                  age=int(row[6]),
+                                                                  birthdate=row[7],
+                                                                  maritalstatus=row[8],
+                                                                  home_address_line_1=row[9],
+                                                                  home_address_line_2=row[10],
+                                                                  home_city=row[11],
+                                                                  home_state=row[12],
+                                                                  home_zipcode=row[13],
+                                                                  mail_address_line_1=row[14],
+                                                                  mail_address_line_2=row[15],
+                                                                  mail_city=row[16],
+                                                                  mail_state=row[17],
+                                                                  mail_zipcode=row[18],
+                                                                  work_address_line_1=row[19],
+                                                                  work_address_line_2=row[20],
+                                                                  work_city=row[21],
+                                                                  work_state=row[22],
+                                                                  work_zipcode=row[23],
+                                                                  email=row[24],
+                                                                  alternate_email=row[25],
+                                                                  home_phone=row[26],
+                                                                  work_phone=row[27],
+                                                                  mobile_phone=row[28],
+                                                                  enrollment_method=row[29],
+                                                                  employment_information=row[30],
+                                                                  employer=get_object_or_404(models.Employer, pk=row[3]),
+                                                                  employerid=(models.Employer.objects.get(pk=row[3]).employerid),
                                                                   creator = request.user,
                                                                   sms="Initial notification sent",
                                                                   emailer="Initial notification sent",
@@ -1667,35 +1679,36 @@ def NonStdRefresh(request):
                                     else:
                                         bulk_mgr.add(models.Employee(employeeid = row[1],
                                                                   ssn=row[2],
-                                                                  name=row[3],
-                                                                  slug=slugify(row[3]),
-                                                                  gendercode=row[4],
-                                                                  age=int(row[5]),
-                                                                  birthdate=row[6],
-                                                                  maritalstatus=row[7],
-                                                                  home_address_line_1=row[8],
-                                                                  home_address_line_2=row[9],
-                                                                  home_city=row[10],
-                                                                  home_state=row[11],
-                                                                  home_zipcode=row[12],
-                                                                  mail_address_line_1=row[13],
-                                                                  mail_address_line_2=row[14],
-                                                                  mail_city=row[15],
-                                                                  mail_state=row[16],
-                                                                  mail_zipcode=row[17],
-                                                                  work_address_line_1=row[18],
-                                                                  work_address_line_2=row[19],
-                                                                  work_city=row[20],
-                                                                  work_state=row[21],
-                                                                  work_zipcode=row[22],
-                                                                  email=row[23],
-                                                                  alternate_email=row[24],
-                                                                  home_phone=row[25],
-                                                                  work_phone=row[26],
-                                                                  mobile_phone=row[27],
-                                                                  enrollment_method=row[28],
-                                                                  employment_information=row[29],
-                                                                  employer=get_object_or_404(models.Employer, pk=pk),
+                                                                  name=row[4],
+                                                                  slug=slugify(row[4]),
+                                                                  gendercode=row[5],
+                                                                  age=int(row[6]),
+                                                                  birthdate=row[7],
+                                                                  maritalstatus=row[8],
+                                                                  home_address_line_1=row[9],
+                                                                  home_address_line_2=row[10],
+                                                                  home_city=row[11],
+                                                                  home_state=row[12],
+                                                                  home_zipcode=row[13],
+                                                                  mail_address_line_1=row[14],
+                                                                  mail_address_line_2=row[15],
+                                                                  mail_city=row[16],
+                                                                  mail_state=row[17],
+                                                                  mail_zipcode=row[18],
+                                                                  work_address_line_1=row[19],
+                                                                  work_address_line_2=row[20],
+                                                                  work_city=row[21],
+                                                                  work_state=row[22],
+                                                                  work_zipcode=row[23],
+                                                                  email=row[24],
+                                                                  alternate_email=row[25],
+                                                                  home_phone=row[26],
+                                                                  work_phone=row[27],
+                                                                  mobile_phone=row[28],
+                                                                  enrollment_method=row[29],
+                                                                  employment_information=row[30],
+                                                                  employer=get_object_or_404(models.Employer, pk=row[3]),
+                                                                  employerid=(models.Employer.objects.get(pk=row[3]).employerid),
                                                                   creator = request.user,
                                                                   sms="Initial notification sent",
                                                                   emailer="Initial notification sent",
@@ -1710,14 +1723,14 @@ def NonStdRefresh(request):
                                 for ix in csv.reader(csv_file):
 
                                         #NOTIFY Employee
-                                        mobile_phone=ix[27]
+                                        mobile_phone=ix[28]
                                         subscription_arn = notification.SubscribeEmployeeObj(mobile_phone)
 
                                         #Log events
                                         event = Event()
                                         event.EventTypeCode = "SUB"
                                         event.EventSubjectId = ""
-                                        event.EventSubjectName = "Phone number: " + mobile_phone
+                                        event.EventSubjectName = mobile_phone
                                         event.EventTypeReason = "Auto subscribed for push notification"
                                         event.source = "Non-Standard Feed Bulk Upload"
                                         event.creator=request.user
@@ -1735,7 +1748,7 @@ def NonStdRefresh(request):
                                         event.creator=request.user
                                         event.save()
 
-                                        email=ix[23]
+                                        email=ix[24]
                                         notification.EmailEmployeeObj(email)
 
                                         #Log events
@@ -1764,7 +1777,7 @@ def NonStdRefresh(request):
                                                                   name=row1[2],
                                                                   errorfield=row1[3],
                                                                   description=row1[4],
-                                                                  employer=get_object_or_404(models.Employer, pk=pk),
+                                                                  employer=get_object_or_404(models.Employer, pk=row1[5]),
                                                                   creator = request.user,
                                                                   source="Non-Standard Feed Bulk Upload"
                                                                   ))
@@ -2187,8 +2200,12 @@ def EmployeeList(request):
 
         employee.ssn = serializer.data["ssn"]
 
-        employer_ident=serializer.data["employer"]
+        #get the most recent employer instance and pk
+        employee.employerid=serializer.data["employerid"]
+        employer_instance=Employer.objects.filter(employerid=employee.employerid)[0]
+        employer_ident=employer_instance.pk
         pk=employer_ident
+
         if pk == "":
              bad_ind = 1
              description = "employer is mandatory"
@@ -2406,6 +2423,46 @@ def EmployeeList(request):
             event.save()
 
             employee.save()
+
+            #Notifications
+            notification = Notification()
+            subscription_arn = notification.SubscribeEmployeeObj(employee.mobile_phone)
+
+            #Log events
+            event = Event()
+            event.EventTypeCode = "SUB"
+            event.EventSubjectId = ""
+            event.EventSubjectName = employee.mobile_phone
+            event.EventTypeReason = "Auto subscribed for push notification"
+            event.source = "Post API"
+            event.creator=employee.creator
+            event.save()
+
+            notification.TextEmployeeObj(subscription_arn)
+
+            #Log events
+            event = Event()
+            event.EventTypeCode = "SMS"
+            event.EventSubjectId = ""
+            event.EventSubjectName = ""
+            event.EventTypeReason = "Auto push notification sent for the below auto subscription"
+            event.source = "Post API"
+            event.creator=employee.creator
+            event.save()
+
+
+            notification.EmailEmployeeObj(employee.email)
+
+            #Log events
+            event = Event()
+            event.EventTypeCode = "EML"
+            event.EventSubjectId = ""
+            event.EventSubjectName = employee.email
+            event.EventTypeReason = "Auto email notification sent"
+            event.source = "Post API"
+            event.creator=employee.creator
+            event.save()
+
             return Response(serializer.data)
 
     #if serializer.is_valid():

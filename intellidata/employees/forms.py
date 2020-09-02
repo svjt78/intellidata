@@ -84,6 +84,7 @@ class EmployeeErrorForm(forms.ModelForm):
     errorfield = forms.CharField(required=False, label='Field At Error', widget=forms.TextInput(attrs={'readonly':'readonly'}))
     description = forms.CharField(required=False, label='Error description_html', widget=forms.TextInput(attrs={'readonly':'readonly'}))
     employer = forms.CharField(required=False, label='Employer', widget=forms.TextInput(attrs={'readonly':'readonly'}))
+    employerid = forms.CharField(required=False, label='Employer ID', widget=forms.TextInput(attrs={'readonly':'readonly'}))
     source = forms.CharField(required=False, label='Origin', widget=forms.TextInput(attrs={'readonly':'readonly'}))
     #error_date = forms.DateTimeField(required=False, label='Feed Date', widget=forms.TextInput(attrs={'readonly':'readonly'}))
 

@@ -72,6 +72,9 @@ class Transmission(models.Model):
             event.save()
 
 
+        if (self.bulk_upload_indicator == "Y" and self.backend_SOR_connection != "Disconnected"):
+            self.bulk_upload_indicator=""
+
         self.response='Success'
         super().save(*args, **kwargs)
 

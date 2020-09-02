@@ -161,6 +161,7 @@ class Employer(models.Model):
     zipcode = models.CharField(max_length=256)
 
     transmission = models.ForeignKey(Transmission, on_delete=models.SET_NULL, null=True, blank=True, related_name="employer_set")
+    transmissionid = models.CharField(max_length=255, null=True, blank=True)
 
     creator = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     employer_date = models.DateTimeField(auto_now=True)
@@ -196,6 +197,10 @@ class Employer(models.Model):
         self.slug = slugify(self.name)
         self.description_html = misaka.html(self.description)
         self.response='Success'
+
+        if (self.bulk_upload_indicator == "Y" and self.backend_SOR_connection != "Disconnected"):
+            self.bulk_upload_indicator=""
+
         super().save(*args, **kwargs)
 
         #connect to backend

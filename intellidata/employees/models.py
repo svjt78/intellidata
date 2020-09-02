@@ -185,6 +185,7 @@ class Employee(models.Model):
     employment_information = models.CharField(max_length=255, null=True, blank=True)
 
     employer = models.ForeignKey(Employer, on_delete=models.SET_NULL, null=True, blank=True, related_name="employee_set")
+    employerid = models.CharField(max_length=255, null=True, blank=True)
 
     creator = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     employee_date = models.DateTimeField(auto_now=True)
@@ -223,6 +224,10 @@ class Employee(models.Model):
 
         self.slug = slugify(self.name)
         self.response='Success'
+
+        if (self.bulk_upload_indicator == "Y" and self.backend_SOR_connection != "Disconnected"):
+            self.bulk_upload_indicator=""
+
     #    self.description_html = misaka.html(self.description)
         super().save(*args, **kwargs)
 

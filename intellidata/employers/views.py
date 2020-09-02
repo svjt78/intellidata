@@ -95,6 +95,7 @@ class CreateEmployer(LoginRequiredMixin, PermissionRequiredMixin, generic.Create
             form.instance.creator = self.request.user
             form.instance.record_status = "Created"
             form.instance.source = "Online Transaction"
+            form.instance.transmissionid=form.instance.transmission.transmissionid
 
             return super().form_valid(form)
 
@@ -160,6 +161,7 @@ def BackendPull(request, pk):
             transmission_obj = get_object_or_404(Transmission, pk = transmission_id)
             obj.transmission = transmission_obj
             obj.source = json_data["SOURCE"]
+            obj.transmissionid = json_data["TRANSMISSIONID"]
 
             obj.backend_SOR_connection = json_data["CONNECTION"]
             obj.response = json_data["RESPONSE"]
@@ -235,6 +237,7 @@ def ListEmployersHistory(request, pk):
                      transmission_obj = get_object_or_404(Transmission, pk = transmission_id)
                      obj.transmission = transmission_obj
                      obj.source = json_data[ix]["SOURCE"]
+                     obj.transmissionid = json_data[ix]["TRANSMISSIONID"]
 
                      obj.backend_SOR_connection = json_data[ix]["CONNECTION"]
                      obj.response = json_data[ix]["RESPONSE"]
@@ -313,6 +316,7 @@ def RefreshEmployer(request, pk):
             transmission_obj = get_object_or_404(Transmission, pk = transmission_id)
             obj1.transmission = transmission_obj
             obj1.source = json_data["SOURCE"]
+            obj1.transmissionid = json_data["TRANSMISSIONID"]
 
             obj1.backend_SOR_connection = json_data["CONNECTION"]
             obj1.response = json_data["RESPONSE"]
@@ -360,6 +364,7 @@ def VersionEmployer(request, pk):
             #form.photo = request.FILES['photo']
             form.instance.creator = request.user
             form.instance.record_status = "Created"
+            form.instance.transmissionid=form.instance.transmission.transmissionid
 
             #Log events
             event = Event()
@@ -512,6 +517,7 @@ class SearchEmployersList(LoginRequiredMixin, generic.ListView):
                 #obj1.transmission = transmission_obj.SenderName
                 obj1.transmission = transmission_obj
                 obj1.source = json_data["SOURCE"]
+                obj1.transmissionid = json_data["TRANSMISSIONID"]
 
                 obj1.backend_SOR_connection = json_data["CONNECTION"]
                 obj1.response = json_data["RESPONSE"]
@@ -591,8 +597,28 @@ def BulkUploadEmployer(request):
                                                     #pass employee:
                                                       employerid=row[1]
                                                       array2.append(employerid)
+
+                                                      transmission=row[12]
+                                                      transmission_instance=Transmission.objects.filter(transmissionid=transmission)[0]
+                                                      transmission_ident=transmission_instance.pk
+                                                      transmission_pk=transmission_ident
+                                                      array1=[]
+                                                      if transmission == "":
+                                                           bad_ind=1
+                                                           error_description = "Transmission is mandatory "
+                                                           array1.append(serial)
+                                                           array1.append(employerid)
+                                                           array1.append(name)
+                                                           array1.append(transmission_pk)
+                                                           array1.append(error_description)
+                                                           array1.append(transmission_pk)
+                                                           array_bad.append(array1)
+                                                      else:
+                                                           array2.append(transmission_pk)
+
                                                        #validate name
                                                       name=row[2]
+                                                      array1=[]
                                                       if name == "":
                                                           bad_ind = 1
                                                           error_description = "Name is mandatory"
@@ -601,6 +627,7 @@ def BulkUploadEmployer(request):
                                                           array1.append(name)
                                                           array1.append(name)
                                                           array1.append(error_description)
+                                                          array1.append(transmission_pk)
                                                           array_bad.append(array1)
 
                                                       else:
@@ -631,6 +658,7 @@ def BulkUploadEmployer(request):
                                                           array1.append(name)
                                                           array1.append(address_line_1)
                                                           array1.append(error_description)
+                                                          array1.append(transmission_pk)
                                                           array_bad.append(array1)
                                                       else:
                                                            array2.append(address_line_1)
@@ -649,6 +677,7 @@ def BulkUploadEmployer(request):
                                                            array1.append(name)
                                                            array1.append(city)
                                                            array1.append(error_description)
+                                                           array1.append(transmission_pk)
                                                            array_bad.append(array1)
                                                       else:
                                                           array2.append(city)
@@ -669,6 +698,7 @@ def BulkUploadEmployer(request):
                                                            array1.append(name)
                                                            array1.append(zipcode)
                                                            array1.append(error_description)
+                                                           array1.append(transmission_pk)
                                                            array_bad.append(array1)
                                                       else:
                                                            array2.append(zipcode)
@@ -676,20 +706,6 @@ def BulkUploadEmployer(request):
                                                       purpose=row[11]
                                                       array2.append(purpose)
 
-
-                                                      transmission_pk=row[12]
-                                                      array1=[]
-                                                      if transmission_pk == "":
-                                                           bad_ind=1
-                                                           error_description = "Transmission Code is mandatory "
-                                                           array1.append(serial)
-                                                           array1.append(employerid)
-                                                           array1.append(name)
-                                                           array1.append(transmission_pk)
-                                                           array1.append(error_description)
-                                                           array_bad.append(array1)
-                                                      else:
-                                                           array2.append(transmission_pk)
 
                                                       if bad_ind == 0:
                                                           array_good.append(array2)
@@ -768,19 +784,20 @@ def BulkUploadEmployer(request):
                         for row in csv.reader(csv_file):
                             if row[1] == "":
                                 bulk_mgr.add(models.Employer(employerid = str(uuid.uuid4())[26:36],
-                                                          name=row[2],
-                                                          slug=slugify(row[2]),
-                                                          description=row[3],
-                                                          description_html = misaka.html(row[3]),
-                                                          FederalEmployerIdentificationNumber=row[4],
-                                                          CarrierMasterAgreementNumber=row[5],
-                                                          address_line_1=row[6],
-                                                          address_line_2=row[7],
-                                                          city=row[8],
-                                                          state=row[9],
-                                                          zipcode=row[10],
-                                                          purpose=row[11],
-                                                          transmission=get_object_or_404(models.Transmission, pk=transmission_pk),
+                                                          name=row[3],
+                                                          slug=slugify(row[3]),
+                                                          description=row[4],
+                                                          description_html = misaka.html(row[4]),
+                                                          FederalEmployerIdentificationNumber=row[5],
+                                                          CarrierMasterAgreementNumber=row[6],
+                                                          address_line_1=row[7],
+                                                          address_line_2=row[8],
+                                                          city=row[9],
+                                                          state=row[10],
+                                                          zipcode=row[11],
+                                                          purpose=row[12],
+                                                          transmission=get_object_or_404(models.Transmission, pk=row[2]),
+                                                          transmissionid=models.Transmission.objects.get(pk=row[2]).transmissionid,
                                                           creator = request.user,
                                                           source="Standard Feed Bulk Upload",
                                                           record_status = "Created",
@@ -788,19 +805,20 @@ def BulkUploadEmployer(request):
                                                           ))
                             else:
                                 bulk_mgr.add(models.Employer(employerid = row[1],
-                                                           name=row[2],
-                                                           slug=slugify(row[2]),
-                                                           description=row[3],
-                                                           description_html = misaka.html(row[3]),
-                                                           FederalEmployerIdentificationNumber=row[4],
-                                                           CarrierMasterAgreementNumber=row[5],
-                                                           address_line_1=row[6],
-                                                           address_line_2=row[7],
-                                                           city=row[8],
-                                                           state=row[9],
-                                                           zipcode=row[10],
-                                                           purpose=row[11],
-                                                           transmission=get_object_or_404(models.Transmission, pk=transmission_pk),
+                                                           name=row[3],
+                                                           slug=slugify(row[3]),
+                                                           description=row[4],
+                                                           description_html = misaka.html(row[4]),
+                                                           FederalEmployerIdentificationNumber=row[5],
+                                                           CarrierMasterAgreementNumber=row[6],
+                                                           address_line_1=row[7],
+                                                           address_line_2=row[8],
+                                                           city=row[9],
+                                                           state=row[10],
+                                                           zipcode=row[11],
+                                                           purpose=row[12],
+                                                           transmission=get_object_or_404(models.Transmission, pk=row[2]),
+                                                           transmissionid=models.Transmission.objects.get(pk=row[2]).transmissionid,
                                                            creator = request.user,
                                                            source="Standard Feed Bulk Upload",
                                                            record_status = "Created",
@@ -823,7 +841,7 @@ def BulkUploadEmployer(request):
                                                           name=row1[2],
                                                           errorfield=row1[3],
                                                           error_description=row1[4],
-                                                          transmission=get_object_or_404(models.Transmission, pk=transmission_pk),
+                                                          transmission=get_object_or_404(models.Transmission, pk=row1[5]),
                                                           creator = request.user,
                                                           source="Standard Feed Bulk Upload"
                                                           ))
@@ -958,8 +976,28 @@ def NonStdRefresh(request):
                                                             #pass employee:
                                                               employerid=row[1]
                                                               array2.append(employerid)
+
+                                                              transmission=row[12]
+                                                              transmission_instance=Transmission.objects.filter(transmissionid=transmission)[0]
+                                                              transmission_ident=transmission_instance.pk
+                                                              transmission_pk=transmission_ident
+                                                              array1=[]
+                                                              if transmission == "":
+                                                                   bad_ind=1
+                                                                   error_description = "Transmission is mandatory "
+                                                                   array1.append(serial)
+                                                                   array1.append(employerid)
+                                                                   array1.append(name)
+                                                                   array1.append(transmission_pk)
+                                                                   array1.append(error_description)
+                                                                   array1.append(transmission_pk)
+                                                                   array_bad.append(array1)
+                                                              else:
+                                                                   array2.append(transmission_pk)
+
                                                                #validate name
                                                               name=row[2]
+                                                              array1=[]
                                                               if name == "":
                                                                   bad_ind = 1
                                                                   error_description = "Name is mandatory"
@@ -968,6 +1006,7 @@ def NonStdRefresh(request):
                                                                   array1.append(name)
                                                                   array1.append(name)
                                                                   array1.append(error_description)
+                                                                  array1.append(transmission_pk)
                                                                   array_bad.append(array1)
 
                                                               else:
@@ -998,6 +1037,7 @@ def NonStdRefresh(request):
                                                                   array1.append(name)
                                                                   array1.append(address_line_1)
                                                                   array1.append(error_description)
+                                                                  array1.append(transmission_pk)
                                                                   array_bad.append(array1)
                                                               else:
                                                                    array2.append(address_line_1)
@@ -1016,6 +1056,7 @@ def NonStdRefresh(request):
                                                                    array1.append(name)
                                                                    array1.append(city)
                                                                    array1.append(error_description)
+                                                                   array1.append(transmission_pk)
                                                                    array_bad.append(array1)
                                                               else:
                                                                   array2.append(city)
@@ -1036,27 +1077,13 @@ def NonStdRefresh(request):
                                                                    array1.append(name)
                                                                    array1.append(zipcode)
                                                                    array1.append(error_description)
+                                                                   array1.append(transmission_pk)
                                                                    array_bad.append(array1)
                                                               else:
                                                                    array2.append(zipcode)
 
                                                               purpose=row[11]
                                                               array2.append(purpose)
-
-
-                                                              transmission_pk=row[12]
-                                                              array1=[]
-                                                              if transmission_pk == "":
-                                                                   bad_ind=1
-                                                                   error_description = "Transmission Code is mandatory "
-                                                                   array1.append(serial)
-                                                                   array1.append(employerid)
-                                                                   array1.append(name)
-                                                                   array1.append(transmission_pk)
-                                                                   array1.append(error_description)
-                                                                   array_bad.append(array1)
-                                                              else:
-                                                                   array2.append(transmission_pk)
 
                                                               if bad_ind == 0:
                                                                   array_good.append(array2)
@@ -1135,19 +1162,20 @@ def NonStdRefresh(request):
                                 for row in csv.reader(csv_file):
                                     if row[1] == "":
                                         bulk_mgr.add(models.Employer(employerid = str(uuid.uuid4())[26:36],
-                                                                  name=row[2],
-                                                                  slug=slugify(row[2]),
-                                                                  description=row[3],
-                                                                  description_html = misaka.html(row[3]),
-                                                                  FederalEmployerIdentificationNumber=row[4],
-                                                                  CarrierMasterAgreementNumber=row[5],
-                                                                  address_line_1=row[6],
-                                                                  address_line_2=row[7],
-                                                                  city=row[8],
-                                                                  state=row[9],
-                                                                  zipcode=row[10],
-                                                                  purpose=row[11],
-                                                                  transmission=get_object_or_404(models.Transmission, pk=transmission_pk),
+                                                                  name=row[3],
+                                                                  slug=slugify(row[3]),
+                                                                  description=row[4],
+                                                                  description_html = misaka.html(row[4]),
+                                                                  FederalEmployerIdentificationNumber=row[5],
+                                                                  CarrierMasterAgreementNumber=row[6],
+                                                                  address_line_1=row[7],
+                                                                  address_line_2=row[8],
+                                                                  city=row[9],
+                                                                  state=row[10],
+                                                                  zipcode=row[11],
+                                                                  purpose=row[12],
+                                                                  transmission=get_object_or_404(models.Transmission, pk=row[2]),
+                                                                  transmissionid=models.Transmission.objects.get(pk=row[2]).transmissionid,
                                                                   creator = request.user,
                                                                   source="Non-Standard Feed Bulk Upload",
                                                                   record_status = "Created",
@@ -1155,19 +1183,20 @@ def NonStdRefresh(request):
                                                                   ))
                                     else:
                                         bulk_mgr.add(models.Employer(employerid = row[1],
-                                                                   name=row[2],
-                                                                   slug=slugify(row[2]),
-                                                                   description=row[3],
-                                                                   description_html = misaka.html(row[3]),
-                                                                   FederalEmployerIdentificationNumber=row[4],
-                                                                   CarrierMasterAgreementNumber=row[5],
-                                                                   address_line_1=row[6],
-                                                                   address_line_2=row[7],
-                                                                   city=row[8],
-                                                                   state=row[9],
-                                                                   zipcode=row[10],
-                                                                   purpose=row[11],
-                                                                   transmission=get_object_or_404(models.Transmission, pk=transmission_pk),
+                                                                   name=row[3],
+                                                                   slug=slugify(row[3]),
+                                                                   description=row[4],
+                                                                   description_html = misaka.html(row[4]),
+                                                                   FederalEmployerIdentificationNumber=row[5],
+                                                                   CarrierMasterAgreementNumber=row[6],
+                                                                   address_line_1=row[7],
+                                                                   address_line_2=row[8],
+                                                                   city=row[9],
+                                                                   state=row[10],
+                                                                   zipcode=row[11],
+                                                                   purpose=row[12],
+                                                                   transmission=get_object_or_404(models.Transmission, pk=row[2]),
+                                                                   transmissionid=models.Transmission.objects.get(pk=row[2]).transmissionid,
                                                                    creator = request.user,
                                                                    source="Non-Standard Feed Bulk Upload",
                                                                    record_status = "Created",
@@ -1190,7 +1219,7 @@ def NonStdRefresh(request):
                                                                   name=row1[2],
                                                                   errorfield=row1[3],
                                                                   error_description=row1[4],
-                                                                  transmission=get_object_or_404(models.Transmission, pk=transmission_pk),
+                                                                  transmission=get_object_or_404(models.Transmission, pk=row1[5]),
                                                                   creator = request.user,
                                                                   source="Non-Standard Feed Bulk Upload"
                                                                   ))
@@ -1378,7 +1407,11 @@ def EmployerList(request):
 
         employer.purpose = serializer.data["purpose"]
 
-        transmission_ident = serializer.data["transmission"]
+        #get the most recent employer instance and pk
+        employer.transmissionid=serializer.data["transmissionid"]
+        transmission_instance=Transmission.objects.filter(transmissionid=employer.transmissionid)[0]
+        transmission_ident=transmission_instance.pk
+        pk=transmission_ident
         array1=[]
         if transmission_ident == "":
             bad_ind=1
@@ -1389,7 +1422,7 @@ def EmployerList(request):
             array1.append(error_description)
             array_bad.append(array1)
         else:
-            employer.transmission = get_object_or_404(Transmission, pk=serializer.data["transmission"])
+            employer.transmission = get_object_or_404(Transmission, pk=pk)
 
         employer.source = "Post API"
 
@@ -1432,8 +1465,8 @@ def EmployerList(request):
                                                           name=row1[1],
                                                           errorfield=row1[2],
                                                           error_description=row1[3],
-                                                          transmission=get_object_or_404(models.Transmission, pk=serializer.data["transmission"]),
-                                                          creator = request.user,
+                                                          transmission=get_object_or_404(models.Transmission, pk=pk),
+                                                          creator = get_object_or_404(User, pk=serializer.data["creator"]),
                                                           source="Post API"
                                                           ))
                             bulk_mgr.done()
