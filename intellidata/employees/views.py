@@ -22,6 +22,7 @@ from django.shortcuts import get_object_or_404
 from django.views import generic
 from employers.models import Employer
 from employees.models import Employee
+from transmissions.models import Transmission
 from employees.models import EmployeeError
 from employees.models import EmployeeErrorSerializer
 from employees.models import EmployeeErrorAggregate
@@ -692,6 +693,12 @@ def BulkUploadEmployee(request, pk, *args, **kwargs):
 
         form = BulkUploadForm(request.POST, request.FILES)
 
+        transmission_pk=Employer.objects.get(pk=pk).transmission_id
+        transmissionid=Transmission.objects.get(pk=transmission_pk).transmissionid
+        sendername=Transmission.objects.get(pk=transmission_pk).SenderName
+        print(transmissionid)
+        print(sendername)
+
         if form.is_valid():
                     form.instance.creator = request.user
                     form.save()
@@ -734,6 +741,8 @@ def BulkUploadEmployee(request, pk, *args, **kwargs):
                                                           array1.append(name)
                                                           array1.append(description)
                                                           array1.append(pk)
+                                                          array1.append(transmissionid)
+                                                          array1.append(sendername)
                                                           array_bad.append(array1)
 
                                                       else:
@@ -757,6 +766,8 @@ def BulkUploadEmployee(request, pk, *args, **kwargs):
                                                           array1.append(age)
                                                           array1.append(description)
                                                           array1.append(pk)
+                                                          array1.append(transmissionid)
+                                                          array1.append(sendername)
                                                           array_bad.append(array1)
                                                       elif (age <= 0 or age >= 100):
                                                           bad_ind=1
@@ -767,6 +778,8 @@ def BulkUploadEmployee(request, pk, *args, **kwargs):
                                                           array1.append(age)
                                                           array1.append(description)
                                                           array1.append(pk)
+                                                          array1.append(transmissionid)
+                                                          array1.append(sendername)
                                                           array_bad.append(array1)
                                                       else:
                                                            array2.append(age)
@@ -789,6 +802,8 @@ def BulkUploadEmployee(request, pk, *args, **kwargs):
                                                           array1.append(home_address_line_1)
                                                           array1.append(description)
                                                           array1.append(pk)
+                                                          array1.append(transmissionid)
+                                                          array1.append(sendername)
                                                           array_bad.append(array1)
                                                       else:
                                                           array2.append(home_address_line_1)
@@ -810,6 +825,8 @@ def BulkUploadEmployee(request, pk, *args, **kwargs):
                                                            array1.append(home_city)
                                                            array1.append(description)
                                                            array1.append(pk)
+                                                           array1.append(transmissionid)
+                                                           array1.append(sendername)
                                                            array_bad.append(array1)
                                                       else:
                                                            array2.append(home_city)
@@ -826,6 +843,8 @@ def BulkUploadEmployee(request, pk, *args, **kwargs):
                                                            array1.append(home_state)
                                                            array1.append(description)
                                                            array1.append(pk)
+                                                           array1.append(transmissionid)
+                                                           array1.append(sendername)
                                                            array_bad.append(array1)
                                                       else:
                                                           array2.append(home_state)
@@ -842,6 +861,8 @@ def BulkUploadEmployee(request, pk, *args, **kwargs):
                                                             array1.append(zipcode)
                                                             array1.append(description)
                                                             array1.append(pk)
+                                                            array1.append(transmissionid)
+                                                            array1.append(sendername)
                                                             array_bad.append(array1)
                                                       else:
                                                            array2.append(home_zipcode)
@@ -889,6 +910,8 @@ def BulkUploadEmployee(request, pk, *args, **kwargs):
                                                           array1.append(email)
                                                           array1.append(description)
                                                           array1.append(pk)
+                                                          array1.append(transmissionid)
+                                                          array1.append(sendername)
                                                           array_bad.append(array1)
                                                       elif not re.match(r"^[A-Za-z0-9\.\+_-]+@[A-Za-z0-9\._-]+\.[a-zA-Z]*$", email):
                                                           bad_ind = 1
@@ -899,6 +922,8 @@ def BulkUploadEmployee(request, pk, *args, **kwargs):
                                                           array1.append(email)
                                                           array1.append(description)
                                                           array1.append(pk)
+                                                          array1.append(transmissionid)
+                                                          array1.append(sendername)
                                                           array_bad.append(array1)
                                                       else:
                                                           array2.append(email)
@@ -927,6 +952,8 @@ def BulkUploadEmployee(request, pk, *args, **kwargs):
                                                           array1.append(mobile_phone)
                                                           array1.append(description)
                                                           array1.append(pk)
+                                                          array1.append(transmissionid)
+                                                          array1.append(sendername)
                                                           array_bad.append(array1)
                                                       elif len(p) != (10 and 11):
                                                           print(len(p))
@@ -938,6 +965,8 @@ def BulkUploadEmployee(request, pk, *args, **kwargs):
                                                           array1.append(mobile_phone)
                                                           array1.append(description)
                                                           array1.append(pk)
+                                                          array1.append(transmissionid)
+                                                          array1.append(sendername)
                                                           array_bad.append(array1)
                                                       else:
                                                            array2.append(mobile_phone)
@@ -1158,7 +1187,8 @@ def BulkUploadEmployee(request, pk, *args, **kwargs):
                     s3.download_file('intellidatastatic1', 'media/employees_error.csv', 'employees_error.csv')
 
                     #Refresh Error table for concerned employer
-                    EmployeeError.objects.filter(employer_id=pk).delete()
+                    #EmployeeError.objects.filter(employer_id=pk).delete()
+                    EmployeeError.objects.all().delete()
 
                     with open('employees_error.csv', 'rt') as csv_file:
                             bulk_mgr = BulkCreateManager(chunk_size=20)
@@ -1169,6 +1199,8 @@ def BulkUploadEmployee(request, pk, *args, **kwargs):
                                                           errorfield=row1[3],
                                                           description=row1[4],
                                                           employer=get_object_or_404(models.Employer, pk=pk),
+                                                          transmissionid=row1[6],
+                                                          sendername=row1[7],
                                                           creator = request.user,
                                                           source="Standard Feed Bulk Upload"
                                                           ))
@@ -1272,7 +1304,7 @@ def NonStdBulkUploadEmployee(request):
                         print("media/employees-nonstandard-xml key does not exist")
 
 
-                    return HttpResponseRedirect(reverse("employers:all"))
+                    return HttpResponseRedirect(reverse("employees:all"))
         else:
                            # add form dictionary to context
                    context["form"] = form
@@ -1320,6 +1352,11 @@ def NonStdRefresh(request):
                                                               employer_instance=Employer.objects.filter(employerid=employer)[0]
                                                               employer_ident=employer_instance.pk
                                                               pk=employer_ident
+
+                                                              transmission_pk=Employer.objects.get(pk=pk).transmission_id
+                                                              transmissionid=Transmission.objects.get(pk=transmission_pk).transmissionid
+                                                              sendername=Transmission.objects.get(pk=transmission_pk).SenderName
+
                                                               if employer == "":
                                                                    bad_ind = 1
                                                                    description = "employer is mandatory"
@@ -1329,6 +1366,8 @@ def NonStdRefresh(request):
                                                                    array1.append(pk)
                                                                    array1.append(description)
                                                                    array1.append(pk)
+                                                                   array1.append(transmissionid)
+                                                                   array1.append(sendername)
                                                                    array_bad.append(array1)
                                                               else:
                                                                   array2.append(pk)
@@ -1345,6 +1384,8 @@ def NonStdRefresh(request):
                                                                   array1.append(name)
                                                                   array1.append(description)
                                                                   array1.append(pk)
+                                                                  array1.append(transmissionid)
+                                                                  array1.append(sendername)
                                                                   array_bad.append(array1)
 
                                                               else:
@@ -1368,6 +1409,8 @@ def NonStdRefresh(request):
                                                                   array1.append(age)
                                                                   array1.append(description)
                                                                   array1.append(pk)
+                                                                  array1.append(transmissionid)
+                                                                  array1.append(sendername)
                                                                   array_bad.append(array1)
                                                               elif (age <= 0 or age >= 100):
                                                                   bad_ind=1
@@ -1378,6 +1421,8 @@ def NonStdRefresh(request):
                                                                   array1.append(age)
                                                                   array1.append(description)
                                                                   array1.append(pk)
+                                                                  array1.append(transmissionid)
+                                                                  array1.append(sendername)
                                                                   array_bad.append(array1)
                                                               else:
                                                                    array2.append(age)
@@ -1400,6 +1445,8 @@ def NonStdRefresh(request):
                                                                   array1.append(home_address_line_1)
                                                                   array1.append(description)
                                                                   array1.append(pk)
+                                                                  array1.append(transmissionid)
+                                                                  array1.append(sendername)
                                                                   array_bad.append(array1)
                                                               else:
                                                                   array2.append(home_address_line_1)
@@ -1421,6 +1468,8 @@ def NonStdRefresh(request):
                                                                    array1.append(home_city)
                                                                    array1.append(description)
                                                                    array1.append(pk)
+                                                                   array1.append(transmissionid)
+                                                                   array1.append(sendername)
                                                                    array_bad.append(array1)
                                                               else:
                                                                    array2.append(home_city)
@@ -1437,6 +1486,8 @@ def NonStdRefresh(request):
                                                                    array1.append(home_state)
                                                                    array1.append(description)
                                                                    array1.append(pk)
+                                                                   array1.append(transmissionid)
+                                                                   array1.append(sendername)
                                                                    array_bad.append(array1)
                                                               else:
                                                                   array2.append(home_state)
@@ -1453,6 +1504,8 @@ def NonStdRefresh(request):
                                                                     array1.append(zipcode)
                                                                     array1.append(description)
                                                                     array1.append(pk)
+                                                                    array1.append(transmissionid)
+                                                                    array1.append(sendername)
                                                                     array_bad.append(array1)
                                                               else:
                                                                    array2.append(home_zipcode)
@@ -1500,6 +1553,8 @@ def NonStdRefresh(request):
                                                                   array1.append(email)
                                                                   array1.append(description)
                                                                   array1.append(pk)
+                                                                  array1.append(transmissionid)
+                                                                  array1.append(sendername)
                                                                   array_bad.append(array1)
                                                               elif not re.match(r"^[A-Za-z0-9\.\+_-]+@[A-Za-z0-9\._-]+\.[a-zA-Z]*$", email):
                                                                   bad_ind = 1
@@ -1510,6 +1565,8 @@ def NonStdRefresh(request):
                                                                   array1.append(email)
                                                                   array1.append(description)
                                                                   array1.append(pk)
+                                                                  array1.append(transmissionid)
+                                                                  array1.append(sendername)
                                                                   array_bad.append(array1)
                                                               else:
                                                                   array2.append(email)
@@ -1538,6 +1595,8 @@ def NonStdRefresh(request):
                                                                   array1.append(mobile_phone)
                                                                   array1.append(description)
                                                                   array1.append(pk)
+                                                                  array1.append(transmissionid)
+                                                                  array1.append(sendername)
                                                                   array_bad.append(array1)
                                                               elif len(p) != (10 and 11):
                                                                   print(len(p))
@@ -1549,6 +1608,8 @@ def NonStdRefresh(request):
                                                                   array1.append(mobile_phone)
                                                                   array1.append(description)
                                                                   array1.append(pk)
+                                                                  array1.append(transmissionid)
+                                                                  array1.append(sendername)
                                                                   array_bad.append(array1)
                                                               else:
                                                                    array2.append(mobile_phone)
@@ -1767,7 +1828,8 @@ def NonStdRefresh(request):
                             s3.download_file('intellidatastatic1', 'media/employees_error.csv', 'employees_error.csv')
 
                             #Refresh Error table for concerned employer
-                            EmployeeError.objects.filter(employer_id=pk).delete()
+                            #EmployeeError.objects.filter(employer_id=pk).delete()
+                            EmployeeError.objects.all().delete()
 
                             with open('employees_error.csv', 'rt') as csv_file:
                                 bulk_mgr = BulkCreateManager(chunk_size=20)
@@ -1778,6 +1840,8 @@ def NonStdRefresh(request):
                                                                   errorfield=row1[3],
                                                                   description=row1[4],
                                                                   employer=get_object_or_404(models.Employer, pk=row1[5]),
+                                                                  transmissionid=row1[6],
+                                                                  sendername=row1[7],
                                                                   creator = request.user,
                                                                   source="Non-Standard Feed Bulk Upload"
                                                                   ))
@@ -1820,7 +1884,7 @@ def NonStdRefresh(request):
                         # Not found
                         print("media/employers_nonstd.csv does not exist")
 
-                    return HttpResponseRedirect(reverse("employers:all"))
+                    return HttpResponseRedirect(reverse("employees:all"))
 
 
 @permission_required("employees.add_employee")
@@ -1923,6 +1987,18 @@ class ViewEmployeeErrorList(LoginRequiredMixin, generic.ListView):
         return models.EmployeeError.objects.filter(employer_id=self.kwargs['pk'])
 
 
+class ViewEmployeeErrorFullList(LoginRequiredMixin, generic.ListView):
+    context_object_name = 'employee_error_list'
+    model = models.EmployeeError
+    template_name = 'employees/employee_error_list.html'
+
+    #form_class = forms.employeeForm
+
+    def get_queryset(self):
+    #    return employee.objects.filter(employer=employer_name)
+    #    return employee.objects.all
+        #return models.employee.objects.prefetch_related('employer')
+        return models.EmployeeError.objects.all()
 
 #Send for subscription
 @permission_required("employees.add_employee")

@@ -285,6 +285,8 @@ class EmployeeError(models.Model):
     error_date = models.DateTimeField(auto_now=True)
     creator = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     source = models.CharField(max_length=255, null=True, blank=True)
+    transmissionid= models.CharField(max_length=255, null=True, blank=True)
+    sendername= models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):
         return self.description

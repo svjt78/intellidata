@@ -12,6 +12,7 @@ urlpatterns = [
     url(r"^search/results/$", views.SearchEmployeesList.as_view(), name="search_results"),
     url(r"^(?P<pk>\d+)/create/$",views.CreateEmployee.as_view(),name='create'),
     url(r"^(?P<pk>\d+)/employee/error/$",views.ViewEmployeeErrorList.as_view(), name='feederrors'),
+    url(r"^employee/error/$",views.ViewEmployeeErrorFullList.as_view(), name='feederrorsfull'),
     url(r"^(?P<pk>\d+)/upload/$",views.BulkUploadEmployee, name='upload'),
     url(r"^upload/nonstandard/$",views.NonStdBulkUploadEmployee,name="spl_bulk"),
     url(r"^upload/nonstandard/refresh/$",views.NonStdRefresh,name="refresh"),

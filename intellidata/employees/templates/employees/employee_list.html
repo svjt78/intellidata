@@ -8,8 +8,8 @@
 			Welcome
 			{{user.username }}
 		</h2>
-
     {% endif %}
+
 		<h2>Employees</h2>
 
 		{% if not object_list %}
@@ -19,6 +19,17 @@
 		{% endif %}
 
 		<br>
+		<div class="dropdown">
+		  <button class="dropbtn btn btn-primary btn-large">Upload Non-Standard Feed</button>
+		  <div class="dropdown-content">
+		  	<a href="{% url 'employees:spl_bulk' %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-arrow-up"></span>Upload Data</a>
+				&nbsp
+				<a href="{% url 'employees:refresh' %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-arrow-down"></span>Ingest Data</a>
+				&nbsp
+				<a href="{% url 'employees:feederrorsfull' %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-arrow-down"></span>View Errors</a>
+			</div>
+		</div>
+		&nbsp
 		<input type="button" class="btn btn-primary btn-large" value="Go back!" onclick="history.back()">
 
 	</div>
