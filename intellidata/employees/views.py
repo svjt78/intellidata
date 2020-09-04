@@ -708,8 +708,9 @@ def BulkUploadEmployee(request, pk, *args, **kwargs):
 
                     with open('employees.csv', 'rt') as csv_file:
                         array_good =[]
-                        array_bad = []
-                        #array_bad =[]
+                        array_bad =[]
+                        #array_bad = ["Serial#", "Employee_id", "Name", "Errorfield", "Description", "Employer_id", "Tramsmission_id", "Sender_Name"]
+
                         next(csv_file) # skip header line
                         for row in csv.reader(csv_file):
                                                       bad_ind = 0
@@ -1186,6 +1187,16 @@ def BulkUploadEmployee(request, pk, *args, **kwargs):
                     # load the employee error table
                     s3.download_file('intellidatastatic1', 'media/employees_error.csv', 'employees_error.csv')
 
+                    if (os.stat("employees_error.csv").st_size != 0):
+                        email_address=models.Employer.objects.get(pk=pk).planadmin_email
+                        if (email_address!="" and email_address!=None):
+                            employer_name=models.Employer.objects.get(pk=pk).name
+                            attached_file = employer_name + "_error"
+                            attachment_file = "employees_error.csv"
+                            notification.EmailPlanAdmin(email_address, attachment_file, attached_file)
+
+
+
                     #Refresh Error table for concerned employer
                     #EmployeeError.objects.filter(employer_id=pk).delete()
                     EmployeeError.objects.all().delete()
@@ -1198,7 +1209,7 @@ def BulkUploadEmployee(request, pk, *args, **kwargs):
                                                           name=row1[2],
                                                           errorfield=row1[3],
                                                           description=row1[4],
-                                                          employer=get_object_or_404(models.Employer, pk=pk),
+                                                          employer=get_object_or_404(models.Employer, pk=row1[5]),
                                                           transmissionid=row1[6],
                                                           sendername=row1[7],
                                                           creator = request.user,
@@ -1834,6 +1845,7 @@ def NonStdRefresh(request):
                             with open('employees_error.csv', 'rt') as csv_file:
                                 bulk_mgr = BulkCreateManager(chunk_size=20)
                                 for row1 in csv.reader(csv_file):
+
                                     bulk_mgr.add(models.EmployeeError(serial = row1[0],
                                                                   employeeid=row1[1],
                                                                   name=row1[2],

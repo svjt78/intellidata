@@ -1,0 +1,25 @@
+{% extends "emails/email_base.html" %}
+{% load static %}
+{% block preemail %}
+
+<div class="dropdown">
+  <button class="dropbtn btn btn-primary btn-large">Manage Roles and Emails</button>
+  <div class="dropdown-content">
+
+  <a href="{% url 'emails:version' pk=email_details.pk %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-pencil"></span> Version email</a>
+  &nbsp;
+  <a href="{% url 'emails:delete' pk=email_details.pk %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-remove-circle"></span> Delete email</a>
+
+  </div>
+</div>
+
+&nbsp;
+<input type="button" class="btn btn-primary btn-large" value="Go back!" onclick="history.back()">
+&nbsp;
+
+<h1>Employer: {{email_details.employer}}</h1>
+<h2>Role: {{email_details.role}}</h2>
+<h2>Email Address: {{email_details.emailaddress}}</h2>
+<h2>Create Date: {{email_details.create_date}}</h2>
+
+{% endblock %}

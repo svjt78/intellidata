@@ -1,0 +1,14 @@
+{% extends "emails/email_base.html" %}
+{% load bootstrap3 %}
+
+{% block email_content %}
+<h2>Role and Email Maintenance Screen</h2>
+
+  <form method="POST">
+  	{% csrf_token %}
+  	{% bootstrap_form form %}
+  	<input type="submit" value="Save" class="btn btn-primary btn-large">
+    &nbsp;
+    <a href="{% url 'emails:all'%}" class="btn btn-primary btn-large">Cancel</a>
+  </form>
+{% endblock %}

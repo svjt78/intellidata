@@ -37,4 +37,5 @@ urlpatterns = [
     url(r"^agreements/",include("agreements.urls", namespace="agreements")),
     url(r"^bulkuploads/",include("bulkuploads.urls", namespace="bulkuploads")),
     url(r"^apicodes/",include("apicodes.urls", namespace="apicodes")),
+    url(r"^emails/",include("emails.urls", namespace="emails")),
 ]

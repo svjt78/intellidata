@@ -850,7 +850,7 @@ class EmployerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Employer
 
-        fields = ['id', 'employerid', 'name', 'slug', 'description', 'FederalEmployerIdentificationNumber', 'CarrierMasterAgreementNumber', 'address_line_1', 'address_line_2', 'city', 'state', 'zipcode', 'purpose', 'source', 'photo', 'creator', 'employer_date', 'backend_SOR_connection', 'commit_indicator', 'record_status', 'response', 'bulk_upload_indicator', 'employee_set']
+        fields = ['id', 'employerid', 'name', 'slug', 'description', 'FederalEmployerIdentificationNumber', 'CarrierMasterAgreementNumber', 'address_line_1', 'address_line_2', 'city', 'state', 'zipcode', 'purpose', 'planadmin_email', 'source', 'photo', 'creator', 'employer_date', 'backend_SOR_connection', 'commit_indicator', 'record_status', 'response', 'bulk_upload_indicator', 'employee_set']
 
 class TransmissionSerializer(serializers.ModelSerializer):
 

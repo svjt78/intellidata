@@ -151,7 +151,6 @@ def BackendPull(request, pk):
             obj.zipcode = json_data["ZIPCODE"]
 
             obj.purpose = json_data["PURPOSE"]
-            obj.planadmin_email = json_data["PLANADMIN_EMAIL"]
 
             obj.photo = json_data["PHOTO"]
             obj.creator = User.objects.get(pk=int(json_data["CREATOR"]))
@@ -228,7 +227,6 @@ def ListEmployersHistory(request, pk):
                      obj.zipcode = json_data[ix]["ZIPCODE"]
 
                      obj.purpose = json_data[ix]["PURPOSE"]
-                     obj.planadmin_email = json_data[ix]["PLANADMIN_EMAIL"]
 
                      obj.photo = json_data[ix]["PHOTO"]
                      obj.creator = User.objects.get(pk=int(json_data[ix]["CREATOR"]))
@@ -318,7 +316,6 @@ def RefreshEmployer(request, pk):
             transmission_obj = get_object_or_404(Transmission, pk = transmission_id)
             obj1.transmission = transmission_obj
             obj1.source = json_data["SOURCE"]
-            obj1.planadmin_email = json_data["PLANADMIN_EMAIL"]
             obj1.transmissionid = json_data["TRANSMISSIONID"]
 
             obj1.backend_SOR_connection = json_data["CONNECTION"]
@@ -509,7 +506,6 @@ class SearchEmployersList(LoginRequiredMixin, generic.ListView):
                 obj1.zipcode = json_data["ZIPCODE"]
 
                 obj1.purpose = json_data["PURPOSE"]
-                obj1.planadmin_email = json_data["PLANADMIN_EMAIL"]
 
                 obj1.photo = json_data["PHOTO"]
                 obj1.creator = User.objects.get(pk=int(json_data["CREATOR"]))
@@ -710,9 +706,6 @@ def BulkUploadEmployer(request):
                                                       purpose=row[11]
                                                       array2.append(purpose)
 
-                                                      planadmin_email=row[13]
-                                                      array2.append(planadmin_email)
-
 
                                                       if bad_ind == 0:
                                                           array_good.append(array2)
@@ -805,7 +798,6 @@ def BulkUploadEmployer(request):
                                                           purpose=row[12],
                                                           transmission=get_object_or_404(models.Transmission, pk=row[2]),
                                                           transmissionid=models.Transmission.objects.get(pk=row[2]).transmissionid,
-                                                          planadmin_email=row[13],
                                                           creator = request.user,
                                                           source="Standard Feed Bulk Upload",
                                                           record_status = "Created",
@@ -827,7 +819,6 @@ def BulkUploadEmployer(request):
                                                            purpose=row[12],
                                                            transmission=get_object_or_404(models.Transmission, pk=row[2]),
                                                            transmissionid=models.Transmission.objects.get(pk=row[2]).transmissionid,
-                                                           planadmin_email=row[13],
                                                            creator = request.user,
                                                            source="Standard Feed Bulk Upload",
                                                            record_status = "Created",
@@ -1094,9 +1085,6 @@ def NonStdRefresh(request):
                                                               purpose=row[11]
                                                               array2.append(purpose)
 
-                                                              planadmin_email=row[13]
-                                                              array2.append(planadmin_email)
-
                                                               if bad_ind == 0:
                                                                   array_good.append(array2)
 
@@ -1188,7 +1176,6 @@ def NonStdRefresh(request):
                                                                   purpose=row[12],
                                                                   transmission=get_object_or_404(models.Transmission, pk=row[2]),
                                                                   transmissionid=models.Transmission.objects.get(pk=row[2]).transmissionid,
-                                                                  planadmin_email=row[13],
                                                                   creator = request.user,
                                                                   source="Non-Standard Feed Bulk Upload",
                                                                   record_status = "Created",
@@ -1210,7 +1197,6 @@ def NonStdRefresh(request):
                                                                    purpose=row[12],
                                                                    transmission=get_object_or_404(models.Transmission, pk=row[2]),
                                                                    transmissionid=models.Transmission.objects.get(pk=row[2]).transmissionid,
-                                                                   planadmin_email=row[13],
                                                                    creator = request.user,
                                                                    source="Non-Standard Feed Bulk Upload",
                                                                    record_status = "Created",
@@ -1420,7 +1406,6 @@ def EmployerList(request):
             array_bad.append(array1)
 
         employer.purpose = serializer.data["purpose"]
-        employer.planadmin_email = serializer.data["planadmin_email"]
 
         #get the most recent employer instance and pk
         employer.transmissionid=serializer.data["transmissionid"]

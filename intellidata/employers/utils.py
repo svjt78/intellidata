@@ -5,6 +5,10 @@ import boto3
 import json
 from botocore.exceptions import ClientError
 
+from email.mime.text import MIMEText
+from email.mime.application import MIMEApplication
+from email.mime.multipart import MIMEMultipart
+
 
 
 def create_new_ref_number():
@@ -227,6 +231,31 @@ class Notification:
                 print("Email sent! Message ID:"),
                 print(response['MessageId'])
                 #obj.emailer = "Email Notification Sent on " + str(datetime.date.today())
+
+
+    def EmailPlanAdmin(self, email_addr, attachment_file, attached_file):
+
+        client = boto3.client('ses')
+
+        message = MIMEMultipart()
+        message['Subject'] = 'Employee feed error - Please refer to attached file'
+        message['From'] = 'suvojit.dt@gmail.com'
+        message['To'] = ', '.join([email_addr])
+        # message body
+        part = MIMEText('email body string', 'html')
+        message.attach(part)
+        # attachment
+        part = MIMEApplication(open(attachment_file, 'rb').read())
+        part.add_header('Content-Disposition', 'attachment', filename=attached_file)
+        message.attach(part)
+        response = client.send_raw_email(
+            Source=message['From'],
+            Destinations=[email_addr],
+            RawMessage={
+                'Data': message.as_string()
+            }
+        )
+
 
 
 #class built to contain the different API domain names

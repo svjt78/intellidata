@@ -27,7 +27,7 @@ class EmployerForm(forms.ModelForm):
     class Meta:
         model = Employer
         #exclude = ('slug','creator', 'bulk_upload_indicator')
-        fields = ('employerid', 'name','description', 'FederalEmployerIdentificationNumber', 'CarrierMasterAgreementNumber', 'address_line_1', 'address_line_2', 'city', 'state', 'zipcode', 'purpose', 'photo', 'transmission', 'backend_SOR_connection', 'record_status', 'response')
+        fields = ('employerid', 'name','description', 'FederalEmployerIdentificationNumber', 'CarrierMasterAgreementNumber', 'address_line_1', 'address_line_2', 'city', 'state', 'zipcode', 'purpose', 'planadmin_email', 'photo', 'transmission', 'backend_SOR_connection', 'record_status', 'response')
 
         widgets = {
             'employerid': forms.TextInput(attrs={'readonly':'readonly'}),
@@ -36,7 +36,9 @@ class EmployerForm(forms.ModelForm):
             'FederalEmployerIdentificationNumber': forms.TextInput(attrs={'class': 'textinputclass'}),
             'CarrierMasterAgreementNumber': forms.TextInput(attrs={'class': 'textinputclass'}),
             'purpose': forms.TextInput(attrs={'class': 'textinputclass'}),
-            'photo': forms.ImageField()
+            'planadmin_email_address': forms.EmailField(max_length = 200),
+            'photo': forms.ImageField(),
+
         }
 
 class EmployerErrorForm(forms.ModelForm):

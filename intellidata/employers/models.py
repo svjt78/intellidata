@@ -167,6 +167,7 @@ class Employer(models.Model):
     employer_date = models.DateTimeField(auto_now=True)
     photo = models.ImageField(blank=True, null=True)
     purpose = models.CharField(max_length=255, null=True, default='', blank=True)
+    planadmin_email = models.EmailField(max_length=254, null=True, default='', blank=True)
     source = models.CharField(max_length=255, null=True, blank=True)
 
     backend_SOR_connection = models.CharField(max_length=255, default='Disconnected')

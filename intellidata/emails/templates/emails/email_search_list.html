@@ -1,0 +1,21 @@
+{% extends "emails/email_base.html" %}
+{% load bootstrap3 %}
+
+{% block email_content %}
+<div class="col-md-8">
+	<div class="list-group">
+		{% for email in object_list %}
+			<a class="list-group-item" href="{% url 'emails:single' pk=email.pk %}">
+					 <h4 class="title list-group-item-heading">Company: {{ email.company }}</h4>
+					 <h4 class="title list-group-item-heading">Role: {{ email.role }}</h4>
+					 <h4 class="title list-group-item-heading">Email Address: {{ email.emailaddress }}</h4>
+					 <h4 class="title list-group-item-heading">Create Date: {{ email.create_date }}</h4>
+		</a>
+		{% endfor %}
+	</div>
+</div>
+{% endblock %}
+
+{% block postemail %}
+	<input type="button" class="btn btn-primary btn-large" value="Go back!" onclick="history.back()">
+{% endblock %}

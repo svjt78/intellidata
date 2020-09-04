@@ -31,6 +31,7 @@
 			{% for error in object_list %}
 
 			     <h4 class="title list-group-item-heading">{{ error.serial }}</h4>
+					 <h4 class="title list-group-item-heading">Employee Name: {{ error.employeeid }}</h4>
 					 <h4 class="title list-group-item-heading">Employee Name: {{ error.name }}</h4>
 					 <h4 class="title list-group-item-heading">Field At Error: {{ error.errorfield }}</h4>
 					 <h4 class="title list-group-item-heading">Error Description: {{ error.description }}</h4>

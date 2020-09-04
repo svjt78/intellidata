@@ -1,0 +1,47 @@
+{% extends "emails/email_base.html" %}
+
+{% load static %}
+{% load thumbnail %}
+
+{% block preemail %}
+<div class="col-md-4">
+	<div class="content">
+		{% if user.is_authenticated %}
+		<h2>
+			Welcome
+			{{user.username }}
+
+		</h2>
+
+    {% endif %}
+		<h2>emails</h2>
+
+		{% if not object_list %}
+  			<p>No roles and emails are available at this time! Go ahead and create a role and email if needed!</p>
+		{% else %}
+				<p>Welcome to the roles and emails Page! Select a role and email that you want to work with!</p>
+		{% endif %}
+
+	</div>
+
+	{% if user.is_authenticated %}
+	<a href="{% url 'emails:create' %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-plus-sign"></span> Configure New Email!</a>
+	&nbsp;
+	{% endif %}
+</div>
+{% endblock %}
+
+{% block email_content %}
+<div class="col-md-8">
+	<div class="list-group">
+		{% for email in object_list %}
+			<a class="list-group-item" href="{% url 'emails:single' pk=email.pk %}">
+					 <h4 class="title list-group-item-heading">Employer: {{ email.employer }}</h4>
+					 <h4 class="title list-group-item-heading">Role: {{ email.role }}</h4>
+					 <h4 class="title list-group-item-heading">Email Address: {{ email.emailaddress }}</h4>
+					 <h4 class="title list-group-item-heading">Create Date: {{ email.create_date }}</h4>
+		</a>
+		{% endfor %}
+	</div>
+</div>
+{% endblock %}

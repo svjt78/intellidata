@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     'agreements',
     'bulkuploads',
     'apicodes',
+    'emails',
     'storages',
     'phonenumber_field',
     'rest_framework',
