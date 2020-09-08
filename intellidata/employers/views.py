@@ -406,6 +406,7 @@ class UpdateEmployer(LoginRequiredMixin, PermissionRequiredMixin, generic.Update
         else:
             form.instance.creator = self.request.user
             form.instance.record_status = "Updated"
+            form.instance.transmissionid=form.instance.transmission.transmissionid
 
             #Log events
             event = Event()

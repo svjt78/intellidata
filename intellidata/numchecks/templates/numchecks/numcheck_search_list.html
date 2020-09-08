@@ -1,0 +1,21 @@
+{% extends "numchecks/numcheck_base.html" %}
+{% load bootstrap3 %}
+
+{% block numcheck_content %}
+<div class="col-md-8">
+	<div class="list-group">
+		{% for numcheck in object_list %}
+			<a class="list-group-item" href="{% url 'numchecks:single' pk=numcheck.pk %}">
+					 <h4 class="title list-group-item-heading">Attribute: {{ numcheck.attributes }}</h4>
+					 <h4 class="title list-group-item-heading">Required: {{ numcheck.required }}</h4>
+					 <h4 class="title list-group-item-heading">Create Date: {{ numcheck.create_date }}</h4>
+					 <h4 class="title list-group-item-heading">Creator: {{ numcheck.creator }}</h4>
+		</a>
+		{% endfor %}
+	</div>
+</div>
+{% endblock %}
+
+{% block postnumcheck %}
+	<input type="button" class="btn btn-primary btn-large" value="Go back!" onclick="history.back()">
+{% endblock %}

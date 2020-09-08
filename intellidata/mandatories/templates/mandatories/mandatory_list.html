@@ -1,0 +1,47 @@
+{% extends "mandatories/mandatory_base.html" %}
+
+{% load static %}
+{% load thumbnail %}
+
+{% block premandatory %}
+<div class="col-md-4">
+	<div class="content">
+		{% if user.is_authenticated %}
+		<h2>
+			Welcome
+			{{user.username }}
+
+		</h2>
+
+    {% endif %}
+		<h2>Mandatory Rules</h2>
+
+		{% if not object_list %}
+  			<p>No Mandatories Rules are available at this time! Go ahead and create a Mandatory Rule if needed!</p>
+		{% else %}
+				<p>Welcome to Mandatories Rules Management Page! Select a Mandatory Rule that you want to work with!</p>
+		{% endif %}
+
+	</div>
+
+	{% if user.is_authenticated %}
+	<a href="{% url 'mandatories:create' %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-plus-sign"></span> Configure a Mandatory Rule!</a>
+	&nbsp;
+	{% endif %}
+</div>
+{% endblock %}
+
+{% block mandatory_content %}
+<div class="col-md-8">
+	<div class="list-group">
+		{% for mandatory in object_list %}
+			<a class="list-group-item" href="{% url 'mandatories:single' pk=mandatory.pk %}">
+					 <h4 class="title list-group-item-heading">Attribute: {{ mandatory.attributes }}</h4>
+					 <h4 class="title list-group-item-heading">Required: {{ mandatory.required }}</h4>
+					 <h4 class="title list-group-item-heading">Create Date: {{ mandatory.create_date }}</h4>
+					 <h4 class="title list-group-item-heading">Creator: {{ mandatory.creator }}</h4>
+		</a>
+		{% endfor %}
+	</div>
+</div>
+{% endblock %}

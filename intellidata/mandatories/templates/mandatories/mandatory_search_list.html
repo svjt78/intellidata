@@ -1,0 +1,21 @@
+{% extends "mandatories/mandatory_base.html" %}
+{% load bootstrap3 %}
+
+{% block mandatory_content %}
+<div class="col-md-8">
+	<div class="list-group">
+		{% for mandatory in object_list %}
+			<a class="list-group-item" href="{% url 'mandatories:single' pk=mandatory.pk %}">
+					 <h4 class="title list-group-item-heading">Attribute: {{ mandatory.attributes }}</h4>
+					 <h4 class="title list-group-item-heading">Required: {{ mandatory.required }}</h4>
+					 <h4 class="title list-group-item-heading">Create Date: {{ mandatory.create_date }}</h4>
+					 <h4 class="title list-group-item-heading">Creator: {{ mandatory.creator }}</h4>
+		</a>
+		{% endfor %}
+	</div>
+</div>
+{% endblock %}
+
+{% block postmandatory %}
+	<input type="button" class="btn btn-primary btn-large" value="Go back!" onclick="history.back()">
+{% endblock %}

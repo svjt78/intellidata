@@ -39,6 +39,8 @@ class TransmissionForm(forms.ModelForm):
 
             'SystemVersionIdentifier': forms.TextInput(attrs={'class': 'textinputclass'}),
 
+            'planadmin_email_address': forms.EmailField(max_length = 200),
+
         }
 
 class TransmissionErrorForm(forms.ModelForm):

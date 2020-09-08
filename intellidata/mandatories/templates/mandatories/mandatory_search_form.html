@@ -1,0 +1,13 @@
+{% extends "mandatories/mandatory_base.html" %}
+
+{% block premandatory %}
+<h4>Search Mandatory Rule</h4>
+
+  <form action="{% url 'mandatories:search_results' %}" method="GET">
+  	{% csrf_token %}
+    <input name="q" type="text" placeholder="Search...">
+    &nbsp;
+    <button class="btn btn-primary btn-large" type="submit" >Search</button>
+  </form>
+
+{% endblock %}

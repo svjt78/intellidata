@@ -42,8 +42,6 @@
             <a class="navbar-brand mynav" href="{% url 'admin' %}">Admin</a>
             &nbsp;
             <a class="navbar-brand mynav" href="http://127.0.0.1:8000/admin/dashboard/mydash/">Dashboard</a>
-            &nbsp;
-            <a class="navbar-brand mynav" href="{% url 'apicodes:all' %}">API Codes</a>
 
             <!-- Anything inside of collapse navbar-collapse goes into the "hamburger" -->
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
@@ -59,8 +57,26 @@
                           <li><a class="navbar-brand mynav" href="{% url 'products:search' %}" class="btn btn-simple">Product</a></li>
                           <li><a class="navbar-brand mynav" href="{% url 'agreements:search' %}" class="btn btn-simple">Agreement</a></li>
                           <li><a class="navbar-brand mynav" href="{% url 'transmissions:search' %}" class="btn btn-simple">Transmission</a></li>
-                          <li><a class="navbar-brand mynav" href="{% url 'emails:search' %}" class="btn btn-simple">Roles & Emails</a></li>
+                          <li><a class="navbar-brand mynav" href="{% url 'mandatories:search' %}" class="btn btn-simple">Mandatory Rule</a></li>
+                          <li><a class="navbar-brand mynav" href="{% url 'numchecks:search' %}" class="btn btn-simple">Numeric Rule</a></li>
                           <li><a class="navbar-brand mynav" href="{% url 'events:search' %}" class="btn btn-simple">Event</a></li>
+                          <li><a class="navbar-brand mynav" href="{% url 'emails:search' %}" class="btn btn-simple">Roles & Emails</a></li>
+
+
+                        </div>
+                      </div>
+
+                      &nbsp;
+                      &nbsp;
+
+                      &nbsp;
+
+                      <div class="dropdown">
+                        <li><a class="navbar-brand mynav" href="#" class="btn btn-simple">Rules</a></li>
+                        <div class="dropdown-content">
+                            <a class="navbar-brand mynav" href="{% url 'mandatories:all' %}" class="btn btn-simple">Mandatory</a>
+                            <a class="navbar-brand mynav" href="{% url 'numchecks:all' %}" class="btn btn-simple">Numeric</a>
+                            <a class="navbar-brand mynav" href="{% url 'apicodes:all' %}" class="btn btn-simple">API Codes</a>
 
                         </div>
                       </div>

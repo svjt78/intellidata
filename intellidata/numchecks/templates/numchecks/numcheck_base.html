@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container">
+  <div class="row">
+    {% block prenumcheck %}{% endblock %}
+    {% block numcheck_content %}{% endblock %}
+    {% block postnumcheck %}{% endblock %}
+  </div>
+</div>
+
+{% endblock %}

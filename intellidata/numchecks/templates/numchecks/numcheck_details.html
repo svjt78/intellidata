@@ -1,0 +1,27 @@
+{% extends "numchecks/numcheck_base.html" %}
+{% load static %}
+{% block prenumcheck %}
+
+<div class="dropdown">
+  <button class="dropbtn btn btn-primary btn-large">Configure Numeric Check Rules</button>
+  <div class="dropdown-content">
+
+  <a href="{% url 'numchecks:version' pk=numcheck_details.pk %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-pencil"></span> Version Numeric Rule</a>
+  &nbsp;
+  <a href="{% url 'numchecks:update' pk=numcheck_details.pk %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-pencil"></span> Update Numeric Rule</a>
+  &nbsp;
+  <a href="{% url 'numchecks:delete' pk=numcheck_details.pk %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-remove-circle"></span> Delete Numeric Rule</a>
+
+  </div>
+</div>
+
+&nbsp;
+<input type="button" class="btn btn-primary btn-large" value="Go back!" onclick="history.back()">
+&nbsp;
+
+<h1>Attribute: {{numcheck_details.attributes}}</h1>
+<h2>Number: {{numcheck_details.numberfield}}</h2>
+<h2>Create Date: {{numcheck_details.create_date}}</h2>
+<h2>Creator: {{numcheck_details.creator}}</h2>
+
+{% endblock %}

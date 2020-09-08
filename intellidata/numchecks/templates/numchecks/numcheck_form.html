@@ -1,0 +1,14 @@
+{% extends "numchecks/numcheck_base.html" %}
+{% load bootstrap3 %}
+
+{% block numcheck_content %}
+<h2>Numeric Rule Maintenance Screen</h2>
+
+  <form method="POST">
+  	{% csrf_token %}
+  	{% bootstrap_form form %}
+  	<input type="submit" value="Save" class="btn btn-primary btn-large">
+    &nbsp;
+    <a href="{% url 'numchecks:all'%}" class="btn btn-primary btn-large">Cancel</a>
+  </form>
+{% endblock %}

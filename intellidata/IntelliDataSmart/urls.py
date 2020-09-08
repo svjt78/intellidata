@@ -38,4 +38,6 @@ urlpatterns = [
     url(r"^bulkuploads/",include("bulkuploads.urls", namespace="bulkuploads")),
     url(r"^apicodes/",include("apicodes.urls", namespace="apicodes")),
     url(r"^emails/",include("emails.urls", namespace="emails")),
+    url(r"^mandatories/",include("mandatories.urls", namespace="mandatories")),
+    url(r"^numchecks/",include("numchecks.urls", namespace="numchecks")),
 ]

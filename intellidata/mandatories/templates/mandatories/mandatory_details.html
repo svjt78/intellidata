@@ -1,0 +1,27 @@
+{% extends "mandatories/mandatory_base.html" %}
+{% load static %}
+{% block premandatory %}
+
+<div class="dropdown">
+  <button class="dropbtn btn btn-primary btn-large">Configure Mandatory Rules</button>
+  <div class="dropdown-content">
+
+  <a href="{% url 'mandatories:version' pk=mandatory_details.pk %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-pencil"></span> Version Mandatory Rule</a>
+  &nbsp;
+  <a href="{% url 'mandatories:update' pk=mandatory_details.pk %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-pencil"></span> Update Mandatory Rule</a>
+  &nbsp;
+  <a href="{% url 'mandatories:delete' pk=mandatory_details.pk %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-remove-circle"></span> Delete Mandatory Rule</a>
+
+  </div>
+</div>
+
+&nbsp;
+<input type="button" class="btn btn-primary btn-large" value="Go back!" onclick="history.back()">
+&nbsp;
+
+<h1>Attribute: {{mandatory_details.attributes}}</h1>
+<h2>Required: {{mandatory_details.required}}</h2>
+<h2>Create Date: {{mandatory_details.create_date}}</h2>
+<h2>Creator: {{mandatory_details.creator}}</h2>
+
+{% endblock %}

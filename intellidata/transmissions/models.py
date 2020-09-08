@@ -42,6 +42,7 @@ class Transmission(models.Model):
     TransmissionTypeCode = models.CharField(max_length=255, default="Electronic")
     SystemVersionIdentifier = models.CharField(max_length=255, null=True, blank=True)
     source = models.CharField(max_length=255, null=True, blank=True)
+    planadmin_email = models.EmailField(max_length=254, null=True, default='', blank=True)
 
     create_date = models.DateTimeField(auto_now=True)
     creator = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)

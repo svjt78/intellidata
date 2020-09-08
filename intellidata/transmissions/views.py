@@ -143,6 +143,7 @@ def BackendPull(request, pk):
             obj.TestProductionCode = json_data["TEST_PRODUCTION_CODE"]
             obj.TransmissionTypeCode = json_data["TRANSMISSION_TYPE_CODE"]
             obj.SystemVersionIdentifier = json_data["SYSTEM_VERSION_IDENTIFIER"]
+            obj.planadmin_email = json_data["PLANADMIN_EMAIL"]
             obj.creator = User.objects.get(pk=int(json_data["CREATOR"]))
             #obj.crerator = get_object_or_404(User, pk=obj.creatorid)
             obj.create_date = json_data["CREATE_DATE"]
@@ -203,6 +204,7 @@ def ListTransmissionsHistory(request, pk):
                      obj.TestProductionCode = json_data[ix]["TEST_PRODUCTION_CODE"]
                      obj.TransmissionTypeCode = json_data[ix]["TRANSMISSION_TYPE_CODE"]
                      obj.SystemVersionIdentifier = json_data[ix]["SYSTEM_VERSION_IDENTIFIER"]
+                     obj.planadmin_email = json_data[ix]["PLANADMIN_EMAIL"]
                      #obj.photo = json_data[ix]["PHOTO"]
                      obj.creator = User.objects.get(pk=int(json_data[ix]["CREATOR"]))
                      obj.create_date = json_data[ix]["CREATE_DATE"]
@@ -266,6 +268,7 @@ def RefreshTransmission(request, pk):
             obj1.TestProductionCode = json_data["TEST_PRODUCTION_CODE"]
             obj1.TransmissionTypeCode = json_data["TRANSMISSION_TYPE_CODE"]
             obj1.SystemVersionIdentifier = json_data["SYSTEM_VERSION_IDENTIFIER"]
+            obj1.planadmin_email = json_data["PLANADMIN_EMAIL"]
 
             obj1.creator = User.objects.get(pk=int(json_data["CREATOR"]))
             #obj.crerator = get_object_or_404(User, pk=obj.creatorid)
@@ -453,6 +456,7 @@ class SearchTransmissionsList(LoginRequiredMixin, generic.ListView):
                 obj1.TestProductionCode = json_data["TEST_PRODUCTION_CODE"]
                 obj1.TransmissionTypeCode = json_data["TRANSMISSION_TYPE_CODE"]
                 obj1.SystemVersionIdentifier = json_data["SYSTEM_VERSION_IDENTIFIER"]
+                obj1.planadmin_email = json_data["PLANADMIN_EMAIL"]
 
                 obj1.creator = User.objects.get(pk=int(json_data["CREATOR"]))
                 #obj.crerator = get_object_or_404(User, pk=obj.creatorid)
@@ -567,6 +571,9 @@ def BulkUploadTransmission(request):
                                                       SystemVersionIdentifier=row[7]
                                                       array2.append(SystemVersionIdentifier)
 
+                                                      planadmin_email=row[8]
+                                                      array2.append(planadmin_email)
+
                                                       if bad_ind == 0:
                                                           array_good.append(array2)
 
@@ -650,6 +657,7 @@ def BulkUploadTransmission(request):
                                                           TestProductionCode=row[5],
                                                           TransmissionTypeCode=row[6],
                                                           SystemVersionIdentifier=row[7],
+                                                          planadmin_email=row[8],
                                                           creator = request.user,
                                                           source="Standard Feed Bulk Upload",
                                                           record_status = "Created",
@@ -663,6 +671,7 @@ def BulkUploadTransmission(request):
                                                            TestProductionCode=row[5],
                                                            TransmissionTypeCode=row[6],
                                                            SystemVersionIdentifier=row[7],
+                                                           planadmin_email=row[8],
                                                            creator = request.user,
                                                            source="Standard Feed Bulk Upload",
                                                            record_status = "Created",

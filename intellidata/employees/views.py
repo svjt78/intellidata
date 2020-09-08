@@ -1838,6 +1838,7 @@ def NonStdRefresh(request):
                             # load the employee error table
                             s3.download_file('intellidatastatic1', 'media/employees_error.csv', 'employees_error.csv')
 
+
                             #Refresh Error table for concerned employer
                             #EmployeeError.objects.filter(employer_id=pk).delete()
                             EmployeeError.objects.all().delete()
@@ -1845,7 +1846,7 @@ def NonStdRefresh(request):
                             with open('employees_error.csv', 'rt') as csv_file:
                                 bulk_mgr = BulkCreateManager(chunk_size=20)
                                 for row1 in csv.reader(csv_file):
-
+                                    #pk = Employer.objects.get(pk=row1[5]).transmission.pk
                                     bulk_mgr.add(models.EmployeeError(serial = row1[0],
                                                                   employeeid=row1[1],
                                                                   name=row1[2],
@@ -1858,6 +1859,14 @@ def NonStdRefresh(request):
                                                                   source="Non-Standard Feed Bulk Upload"
                                                                   ))
                                 bulk_mgr.done()
+
+                                if (os.stat("employees_error.csv").st_size != 0):
+                                    email_address=Transmission.objects.get(pk=transmission_pk).planadmin_email
+                                    if (email_address!="" and email_address!=None):
+                                        sender_name=Transmission.objects.get(pk=transmission_pk).SenderName
+                                        attached_file = sender_name + "_error"
+                                        attachment_file = "employees_error.csv"
+                                        notification.EmailPlanAdmin(email_address, attachment_file, attached_file)
 
 
                             #Create the aggregate report

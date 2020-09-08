@@ -1,0 +1,14 @@
+{% extends "mandatories/mandatory_base.html" %}
+{% load bootstrap3 %}
+
+{% block mandatory_content %}
+<h2>Mandatory Rule Maintenance Screen</h2>
+
+  <form method="POST">
+  	{% csrf_token %}
+  	{% bootstrap_form form %}
+  	<input type="submit" value="Save" class="btn btn-primary btn-large">
+    &nbsp;
+    <a href="{% url 'mandatories:all'%}" class="btn btn-primary btn-large">Cancel</a>
+  </form>
+{% endblock %}
