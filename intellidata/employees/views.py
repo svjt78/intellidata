@@ -53,6 +53,8 @@ from django.db.models import Count
 
 from events.forms import EventForm
 from events.models import Event
+from mandatories.models import Mandatory
+from numchecks.models import Numcheck
 
 # For Rest rest_framework
 from rest_framework import status
@@ -725,8 +727,27 @@ def BulkUploadEmployee(request, pk, *args, **kwargs):
                                                       employeeid=row[1]
                                                       array2.append(employeeid)
 
+                                                      name=row[3]
                                                       ssn=row[2]
-                                                      array2.append(ssn)
+                                                      if (Mandatory.objects.filter(attributes='employee_ssn').exists()):
+                                                          var=Mandatory.objects.filter(attributes='employee_ssn')[0].required
+                                                          if (var == "Yes" and ssn ==""):
+                                                               array1=[]
+                                                               bad_ind = 1
+                                                               description = "SSN is mandatory"
+                                                               array1.append(serial)
+                                                               array1.append(employeeid)
+                                                               array1.append(name)
+                                                               array1.append(ssn)
+                                                               array1.append(description)
+                                                               array1.append(pk)
+                                                               array1.append(transmissionid)
+                                                               array1.append(sendername)
+                                                               array_bad.append(array1)
+                                                          else:
+                                                               array2.append(ssn)
+                                                      else:
+                                                              array2.append(ssn)
 
                                                       #employerid=row[30]
 
@@ -753,7 +774,25 @@ def BulkUploadEmployee(request, pk, *args, **kwargs):
                                                       #array2.append(slug)
 
                                                       gendercode=row[4]
-                                                      array2.append(gendercode)
+                                                      if (Mandatory.objects.filter(attributes='employee_gendercode').exists()):
+                                                          var=Mandatory.objects.filter(attributes='employee_gendercode')[0].required
+                                                          if (var == "Yes" and gendercode ==""):
+                                                               array1=[]
+                                                               bad_ind = 1
+                                                               description = "Gendercode is mandatory"
+                                                               array1.append(serial)
+                                                               array1.append(employeeid)
+                                                               array1.append(name)
+                                                               array1.append(gendercode)
+                                                               array1.append(description)
+                                                               array1.append(pk)
+                                                               array1.append(transmissionid)
+                                                               array1.append(sendername)
+                                                               array_bad.append(array1)
+                                                          else:
+                                                               array2.append(gendercode)
+                                                      else:
+                                                              array2.append(gendercode)
 
                                                       #validate age
                                                       age=int(row[5])
@@ -786,10 +825,46 @@ def BulkUploadEmployee(request, pk, *args, **kwargs):
                                                            array2.append(age)
 
                                                       birthdate=row[6]
-                                                      array2.append(birthdate)
+                                                      if (Mandatory.objects.filter(attributes='employee_birthdate').exists()):
+                                                          var=Mandatory.objects.filter(attributes='employee_birthdate')[0].required
+                                                          if (var == "Yes" and birthdate ==""):
+                                                               array1=[]
+                                                               bad_ind = 1
+                                                               description = "Birthdate is mandatory"
+                                                               array1.append(serial)
+                                                               array1.append(employeeid)
+                                                               array1.append(name)
+                                                               array1.append(birthdate)
+                                                               array1.append(description)
+                                                               array1.append(pk)
+                                                               array1.append(transmissionid)
+                                                               array1.append(sendername)
+                                                               array_bad.append(array1)
+                                                          else:
+                                                               array2.append(birthdate)
+                                                      else:
+                                                              array2.append(birthdate)
 
                                                       maritalstatus=row[7]
-                                                      array2.append(maritalstatus)
+                                                      if (Mandatory.objects.filter(attributes='employee_maritalstatus').exists()):
+                                                          var=Mandatory.objects.filter(attributes='employee_maritalstatus')[0].required
+                                                          if (var == "Yes" and maritalstatus ==""):
+                                                               array1=[]
+                                                               bad_ind = 1
+                                                               description = "Marital status is mandatory"
+                                                               array1.append(serial)
+                                                               array1.append(employeeid)
+                                                               array1.append(name)
+                                                               array1.append(maritalstatus)
+                                                               array1.append(description)
+                                                               array1.append(pk)
+                                                               array1.append(transmissionid)
+                                                               array1.append(sendername)
+                                                               array_bad.append(array1)
+                                                          else:
+                                                               array2.append(maritalstatus)
+                                                      else:
+                                                              array2.append(maritalstatus)
 
                                                       #validate address line 1
                                                       home_address_line_1=row[8]
@@ -812,7 +887,25 @@ def BulkUploadEmployee(request, pk, *args, **kwargs):
 
                                                       #validate address line 2
                                                       home_address_line_2=row[9]
-                                                      array2.append(home_address_line_2)
+                                                      if (Mandatory.objects.filter(attributes='employee_home_address_line_2').exists()):
+                                                          var=Mandatory.objects.filter(attributes='employee_home_address_line_2')[0].required
+                                                          if (var == "Yes" and home_address_line_2 ==""):
+                                                               array1=[]
+                                                               bad_ind = 1
+                                                               description = "Home address 2 is mandatory"
+                                                               array1.append(serial)
+                                                               array1.append(employeeid)
+                                                               array1.append(name)
+                                                               array1.append(home_address_line_2)
+                                                               array1.append(description)
+                                                               array1.append(pk)
+                                                               array1.append(transmissionid)
+                                                               array1.append(sendername)
+                                                               array_bad.append(array1)
+                                                          else:
+                                                               array2.append(home_address_line_2)
+                                                      else:
+                                                              array2.append(home_address_line_2)
 
                                                            #validate city
                                                       home_city=row[10]
@@ -859,7 +952,7 @@ def BulkUploadEmployee(request, pk, *args, **kwargs):
                                                             array1.append(serial)
                                                             array1.append(employeeid)
                                                             array1.append(name)
-                                                            array1.append(zipcode)
+                                                            array1.append(home_zipcode)
                                                             array1.append(description)
                                                             array1.append(pk)
                                                             array1.append(transmissionid)
@@ -869,34 +962,214 @@ def BulkUploadEmployee(request, pk, *args, **kwargs):
                                                            array2.append(home_zipcode)
 
                                                       mail_address_line_1=row[13]
-                                                      array2.append(mail_address_line_1)
+                                                      if (Mandatory.objects.filter(attributes='employee_mail_address_line_1').exists()):
+                                                          var=Mandatory.objects.filter(attributes='employee_mail_address_line_1')[0].required
+                                                          if (var == "Yes" and mail_address_line_1 ==""):
+                                                               array1=[]
+                                                               bad_ind = 1
+                                                               description = "Mail_address_line_1 is mandatory"
+                                                               array1.append(serial)
+                                                               array1.append(employeeid)
+                                                               array1.append(name)
+                                                               array1.append(mail_address_line_1)
+                                                               array1.append(description)
+                                                               array1.append(pk)
+                                                               array1.append(transmissionid)
+                                                               array1.append(sendername)
+                                                               array_bad.append(array1)
+                                                          else:
+                                                               array2.append(mail_address_line_1)
+                                                      else:
+                                                              array2.append(mail_address_line_1)
 
                                                       mail_address_line_2=row[14]
-                                                      array2.append(mail_address_line_2)
+                                                      if (Mandatory.objects.filter(attributes='employee_mail_address_line_2').exists()):
+                                                          var=Mandatory.objects.filter(attributes='employee_mail_address_line_2')[0].required
+                                                          if (var == "Yes" and mail_address_line_2 ==""):
+                                                               array1=[]
+                                                               bad_ind = 1
+                                                               description = "mail_address_line_2 is mandatory"
+                                                               array1.append(serial)
+                                                               array1.append(employeeid)
+                                                               array1.append(name)
+                                                               array1.append(mail_address_line_2)
+                                                               array1.append(description)
+                                                               array1.append(pk)
+                                                               array1.append(transmissionid)
+                                                               array1.append(sendername)
+                                                               array_bad.append(array1)
+                                                          else:
+                                                               array2.append(mail_address_line_2)
+                                                      else:
+                                                              array2.append(mail_address_line_2)
 
                                                       mail_city=row[15]
-                                                      array2.append(mail_city)
+                                                      if (Mandatory.objects.filter(attributes='employee_mail_city').exists()):
+                                                          var=Mandatory.objects.filter(attributes='employee_mail_city')[0].required
+                                                          if (var == "Yes" and mail_city ==""):
+                                                               array1=[]
+                                                               bad_ind = 1
+                                                               description = "mail_city is mandatory"
+                                                               array1.append(serial)
+                                                               array1.append(employeeid)
+                                                               array1.append(name)
+                                                               array1.append(mail_city)
+                                                               array1.append(description)
+                                                               array1.append(pk)
+                                                               array1.append(transmissionid)
+                                                               array1.append(sendername)
+                                                               array_bad.append(array1)
+                                                          else:
+                                                               array2.append(mail_city)
+                                                      else:
+                                                              array2.append(mail_city)
 
                                                       mail_state=row[16]
-                                                      array2.append(mail_state)
+                                                      if (Mandatory.objects.filter(attributes='employee_mail_state').exists()):
+                                                          var=Mandatory.objects.filter(attributes='employee_mail_state')[0].required
+                                                          if (var == "Yes" and mail_state ==""):
+                                                               array1=[]
+                                                               bad_ind = 1
+                                                               description = "mail_state is mandatory"
+                                                               array1.append(serial)
+                                                               array1.append(employeeid)
+                                                               array1.append(name)
+                                                               array1.append(mail_state)
+                                                               array1.append(description)
+                                                               array1.append(pk)
+                                                               array1.append(transmissionid)
+                                                               array1.append(sendername)
+                                                               array_bad.append(array1)
+                                                          else:
+                                                               array2.append(mail_state)
+                                                      else:
+                                                              array2.append(mail_state)
 
                                                       mail_zipcode=row[17]
-                                                      array2.append(mail_zipcode)
+                                                      if (Mandatory.objects.filter(attributes='employee_mail_zipcode').exists()):
+                                                          var=Mandatory.objects.filter(attributes='employee_mail_zipcode')[0].required
+                                                          if (var == "Yes" and mail_zipcode ==""):
+                                                               array1=[]
+                                                               bad_ind = 1
+                                                               description = "mail_zipcode is mandatory"
+                                                               array1.append(serial)
+                                                               array1.append(employeeid)
+                                                               array1.append(name)
+                                                               array1.append(mail_zipcode)
+                                                               array1.append(description)
+                                                               array1.append(pk)
+                                                               array1.append(transmissionid)
+                                                               array1.append(sendername)
+                                                               array_bad.append(array1)
+                                                          else:
+                                                               array2.append(mail_zipcode)
+                                                      else:
+                                                              array2.append(mail_zipcode)
 
                                                       work_address_line_1=row[18]
-                                                      array2.append(work_address_line_1)
+                                                      if (Mandatory.objects.filter(attributes='employee_work_address_line_1').exists()):
+                                                          var=Mandatory.objects.filter(attributes='employee_work_address_line_1')[0].required
+                                                          if (var == "Yes" and work_address_line_1 ==""):
+                                                               array1=[]
+                                                               bad_ind = 1
+                                                               description = "work_address_line_1 is mandatory"
+                                                               array1.append(serial)
+                                                               array1.append(employeeid)
+                                                               array1.append(name)
+                                                               array1.append(work_address_line_1)
+                                                               array1.append(description)
+                                                               array1.append(pk)
+                                                               array1.append(transmissionid)
+                                                               array1.append(sendername)
+                                                               array_bad.append(array1)
+                                                          else:
+                                                               array2.append(work_address_line_1)
+                                                      else:
+                                                              array2.append(work_address_line_1)
 
                                                       work_address_line_2=row[19]
-                                                      array2.append(work_address_line_2)
+                                                      if (Mandatory.objects.filter(attributes='employee_work_address_line_2').exists()):
+                                                          var=Mandatory.objects.filter(attributes='employee_work_address_line_2')[0].required
+                                                          if (var == "Yes" and work_address_line_2 ==""):
+                                                               array1=[]
+                                                               bad_ind = 1
+                                                               description = "work_address_line_2 is mandatory"
+                                                               array1.append(serial)
+                                                               array1.append(employeeid)
+                                                               array1.append(name)
+                                                               array1.append(work_address_line_2)
+                                                               array1.append(description)
+                                                               array1.append(pk)
+                                                               array1.append(transmissionid)
+                                                               array1.append(sendername)
+                                                               array_bad.append(array1)
+                                                          else:
+                                                               array2.append(work_address_line_2)
+                                                      else:
+                                                              array2.append(work_address_line_2)
 
                                                       work_city=row[20]
-                                                      array2.append(work_city)
+                                                      if (Mandatory.objects.filter(attributes='employee_work_city').exists()):
+                                                          var=Mandatory.objects.filter(attributes='employee_work_city')[0].required
+                                                          if (var == "Yes" and work_city ==""):
+                                                               array1=[]
+                                                               bad_ind = 1
+                                                               description = "work_city is mandatory"
+                                                               array1.append(serial)
+                                                               array1.append(employeeid)
+                                                               array1.append(name)
+                                                               array1.append(work_city)
+                                                               array1.append(description)
+                                                               array1.append(pk)
+                                                               array1.append(transmissionid)
+                                                               array1.append(sendername)
+                                                               array_bad.append(array1)
+                                                          else:
+                                                               array2.append(work_city)
+                                                      else:
+                                                              array2.append(work_city)
 
                                                       work_state=row[21]
-                                                      array2.append(work_state)
+                                                      if (Mandatory.objects.filter(attributes='employee_work_state').exists()):
+                                                          var=Mandatory.objects.filter(attributes='employee_work_state')[0].required
+                                                          if (var == "Yes" and work_state ==""):
+                                                               array1=[]
+                                                               bad_ind = 1
+                                                               description = "work_state is mandatory"
+                                                               array1.append(serial)
+                                                               array1.append(employeeid)
+                                                               array1.append(name)
+                                                               array1.append(work_state)
+                                                               array1.append(description)
+                                                               array1.append(pk)
+                                                               array1.append(transmissionid)
+                                                               array1.append(sendername)
+                                                               array_bad.append(array1)
+                                                          else:
+                                                               array2.append(work_state)
+                                                      else:
+                                                              array2.append(work_state)
 
                                                       work_zipcode=row[22]
-                                                      array2.append(work_zipcode)
+                                                      if (Mandatory.objects.filter(attributes='employee_work_zipcode').exists()):
+                                                          var=Mandatory.objects.filter(attributes='employee_work_zipcode')[0].required
+                                                          if (var == "Yes" and work_zipcode ==""):
+                                                               array1=[]
+                                                               bad_ind = 1
+                                                               description = "work_zipcode is mandatory"
+                                                               array1.append(serial)
+                                                               array1.append(employeeid)
+                                                               array1.append(name)
+                                                               array1.append(work_zipcode)
+                                                               array1.append(description)
+                                                               array1.append(pk)
+                                                               array1.append(transmissionid)
+                                                               array1.append(sendername)
+                                                               array_bad.append(array1)
+                                                          else:
+                                                               array2.append(work_zipcode)
+                                                      else:
+                                                              array2.append(work_zipcode)
 
 
                                                             #validate email
@@ -930,15 +1203,69 @@ def BulkUploadEmployee(request, pk, *args, **kwargs):
                                                           array2.append(email)
 
                                                       alternate_email=row[24]
-                                                      array2.append(alternate_email)
+                                                      if (Mandatory.objects.filter(attributes='employee_alternate_email').exists()):
+                                                          var=Mandatory.objects.filter(attributes='employee_alternate_email')[0].required
+                                                          if (var == "Yes" and alternate_email ==""):
+                                                               array1=[]
+                                                               bad_ind = 1
+                                                               description = "alternate_email is mandatory"
+                                                               array1.append(serial)
+                                                               array1.append(employeeid)
+                                                               array1.append(name)
+                                                               array1.append(alternate_email)
+                                                               array1.append(description)
+                                                               array1.append(pk)
+                                                               array1.append(transmissionid)
+                                                               array1.append(sendername)
+                                                               array_bad.append(array1)
+                                                          else:
+                                                               array2.append(alternate_email)
+                                                      else:
+                                                              array2.append(alternate_email)
 
                                                       #validate phone
                                                       home_phone=row[25]
-                                                      array2.append(home_phone)
+                                                      if (Mandatory.objects.filter(attributes='employee_home_phone').exists()):
+                                                          var=Mandatory.objects.filter(attributes='employee_home_phone')[0].required
+                                                          if (var == "Yes" and home_phone ==""):
+                                                               array1=[]
+                                                               bad_ind = 1
+                                                               description = "home_phone is mandatory"
+                                                               array1.append(serial)
+                                                               array1.append(employeeid)
+                                                               array1.append(name)
+                                                               array1.append(home_phone)
+                                                               array1.append(description)
+                                                               array1.append(pk)
+                                                               array1.append(transmissionid)
+                                                               array1.append(sendername)
+                                                               array_bad.append(array1)
+                                                          else:
+                                                               array2.append(home_phone)
+                                                      else:
+                                                              array2.append(home_phone)
 
 
                                                       work_phone=row[26]
-                                                      array2.append(work_phone)
+                                                      if (Mandatory.objects.filter(attributes='employee_work_phone').exists()):
+                                                          var=Mandatory.objects.filter(attributes='employee_work_phone')[0].required
+                                                          if (var == "Yes" and work_phone ==""):
+                                                               array1=[]
+                                                               bad_ind = 1
+                                                               description = "work_phone is mandatory"
+                                                               array1.append(serial)
+                                                               array1.append(employeeid)
+                                                               array1.append(name)
+                                                               array1.append(work_phone)
+                                                               array1.append(description)
+                                                               array1.append(pk)
+                                                               array1.append(transmissionid)
+                                                               array1.append(sendername)
+                                                               array_bad.append(array1)
+                                                          else:
+                                                               array2.append(work_phone)
+                                                      else:
+                                                              array2.append(work_phone)
 
                                                       mobile_phone=row[27]
                                                       array1=[]
@@ -974,10 +1301,46 @@ def BulkUploadEmployee(request, pk, *args, **kwargs):
 
 
                                                       enrollment_method=row[28]
-                                                      array2.append(enrollment_method)
+                                                      if (Mandatory.objects.filter(attributes='employee_enrollment_method').exists()):
+                                                          var=Mandatory.objects.filter(attributes='employee_enrollment_method')[0].required
+                                                          if (var == "Yes" and enrollment_method ==""):
+                                                               array1=[]
+                                                               bad_ind = 1
+                                                               description = "enrollment_method is mandatory"
+                                                               array1.append(serial)
+                                                               array1.append(employeeid)
+                                                               array1.append(name)
+                                                               array1.append(enrollment_method)
+                                                               array1.append(description)
+                                                               array1.append(pk)
+                                                               array1.append(transmissionid)
+                                                               array1.append(sendername)
+                                                               array_bad.append(array1)
+                                                          else:
+                                                               array2.append(enrollment_method)
+                                                      else:
+                                                              array2.append(enrollment_method)
 
                                                       employment_information=row[29]
-                                                      array2.append(employment_information)
+                                                      if (Mandatory.objects.filter(attributes='employee_employment_information').exists()):
+                                                          var=Mandatory.objects.filter(attributes='employee_employment_information')[0].required
+                                                          if (var == "Yes" and employment_information ==""):
+                                                               array1=[]
+                                                               bad_ind = 1
+                                                               description = "employment_information is mandatory"
+                                                               array1.append(serial)
+                                                               array1.append(employeeid)
+                                                               array1.append(name)
+                                                               array1.append(employment_information)
+                                                               array1.append(description)
+                                                               array1.append(pk)
+                                                               array1.append(transmissionid)
+                                                               array1.append(sendername)
+                                                               array_bad.append(array1)
+                                                          else:
+                                                               array2.append(employment_information)
+                                                      else:
+                                                              array2.append(employment_information)
 
 
                                                       if bad_ind == 0:
@@ -1356,9 +1719,6 @@ def NonStdRefresh(request):
                                                               employeeid=row[1]
                                                               array2.append(employeeid)
 
-                                                              ssn=row[2]
-                                                              array2.append(ssn)
-
                                                               employer=row[30]
                                                               employer_instance=Employer.objects.filter(employerid=employer)[0]
                                                               employer_ident=employer_instance.pk
@@ -1405,8 +1765,49 @@ def NonStdRefresh(request):
                                                               slug=slugify(row[3])
                                                               #array2.append(slug)
 
+                                                              ssn=row[2]
+                                                              if (Mandatory.objects.filter(attributes='employee_ssn').exists()):
+                                                                  var=Mandatory.objects.filter(attributes='employee_ssn')[0].required
+                                                                  if (var == "Yes" and ssn ==""):
+                                                                       array1=[]
+                                                                       bad_ind = 1
+                                                                       description = "SSN is mandatory"
+                                                                       array1.append(serial)
+                                                                       array1.append(employeeid)
+                                                                       array1.append(name)
+                                                                       array1.append(ssn)
+                                                                       array1.append(description)
+                                                                       array1.append(pk)
+                                                                       array1.append(transmissionid)
+                                                                       array1.append(sendername)
+                                                                       array_bad.append(array1)
+                                                                  else:
+                                                                       array2.append(ssn)
+                                                              else:
+                                                                      array2.append(ssn)
+
+
+
                                                               gendercode=row[4]
-                                                              array2.append(gendercode)
+                                                              if (Mandatory.objects.filter(attributes='employee_gendercode').exists()):
+                                                                  var=Mandatory.objects.filter(attributes='employee_gendercode')[0].required
+                                                                  if (var == "Yes" and gendercode ==""):
+                                                                       array1=[]
+                                                                       bad_ind = 1
+                                                                       description = "Gendercode is mandatory"
+                                                                       array1.append(serial)
+                                                                       array1.append(employeeid)
+                                                                       array1.append(name)
+                                                                       array1.append(gendercode)
+                                                                       array1.append(description)
+                                                                       array1.append(pk)
+                                                                       array1.append(transmissionid)
+                                                                       array1.append(sendername)
+                                                                       array_bad.append(array1)
+                                                                  else:
+                                                                       array2.append(gendercode)
+                                                              else:
+                                                                      array2.append(gendercode)
 
                                                               #validate age
                                                               age=int(row[5])
@@ -1439,10 +1840,46 @@ def NonStdRefresh(request):
                                                                    array2.append(age)
 
                                                               birthdate=row[6]
-                                                              array2.append(birthdate)
+                                                              if (Mandatory.objects.filter(attributes='employee_birthdate').exists()):
+                                                                  var=Mandatory.objects.filter(attributes='employee_birthdate')[0].required
+                                                                  if (var == "Yes" and birthdate ==""):
+                                                                       array1=[]
+                                                                       bad_ind = 1
+                                                                       description = "Birthdate is mandatory"
+                                                                       array1.append(serial)
+                                                                       array1.append(employeeid)
+                                                                       array1.append(name)
+                                                                       array1.append(birthdate)
+                                                                       array1.append(description)
+                                                                       array1.append(pk)
+                                                                       array1.append(transmissionid)
+                                                                       array1.append(sendername)
+                                                                       array_bad.append(array1)
+                                                                  else:
+                                                                       array2.append(birthdate)
+                                                              else:
+                                                                      array2.append(birthdate)
 
                                                               maritalstatus=row[7]
-                                                              array2.append(maritalstatus)
+                                                              if (Mandatory.objects.filter(attributes='employee_maritalstatus').exists()):
+                                                                  var=Mandatory.objects.filter(attributes='employee_maritalstatus')[0].required
+                                                                  if (var == "Yes" and maritalstatus ==""):
+                                                                       array1=[]
+                                                                       bad_ind = 1
+                                                                       description = "Marital status is mandatory"
+                                                                       array1.append(serial)
+                                                                       array1.append(employeeid)
+                                                                       array1.append(name)
+                                                                       array1.append(maritalstatus)
+                                                                       array1.append(description)
+                                                                       array1.append(pk)
+                                                                       array1.append(transmissionid)
+                                                                       array1.append(sendername)
+                                                                       array_bad.append(array1)
+                                                                  else:
+                                                                       array2.append(maritalstatus)
+                                                              else:
+                                                                      array2.append(maritalstatus)
 
                                                               #validate address line 1
                                                               home_address_line_1=row[8]
@@ -1465,7 +1902,25 @@ def NonStdRefresh(request):
 
                                                               #validate address line 2
                                                               home_address_line_2=row[9]
-                                                              array2.append(home_address_line_2)
+                                                              if (Mandatory.objects.filter(attributes='employee_home_address_line_2').exists()):
+                                                                  var=Mandatory.objects.filter(attributes='employee_home_address_line_2')[0].required
+                                                                  if (var == "Yes" and home_address_line_2 ==""):
+                                                                       array1=[]
+                                                                       bad_ind = 1
+                                                                       description = "Home address 2 is mandatory"
+                                                                       array1.append(serial)
+                                                                       array1.append(employeeid)
+                                                                       array1.append(name)
+                                                                       array1.append(home_address_line_2)
+                                                                       array1.append(description)
+                                                                       array1.append(pk)
+                                                                       array1.append(transmissionid)
+                                                                       array1.append(sendername)
+                                                                       array_bad.append(array1)
+                                                                  else:
+                                                                       array2.append(home_address_line_2)
+                                                              else:
+                                                                      array2.append(home_address_line_2)
 
                                                                    #validate city
                                                               home_city=row[10]
@@ -1512,7 +1967,7 @@ def NonStdRefresh(request):
                                                                     array1.append(serial)
                                                                     array1.append(employeeid)
                                                                     array1.append(name)
-                                                                    array1.append(zipcode)
+                                                                    array1.append(home_zipcode)
                                                                     array1.append(description)
                                                                     array1.append(pk)
                                                                     array1.append(transmissionid)
@@ -1522,34 +1977,214 @@ def NonStdRefresh(request):
                                                                    array2.append(home_zipcode)
 
                                                               mail_address_line_1=row[13]
-                                                              array2.append(mail_address_line_1)
+                                                              if (Mandatory.objects.filter(attributes='employee_mail_address_line_1').exists()):
+                                                                  var=Mandatory.objects.filter(attributes='employee_mail_address_line_1')[0].required
+                                                                  if (var == "Yes" and mail_address_line_1 ==""):
+                                                                       array1=[]
+                                                                       bad_ind = 1
+                                                                       description = "Mail_address_line_1 is mandatory"
+                                                                       array1.append(serial)
+                                                                       array1.append(employeeid)
+                                                                       array1.append(name)
+                                                                       array1.append(mail_address_line_1)
+                                                                       array1.append(description)
+                                                                       array1.append(pk)
+                                                                       array1.append(transmissionid)
+                                                                       array1.append(sendername)
+                                                                       array_bad.append(array1)
+                                                                  else:
+                                                                       array2.append(mail_address_line_1)
+                                                              else:
+                                                                      array2.append(mail_address_line_1)
 
                                                               mail_address_line_2=row[14]
-                                                              array2.append(mail_address_line_2)
+                                                              if (Mandatory.objects.filter(attributes='employee_mail_address_line_2').exists()):
+                                                                  var=Mandatory.objects.filter(attributes='employee_mail_address_line_2')[0].required
+                                                                  if (var == "Yes" and mail_address_line_2 ==""):
+                                                                       array1=[]
+                                                                       bad_ind = 1
+                                                                       description = "mail_address_line_2 is mandatory"
+                                                                       array1.append(serial)
+                                                                       array1.append(employeeid)
+                                                                       array1.append(name)
+                                                                       array1.append(mail_address_line_2)
+                                                                       array1.append(description)
+                                                                       array1.append(pk)
+                                                                       array1.append(transmissionid)
+                                                                       array1.append(sendername)
+                                                                       array_bad.append(array1)
+                                                                  else:
+                                                                       array2.append(mail_address_line_2)
+                                                              else:
+                                                                      array2.append(mail_address_line_2)
 
                                                               mail_city=row[15]
-                                                              array2.append(mail_city)
+                                                              if (Mandatory.objects.filter(attributes='employee_mail_city').exists()):
+                                                                  var=Mandatory.objects.filter(attributes='employee_mail_city')[0].required
+                                                                  if (var == "Yes" and mail_city ==""):
+                                                                       array1=[]
+                                                                       bad_ind = 1
+                                                                       description = "mail_city is mandatory"
+                                                                       array1.append(serial)
+                                                                       array1.append(employeeid)
+                                                                       array1.append(name)
+                                                                       array1.append(mail_city)
+                                                                       array1.append(description)
+                                                                       array1.append(pk)
+                                                                       array1.append(transmissionid)
+                                                                       array1.append(sendername)
+                                                                       array_bad.append(array1)
+                                                                  else:
+                                                                       array2.append(mail_city)
+                                                              else:
+                                                                      array2.append(mail_city)
 
                                                               mail_state=row[16]
-                                                              array2.append(mail_state)
+                                                              if (Mandatory.objects.filter(attributes='employee_mail_state').exists()):
+                                                                  var=Mandatory.objects.filter(attributes='employee_mail_state')[0].required
+                                                                  if (var == "Yes" and mail_state ==""):
+                                                                       array1=[]
+                                                                       bad_ind = 1
+                                                                       description = "mail_state is mandatory"
+                                                                       array1.append(serial)
+                                                                       array1.append(employeeid)
+                                                                       array1.append(name)
+                                                                       array1.append(mail_state)
+                                                                       array1.append(description)
+                                                                       array1.append(pk)
+                                                                       array1.append(transmissionid)
+                                                                       array1.append(sendername)
+                                                                       array_bad.append(array1)
+                                                                  else:
+                                                                       array2.append(mail_state)
+                                                              else:
+                                                                      array2.append(mail_state)
 
                                                               mail_zipcode=row[17]
-                                                              array2.append(mail_zipcode)
+                                                              if (Mandatory.objects.filter(attributes='employee_mail_zipcode').exists()):
+                                                                  var=Mandatory.objects.filter(attributes='employee_mail_zipcode')[0].required
+                                                                  if (var == "Yes" and mail_zipcode ==""):
+                                                                       array1=[]
+                                                                       bad_ind = 1
+                                                                       description = "mail_zipcode is mandatory"
+                                                                       array1.append(serial)
+                                                                       array1.append(employeeid)
+                                                                       array1.append(name)
+                                                                       array1.append(mail_zipcode)
+                                                                       array1.append(description)
+                                                                       array1.append(pk)
+                                                                       array1.append(transmissionid)
+                                                                       array1.append(sendername)
+                                                                       array_bad.append(array1)
+                                                                  else:
+                                                                       array2.append(mail_zipcode)
+                                                              else:
+                                                                      array2.append(mail_zipcode)
 
                                                               work_address_line_1=row[18]
-                                                              array2.append(work_address_line_1)
+                                                              if (Mandatory.objects.filter(attributes='employee_work_address_line_1').exists()):
+                                                                  var=Mandatory.objects.filter(attributes='employee_work_address_line_1')[0].required
+                                                                  if (var == "Yes" and work_address_line_1 ==""):
+                                                                       array1=[]
+                                                                       bad_ind = 1
+                                                                       description = "work_address_line_1 is mandatory"
+                                                                       array1.append(serial)
+                                                                       array1.append(employeeid)
+                                                                       array1.append(name)
+                                                                       array1.append(work_address_line_1)
+                                                                       array1.append(description)
+                                                                       array1.append(pk)
+                                                                       array1.append(transmissionid)
+                                                                       array1.append(sendername)
+                                                                       array_bad.append(array1)
+                                                                  else:
+                                                                       array2.append(work_address_line_1)
+                                                              else:
+                                                                      array2.append(work_address_line_1)
 
                                                               work_address_line_2=row[19]
-                                                              array2.append(work_address_line_2)
+                                                              if (Mandatory.objects.filter(attributes='employee_work_address_line_2').exists()):
+                                                                  var=Mandatory.objects.filter(attributes='employee_work_address_line_2')[0].required
+                                                                  if (var == "Yes" and work_address_line_2 ==""):
+                                                                       array1=[]
+                                                                       bad_ind = 1
+                                                                       description = "work_address_line_2 is mandatory"
+                                                                       array1.append(serial)
+                                                                       array1.append(employeeid)
+                                                                       array1.append(name)
+                                                                       array1.append(work_address_line_2)
+                                                                       array1.append(description)
+                                                                       array1.append(pk)
+                                                                       array1.append(transmissionid)
+                                                                       array1.append(sendername)
+                                                                       array_bad.append(array1)
+                                                                  else:
+                                                                       array2.append(work_address_line_2)
+                                                              else:
+                                                                      array2.append(work_address_line_2)
 
                                                               work_city=row[20]
-                                                              array2.append(work_city)
+                                                              if (Mandatory.objects.filter(attributes='employee_work_city').exists()):
+                                                                  var=Mandatory.objects.filter(attributes='employee_work_city')[0].required
+                                                                  if (var == "Yes" and work_city ==""):
+                                                                       array1=[]
+                                                                       bad_ind = 1
+                                                                       description = "work_city is mandatory"
+                                                                       array1.append(serial)
+                                                                       array1.append(employeeid)
+                                                                       array1.append(name)
+                                                                       array1.append(work_city)
+                                                                       array1.append(description)
+                                                                       array1.append(pk)
+                                                                       array1.append(transmissionid)
+                                                                       array1.append(sendername)
+                                                                       array_bad.append(array1)
+                                                                  else:
+                                                                       array2.append(work_city)
+                                                              else:
+                                                                      array2.append(work_city)
 
                                                               work_state=row[21]
-                                                              array2.append(work_state)
+                                                              if (Mandatory.objects.filter(attributes='employee_work_state').exists()):
+                                                                  var=Mandatory.objects.filter(attributes='employee_work_state')[0].required
+                                                                  if (var == "Yes" and work_state ==""):
+                                                                       array1=[]
+                                                                       bad_ind = 1
+                                                                       description = "work_state is mandatory"
+                                                                       array1.append(serial)
+                                                                       array1.append(employeeid)
+                                                                       array1.append(name)
+                                                                       array1.append(work_state)
+                                                                       array1.append(description)
+                                                                       array1.append(pk)
+                                                                       array1.append(transmissionid)
+                                                                       array1.append(sendername)
+                                                                       array_bad.append(array1)
+                                                                  else:
+                                                                       array2.append(work_state)
+                                                              else:
+                                                                      array2.append(work_state)
 
                                                               work_zipcode=row[22]
-                                                              array2.append(work_zipcode)
+                                                              if (Mandatory.objects.filter(attributes='employee_work_zipcode').exists()):
+                                                                  var=Mandatory.objects.filter(attributes='employee_work_zipcode')[0].required
+                                                                  if (var == "Yes" and work_zipcode ==""):
+                                                                       array1=[]
+                                                                       bad_ind = 1
+                                                                       description = "work_zipcode is mandatory"
+                                                                       array1.append(serial)
+                                                                       array1.append(employeeid)
+                                                                       array1.append(name)
+                                                                       array1.append(work_zipcode)
+                                                                       array1.append(description)
+                                                                       array1.append(pk)
+                                                                       array1.append(transmissionid)
+                                                                       array1.append(sendername)
+                                                                       array_bad.append(array1)
+                                                                  else:
+                                                                       array2.append(work_zipcode)
+                                                              else:
+                                                                      array2.append(work_zipcode)
 
 
                                                                     #validate email
@@ -1583,15 +2218,69 @@ def NonStdRefresh(request):
                                                                   array2.append(email)
 
                                                               alternate_email=row[24]
-                                                              array2.append(alternate_email)
+                                                              if (Mandatory.objects.filter(attributes='employee_alternate_email').exists()):
+                                                                  var=Mandatory.objects.filter(attributes='employee_alternate_email')[0].required
+                                                                  if (var == "Yes" and alternate_email ==""):
+                                                                       array1=[]
+                                                                       bad_ind = 1
+                                                                       description = "alternate_email is mandatory"
+                                                                       array1.append(serial)
+                                                                       array1.append(employeeid)
+                                                                       array1.append(name)
+                                                                       array1.append(alternate_email)
+                                                                       array1.append(description)
+                                                                       array1.append(pk)
+                                                                       array1.append(transmissionid)
+                                                                       array1.append(sendername)
+                                                                       array_bad.append(array1)
+                                                                  else:
+                                                                       array2.append(alternate_email)
+                                                              else:
+                                                                      array2.append(alternate_email)
 
                                                               #validate phone
                                                               home_phone=row[25]
-                                                              array2.append(home_phone)
+                                                              if (Mandatory.objects.filter(attributes='employee_home_phone').exists()):
+                                                                  var=Mandatory.objects.filter(attributes='employee_home_phone')[0].required
+                                                                  if (var == "Yes" and home_phone ==""):
+                                                                       array1=[]
+                                                                       bad_ind = 1
+                                                                       description = "home_phone is mandatory"
+                                                                       array1.append(serial)
+                                                                       array1.append(employeeid)
+                                                                       array1.append(name)
+                                                                       array1.append(home_phone)
+                                                                       array1.append(description)
+                                                                       array1.append(pk)
+                                                                       array1.append(transmissionid)
+                                                                       array1.append(sendername)
+                                                                       array_bad.append(array1)
+                                                                  else:
+                                                                       array2.append(home_phone)
+                                                              else:
+                                                                      array2.append(home_phone)
 
 
                                                               work_phone=row[26]
-                                                              array2.append(work_phone)
+                                                              if (Mandatory.objects.filter(attributes='employee_work_phone').exists()):
+                                                                  var=Mandatory.objects.filter(attributes='employee_work_phone')[0].required
+                                                                  if (var == "Yes" and work_phone ==""):
+                                                                       array1=[]
+                                                                       bad_ind = 1
+                                                                       description = "work_phone is mandatory"
+                                                                       array1.append(serial)
+                                                                       array1.append(employeeid)
+                                                                       array1.append(name)
+                                                                       array1.append(work_phone)
+                                                                       array1.append(description)
+                                                                       array1.append(pk)
+                                                                       array1.append(transmissionid)
+                                                                       array1.append(sendername)
+                                                                       array_bad.append(array1)
+                                                                  else:
+                                                                       array2.append(work_phone)
+                                                              else:
+                                                                      array2.append(work_phone)
 
                                                               mobile_phone=row[27]
                                                               array1=[]
@@ -1627,10 +2316,46 @@ def NonStdRefresh(request):
 
 
                                                               enrollment_method=row[28]
-                                                              array2.append(enrollment_method)
+                                                              if (Mandatory.objects.filter(attributes='employee_enrollment_method').exists()):
+                                                                  var=Mandatory.objects.filter(attributes='employee_enrollment_method')[0].required
+                                                                  if (var == "Yes" and enrollment_method ==""):
+                                                                       array1=[]
+                                                                       bad_ind = 1
+                                                                       description = "enrollment_method is mandatory"
+                                                                       array1.append(serial)
+                                                                       array1.append(employeeid)
+                                                                       array1.append(name)
+                                                                       array1.append(enrollment_method)
+                                                                       array1.append(description)
+                                                                       array1.append(pk)
+                                                                       array1.append(transmissionid)
+                                                                       array1.append(sendername)
+                                                                       array_bad.append(array1)
+                                                                  else:
+                                                                       array2.append(enrollment_method)
+                                                              else:
+                                                                      array2.append(enrollment_method)
 
                                                               employment_information=row[29]
-                                                              array2.append(employment_information)
+                                                              if (Mandatory.objects.filter(attributes='employee_employment_information').exists()):
+                                                                  var=Mandatory.objects.filter(attributes='employee_employment_information')[0].required
+                                                                  if (var == "Yes" and employment_information ==""):
+                                                                       array1=[]
+                                                                       bad_ind = 1
+                                                                       description = "employment_information is mandatory"
+                                                                       array1.append(serial)
+                                                                       array1.append(employeeid)
+                                                                       array1.append(name)
+                                                                       array1.append(employment_information)
+                                                                       array1.append(description)
+                                                                       array1.append(pk)
+                                                                       array1.append(transmissionid)
+                                                                       array1.append(sendername)
+                                                                       array_bad.append(array1)
+                                                                  else:
+                                                                       array2.append(employment_information)
+                                                              else:
+                                                                      array2.append(employment_information)
 
 
                                                               if bad_ind == 0:
@@ -2295,8 +3020,6 @@ def EmployeeList(request):
             employee.employeeid = serializer.data["employeeid"]
             event.EventTypeReason = "Employee added via API"
 
-        employee.ssn = serializer.data["ssn"]
-
         #get the most recent employer instance and pk
         employee.employerid=serializer.data["employerid"]
         employer_instance=Employer.objects.filter(employerid=employee.employerid)[0]
@@ -2330,7 +3053,33 @@ def EmployeeList(request):
 
         employee.slug=slugify(employee.name)
 
+        employee.ssn = serializer.data["ssn"]
+        if (Mandatory.objects.filter(attributes='employee_ssn').exists()):
+            var=Mandatory.objects.filter(attributes='employee_ssn')[0].required
+            if (var == "Yes" and employee.ssn ==""):
+                 array1=[]
+                 bad_ind = 1
+                 description = "SSN is mandatory"
+                 array1.append(employee.employeeid)
+                 array1.append(employee.name)
+                 array1.append(employee.ssn)
+                 array1.append(description)
+                 array1.append(pk)
+                 array_bad.append(array1)
+
         employee.gendercode = serializer.data["gendercode"]
+        if (Mandatory.objects.filter(attributes='employee_gendercode').exists()):
+            var=Mandatory.objects.filter(attributes='employee_gendercode')[0].required
+            if (var == "Yes" and employee.gendercode ==""):
+                 array1=[]
+                 bad_ind = 1
+                 description = "Gendercode is mandatory"
+                 array1.append(employee.employeeid)
+                 array1.append(employee.name)
+                 array1.append(employee.gendercode)
+                 array1.append(description)
+                 array1.append(pk)
+                 array_bad.append(array1)
 
         employee.age = serializer.data["age"]
         array1=[]
@@ -2354,7 +3103,32 @@ def EmployeeList(request):
             array_bad.append(array1)
 
         employee.birthdate = serializer.data["birthdate"]
+        if (Mandatory.objects.filter(attributes='employee_birthdate').exists()):
+            var=Mandatory.objects.filter(attributes='employee_birthdate')[0].required
+            if (var == "Yes" and employee.birthdate ==""):
+                 array1=[]
+                 bad_ind = 1
+                 description = "Birthdate is mandatory"
+                 array1.append(employee.employeeid)
+                 array1.append(employee.name)
+                 array1.append(employee.birthdate)
+                 array1.append(description)
+                 array1.append(pk)
+                 array_bad.append(array1)
+
         employee.maritalstatus = serializer.data["maritalstatus"]
+        if (Mandatory.objects.filter(attributes='employee_maritalstatus').exists()):
+            var=Mandatory.objects.filter(attributes='employee_maritalstatus')[0].required
+            if (var == "Yes" and employee.maritalstatus ==""):
+                 array1=[]
+                 bad_ind = 1
+                 description = "marital status is mandatory"
+                 array1.append(employee.employeeid)
+                 array1.append(employee.name)
+                 array1.append(employee.maritalstatus)
+                 array1.append(description)
+                 array1.append(pk)
+                 array_bad.append(array1)
 
         employee.home_address_line_1 = serializer.data["home_address_line_1"]
         array1=[]
@@ -2407,16 +3181,146 @@ def EmployeeList(request):
             array_bad.append(array1)
 
         employee.mail_address_line_1 = serializer.data["mail_address_line_1"]
+        if (Mandatory.objects.filter(attributes='employee_mail_address_line_1').exists()):
+            var=Mandatory.objects.filter(attributes='employee_mail_address_line_1')[0].required
+            if (var == "Yes" and employee.mail_address_line_1 ==""):
+                 array1=[]
+                 bad_ind = 1
+                 description = "mail_address_line_1 is mandatory"
+                 array1.append(employee.employeeid)
+                 array1.append(employee.name)
+                 array1.append(employee.mail_address_line_1)
+                 array1.append(description)
+                 array1.append(pk)
+                 array_bad.append(array1)
+
         employee.mail_address_line_2 = serializer.data["mail_address_line_2"]
+        if (Mandatory.objects.filter(attributes='employee_mail_address_line_2').exists()):
+            var=Mandatory.objects.filter(attributes='employee_mail_address_line_2')[0].required
+            if (var == "Yes" and employee.mail_address_line_2 ==""):
+                 array1=[]
+                 bad_ind = 1
+                 description = "mail_address_line_2 is mandatory"
+                 array1.append(employee.employeeid)
+                 array1.append(employee.name)
+                 array1.append(employee.mail_address_line_2)
+                 array1.append(description)
+                 array1.append(pk)
+                 array_bad.append(array1)
+
         employee.mail_city = serializer.data["mail_city"]
+        if (Mandatory.objects.filter(attributes='employee_mail_city').exists()):
+            var=Mandatory.objects.filter(attributes='employee_mail_city')[0].required
+            if (var == "Yes" and employee.mail_city ==""):
+                 array1=[]
+                 bad_ind = 1
+                 description = "mail_city is mandatory"
+                 array1.append(employee.employeeid)
+                 array1.append(employee.name)
+                 array1.append(employee.mail_city)
+                 array1.append(description)
+                 array1.append(pk)
+                 array_bad.append(array1)
+
+
         employee.mail_state = serializer.data["mail_state"]
+        if (Mandatory.objects.filter(attributes='employee_mail_state').exists()):
+            var=Mandatory.objects.filter(attributes='employee_mail_state')[0].required
+            if (var == "Yes" and employee.mail_state ==""):
+                 array1=[]
+                 bad_ind = 1
+                 description = "mail_state is mandatory"
+                 array1.append(employee.employeeid)
+                 array1.append(employee.name)
+                 array1.append(employee.mail_state)
+                 array1.append(description)
+                 array1.append(pk)
+                 array_bad.append(array1)
+
         employee.mail_zipcode = serializer.data["mail_zipcode"]
+        if (Mandatory.objects.filter(attributes='employee_mail_zipcode').exists()):
+            var=Mandatory.objects.filter(attributes='employee_mail_zipcode')[0].required
+            if (var == "Yes" and employee.mail_zipcode ==""):
+                 array1=[]
+                 bad_ind = 1
+                 description = "mail_zipcode is mandatory"
+                 array1.append(employee.employeeid)
+                 array1.append(employee.name)
+                 array1.append(employee.mail_zipcode)
+                 array1.append(description)
+                 array1.append(pk)
+                 array_bad.append(array1)
+
 
         employee.work_address_line_1 = serializer.data["work_address_line_1"]
+        if (Mandatory.objects.filter(attributes='employee_work_address_line_1').exists()):
+            var=Mandatory.objects.filter(attributes='employee_work_address_line_1')[0].required
+            if (var == "Yes" and employee.work_address_line_1 ==""):
+                 array1=[]
+                 bad_ind = 1
+                 description = "work_address_line_1 is mandatory"
+                 array1.append(employee.employeeid)
+                 array1.append(employee.name)
+                 array1.append(employee.work_address_line_1)
+                 array1.append(description)
+                 array1.append(pk)
+                 array_bad.append(array1)
+
         employee.work_address_line_2 = serializer.data["work_address_line_2"]
+        if (Mandatory.objects.filter(attributes='employee_work_address_line_2').exists()):
+            var=Mandatory.objects.filter(attributes='employee_work_address_line_2')[0].required
+            if (var == "Yes" and employee.work_address_line_2 ==""):
+                 array1=[]
+                 bad_ind = 1
+                 description = "work_address_line_2 is mandatory"
+                 array1.append(employee.employeeid)
+                 array1.append(employee.name)
+                 array1.append(employee.work_address_line_2)
+                 array1.append(description)
+                 array1.append(pk)
+                 array_bad.append(array1)
+
         employee.work_city = serializer.data["work_city"]
+        if (Mandatory.objects.filter(attributes='employee_work_city').exists()):
+            var=Mandatory.objects.filter(attributes='employee_work_city')[0].required
+            if (var == "Yes" and employee.work_city ==""):
+                 array1=[]
+                 bad_ind = 1
+                 description = "work_city is mandatory"
+                 array1.append(employee.employeeid)
+                 array1.append(employee.name)
+                 array1.append(employee.work_city)
+                 array1.append(description)
+                 array1.append(pk)
+                 array_bad.append(array1)
+
         employee.work_state = serializer.data["work_state"]
+        if (Mandatory.objects.filter(attributes='employee_work_state').exists()):
+            var=Mandatory.objects.filter(attributes='employee_work_state')[0].required
+            if (var == "Yes" and employee.work_state ==""):
+                 array1=[]
+                 bad_ind = 1
+                 description = "work_state is mandatory"
+                 array1.append(employee.employeeid)
+                 array1.append(employee.name)
+                 array1.append(employee.work_state)
+                 array1.append(description)
+                 array1.append(pk)
+                 array_bad.append(array1)
+
         employee.work_zipcode = serializer.data["work_zipcode"]
+        if (Mandatory.objects.filter(attributes='employee_work_zipcode').exists()):
+            var=Mandatory.objects.filter(attributes='employee_work_zipcode')[0].required
+            if (var == "Yes" and employee.work_zipcode ==""):
+                 array1=[]
+                 bad_ind = 1
+                 description = "work_zipcode is mandatory"
+                 array1.append(employee.employeeid)
+                 array1.append(employee.name)
+                 array1.append(employee.work_zipcode)
+                 array1.append(description)
+                 array1.append(pk)
+                 array_bad.append(array1)
 
         employee.email = serializer.data["email"]
         array1=[]
@@ -2440,14 +3344,88 @@ def EmployeeList(request):
             array_bad.append(array1)
 
         employee.alternate_email = serializer.data["alternate_email"]
+        if (Mandatory.objects.filter(attributes='employee_alternate_email').exists()):
+            var=Mandatory.objects.filter(attributes='employee_alternate_email')[0].required
+            if (var == "Yes" and employee.alternate_email ==""):
+                 array1=[]
+                 bad_ind = 1
+                 description = "alternate_email is mandatory"
+                 array1.append(employee.employeeid)
+                 array1.append(employee.name)
+                 array1.append(employee.alternate_email)
+                 array1.append(description)
+                 array1.append(pk)
+                 array_bad.append(array1)
 
         employee.home_phone = serializer.data["home_phone"]
+        if (Mandatory.objects.filter(attributes='employee_home_phone').exists()):
+            var=Mandatory.objects.filter(attributes='employee_home_phone')[0].required
+            if (var == "Yes" and employee.home_phone ==""):
+                 array1=[]
+                 bad_ind = 1
+                 description = "home_phone is mandatory"
+                 array1.append(employee.employeeid)
+                 array1.append(employee.name)
+                 array1.append(employee.home_phone)
+                 array1.append(description)
+                 array1.append(pk)
+                 array_bad.append(array1)
+
         employee.work_phone = serializer.data["work_phone"]
+        if (Mandatory.objects.filter(attributes='employee_work_phone').exists()):
+            var=Mandatory.objects.filter(attributes='employee_work_phone')[0].required
+            if (var == "Yes" and employee.work_phone ==""):
+                 array1=[]
+                 bad_ind = 1
+                 description = "work_phone is mandatory"
+                 array1.append(employee.employeeid)
+                 array1.append(employee.name)
+                 array1.append(employee.work_phone)
+                 array1.append(description)
+                 array1.append(pk)
+                 array_bad.append(array1)
 
         employee.mobile_phone = serializer.data["mobile_phone"]
+        if (Mandatory.objects.filter(attributes='employee_mobile_phone').exists()):
+            var=Mandatory.objects.filter(attributes='employee_mobile_phone')[0].required
+            if (var == "Yes" and employee.mobile_phone ==""):
+                 array1=[]
+                 bad_ind = 1
+                 description = "mobile_phone is mandatory"
+                 array1.append(employee.employeeid)
+                 array1.append(employee.name)
+                 array1.append(employee.mobile_phone)
+                 array1.append(description)
+                 array1.append(pk)
+                 array_bad.append(array1)
 
         employee.enrollment_method = serializer.data["enrollment_method"]
+        if (Mandatory.objects.filter(attributes='employee_enrollment_method').exists()):
+            var=Mandatory.objects.filter(attributes='employee_enrollment_method')[0].required
+            if (var == "Yes" and employee.enrollment_method ==""):
+                 array1=[]
+                 bad_ind = 1
+                 description = "enrollment_method is mandatory"
+                 array1.append(employee.employeeid)
+                 array1.append(employee.name)
+                 array1.append(employee.enrollment_method)
+                 array1.append(description)
+                 array1.append(pk)
+                 array_bad.append(array1)
+
         employee.employment_information = serializer.data["employment_information"]
+        if (Mandatory.objects.filter(attributes='employee_employment_information').exists()):
+            var=Mandatory.objects.filter(attributes='employee_employment_information')[0].required
+            if (var == "Yes" and employee.employment_information ==""):
+                 array1=[]
+                 bad_ind = 1
+                 description = "employment_information is mandatory"
+                 array1.append(employee.employeeid)
+                 array1.append(employee.name)
+                 array1.append(employee.employment_information)
+                 array1.append(description)
+                 array1.append(pk)
+                 array_bad.append(array1)
 
         employee.source = "Post API"
 

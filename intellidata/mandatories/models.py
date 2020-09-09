@@ -139,6 +139,7 @@ class Mandatory(models.Model):
     required = models.CharField(max_length=100,
                                       choices=CODE_CHOICES,
                                       default=NO)
+    description = models.TextField(blank=True, default='')
     create_date = models.DateTimeField(auto_now=True)
     creator = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name="mandatory_rule_creator_set")
 
@@ -153,4 +154,4 @@ class Mandatory(models.Model):
         return reverse("mandatories:single", kwargs={"pk": self.pk})
 
     class Meta:
-        ordering = ["attributes", "-create_date"]
+        ordering = ["-create_date"]

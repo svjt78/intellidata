@@ -67,7 +67,7 @@ class MandatoryForm(forms.ModelForm):
     class Meta:
         model = Mandatory
 
-        fields = ('attributes', 'required')
+        fields = ('attributes', 'required', 'description')
 
         widgets = {
 

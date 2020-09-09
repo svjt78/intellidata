@@ -499,7 +499,7 @@ class SearchEmployersList(LoginRequiredMixin, generic.ListView):
                 obj1.name = json_data["NAME"]
                 obj1.slug = json_data["SLUG"]
                 obj1.description = json_data["DESCRIPTION"]
-                obj1.description_html = misaka.html(obj.description)
+                obj1.description_html = misaka.html(obj1.description)
                 obj1.FederalEmployerIdentificationNumber = json_data["FEDERAL_EMPLOYER_IDENTIFICATION_NUMBER"]
                 obj1.CarrierMasterAgreementNumber = json_data["CARRIER_MASTER_AGREEMENT_NUMBER"]
 
