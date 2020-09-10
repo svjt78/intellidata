@@ -19,8 +19,8 @@ from django.db import IntegrityError
 from django.shortcuts import get_object_or_404
 from django.views import generic
 from django.db.models import Count
-from employers.models import Employer
 from employees.models import Employee, EmployeeSerializer, EmployeeErrorSerializer
+from employers.models import Employer, EmployerSerializer, EmployerErrorSerializer
 from django.contrib.auth.models import User
 from bulkuploads.models import BulkUpload
 from apicodes.models import APICodes
@@ -42,6 +42,8 @@ import misaka
 import uuid
 from django.shortcuts import get_object_or_404
 from transmissions.models import Transmission
+from mandatories.models import Mandatory
+from numchecks.models import Numcheck
 
 import boto3
 import requests
@@ -642,15 +644,64 @@ def BulkUploadEmployer(request):
                                                       #array2.append(slug)
 
                                                       description=row[3]
-                                                      array2.append(description)
+                                                      if (Mandatory.objects.filter(attributes='employer_description').exists()):
+                                                          var=Mandatory.objects.filter(attributes='employer_description')[0].required
+                                                          if (var == "Yes" and description ==""):
+                                                               array1=[]
+                                                               bad_ind = 1
+                                                               error_description = "Description is mandatory"
+                                                               array1.append(serial)
+                                                               array1.append(employerid)
+                                                               array1.append(name)
+                                                               array1.append(description)
+                                                               array1.append(error_description)
+                                                               array1.append(transmission_pk)
+                                                               array_bad.append(array1)
+                                                          else:
+                                                               array2.append(description)
+                                                      else:
+                                                              array2.append(description)
 
                                                       description_html = misaka.html(description)
 
                                                       FederalEmployerIdentificationNumber=row[4]
-                                                      array2.append(FederalEmployerIdentificationNumber)
+                                                      if (Mandatory.objects.filter(attributes='employer_FederalEmployerIdentificationNumber').exists()):
+                                                          var=Mandatory.objects.filter(attributes='employer_FederalEmployerIdentificationNumber')[0].required
+                                                          if (var == "Yes" and FederalEmployerIdentificationNumber ==""):
+                                                               array1=[]
+                                                               bad_ind = 1
+                                                               error_description = "FederalEmployerIdentificationNumber is mandatory"
+                                                               array1.append(serial)
+                                                               array1.append(employerid)
+                                                               array1.append(name)
+                                                               array1.append(FederalEmployerIdentificationNumber)
+                                                               array1.append(error_description)
+                                                               array1.append(transmission_pk)
+                                                               array_bad.append(array1)
+                                                          else:
+                                                               array2.append(FederalEmployerIdentificationNumber)
+                                                      else:
+                                                              array2.append(FederalEmployerIdentificationNumber)
+
 
                                                       CarrierMasterAgreementNumber=row[5]
-                                                      array2.append(CarrierMasterAgreementNumber)
+                                                      if (Mandatory.objects.filter(attributes='employer_CarrierMasterAgreementNumber').exists()):
+                                                          var=Mandatory.objects.filter(attributes='employer_CarrierMasterAgreementNumber')[0].required
+                                                          if (var == "Yes" and CarrierMasterAgreementNumber ==""):
+                                                               array1=[]
+                                                               bad_ind = 1
+                                                               error_description = "CarrierMasterAgreementNumber is mandatory"
+                                                               array1.append(serial)
+                                                               array1.append(employerid)
+                                                               array1.append(name)
+                                                               array1.append(CarrierMasterAgreementNumber)
+                                                               array1.append(error_description)
+                                                               array1.append(transmission_pk)
+                                                               array_bad.append(array1)
+                                                          else:
+                                                               array2.append(CarrierMasterAgreementNumber)
+                                                      else:
+                                                              array2.append(CarrierMasterAgreementNumber)
 
                                                       #validate address
                                                       address_line_1=row[6]
@@ -669,7 +720,23 @@ def BulkUploadEmployer(request):
                                                            array2.append(address_line_1)
 
                                                       address_line_2=row[7]
-                                                      array2.append(address_line_2)
+                                                      if (Mandatory.objects.filter(attributes='employer_address_line_2').exists()):
+                                                          var=Mandatory.objects.filter(attributes='employer_address_line_2')[0].required
+                                                          if (var == "Yes" and address_line_2 ==""):
+                                                               array1=[]
+                                                               bad_ind = 1
+                                                               error_description = "address_line_2 is mandatory"
+                                                               array1.append(serial)
+                                                               array1.append(employerid)
+                                                               array1.append(name)
+                                                               array1.append(address_line_2)
+                                                               array1.append(error_description)
+                                                               array1.append(transmission_pk)
+                                                               array_bad.append(array1)
+                                                          else:
+                                                               array2.append(address_line_2)
+                                                      else:
+                                                              array2.append(address_line_2)
 
                                                       #validate address line 1
                                                       city=row[8]
@@ -690,7 +757,23 @@ def BulkUploadEmployer(request):
 
                                                       #validate address line 2
                                                       state=row[9]
-                                                      array2.append(state)
+                                                      if (Mandatory.objects.filter(attributes='employer_state').exists()):
+                                                           var=Mandatory.objects.filter(attributes='employer_state')[0].required
+                                                           if (var == "Yes" and state ==""):
+                                                                array1=[]
+                                                                bad_ind = 1
+                                                                error_description = "state is mandatory"
+                                                                array1.append(serial)
+                                                                array1.append(employerid)
+                                                                array1.append(name)
+                                                                array1.append(state)
+                                                                array1.append(error_description)
+                                                                array1.append(transmission_pk)
+                                                                array_bad.append(array1)
+                                                           else:
+                                                                array2.append(state)
+                                                      else:
+                                                               array2.append(state)
 
                                                            #validate city
                                                       zipcode=row[10]
@@ -709,10 +792,42 @@ def BulkUploadEmployer(request):
                                                            array2.append(zipcode)
 
                                                       purpose=row[11]
-                                                      array2.append(purpose)
+                                                      if (Mandatory.objects.filter(attributes='employer_purpose').exists()):
+                                                           var=Mandatory.objects.filter(attributes='employer_purpose')[0].required
+                                                           if (var == "Yes" and purpose ==""):
+                                                                array1=[]
+                                                                bad_ind = 1
+                                                                error_description = "purpose is mandatory"
+                                                                array1.append(serial)
+                                                                array1.append(employerid)
+                                                                array1.append(name)
+                                                                array1.append(purpose)
+                                                                array1.append(error_description)
+                                                                array1.append(transmission_pk)
+                                                                array_bad.append(array1)
+                                                           else:
+                                                                array2.append(purpose)
+                                                      else:
+                                                               array2.append(purpose)
 
                                                       planadmin_email=row[13]
-                                                      array2.append(planadmin_email)
+                                                      if (Mandatory.objects.filter(attributes='employer_planadmin_email').exists()):
+                                                           var=Mandatory.objects.filter(attributes='employer_planadmin_email')[0].required
+                                                           if (var == "Yes" and planadmin_email ==""):
+                                                                array1=[]
+                                                                bad_ind = 1
+                                                                error_description = "planadmin_email is mandatory"
+                                                                array1.append(serial)
+                                                                array1.append(employerid)
+                                                                array1.append(name)
+                                                                array1.append(planadmin_email)
+                                                                array1.append(error_description)
+                                                                array1.append(transmission_pk)
+                                                                array_bad.append(array1)
+                                                           else:
+                                                                array2.append(planadmin_email)
+                                                      else:
+                                                               array2.append(planadmin_email)
 
 
                                                       if bad_ind == 0:
@@ -1026,15 +1141,64 @@ def NonStdRefresh(request):
                                                               #array2.append(slug)
 
                                                               description=row[3]
-                                                              array2.append(description)
+                                                              if (Mandatory.objects.filter(attributes='employer_description').exists()):
+                                                                  var=Mandatory.objects.filter(attributes='employer_description')[0].required
+                                                                  if (var == "Yes" and description ==""):
+                                                                       array1=[]
+                                                                       bad_ind = 1
+                                                                       error_description = "Description is mandatory"
+                                                                       array1.append(serial)
+                                                                       array1.append(employerid)
+                                                                       array1.append(name)
+                                                                       array1.append(description)
+                                                                       array1.append(error_description)
+                                                                       array1.append(transmission_pk)
+                                                                       array_bad.append(array1)
+                                                                  else:
+                                                                       array2.append(description)
+                                                              else:
+                                                                      array2.append(description)
 
                                                               description_html = misaka.html(description)
 
                                                               FederalEmployerIdentificationNumber=row[4]
-                                                              array2.append(FederalEmployerIdentificationNumber)
+                                                              if (Mandatory.objects.filter(attributes='employer_FederalEmployerIdentificationNumber').exists()):
+                                                                  var=Mandatory.objects.filter(attributes='employer_FederalEmployerIdentificationNumber')[0].required
+                                                                  if (var == "Yes" and FederalEmployerIdentificationNumber ==""):
+                                                                       array1=[]
+                                                                       bad_ind = 1
+                                                                       error_description = "FederalEmployerIdentificationNumber is mandatory"
+                                                                       array1.append(serial)
+                                                                       array1.append(employerid)
+                                                                       array1.append(name)
+                                                                       array1.append(FederalEmployerIdentificationNumber)
+                                                                       array1.append(error_description)
+                                                                       array1.append(transmission_pk)
+                                                                       array_bad.append(array1)
+                                                                  else:
+                                                                       array2.append(FederalEmployerIdentificationNumber)
+                                                              else:
+                                                                      array2.append(FederalEmployerIdentificationNumber)
+
 
                                                               CarrierMasterAgreementNumber=row[5]
-                                                              array2.append(CarrierMasterAgreementNumber)
+                                                              if (Mandatory.objects.filter(attributes='employer_CarrierMasterAgreementNumber').exists()):
+                                                                  var=Mandatory.objects.filter(attributes='employer_CarrierMasterAgreementNumber')[0].required
+                                                                  if (var == "Yes" and CarrierMasterAgreementNumber ==""):
+                                                                       array1=[]
+                                                                       bad_ind = 1
+                                                                       error_description = "CarrierMasterAgreementNumber is mandatory"
+                                                                       array1.append(serial)
+                                                                       array1.append(employerid)
+                                                                       array1.append(name)
+                                                                       array1.append(CarrierMasterAgreementNumber)
+                                                                       array1.append(error_description)
+                                                                       array1.append(transmission_pk)
+                                                                       array_bad.append(array1)
+                                                                  else:
+                                                                       array2.append(CarrierMasterAgreementNumber)
+                                                              else:
+                                                                      array2.append(CarrierMasterAgreementNumber)
 
                                                               #validate address
                                                               address_line_1=row[6]
@@ -1053,7 +1217,23 @@ def NonStdRefresh(request):
                                                                    array2.append(address_line_1)
 
                                                               address_line_2=row[7]
-                                                              array2.append(address_line_2)
+                                                              if (Mandatory.objects.filter(attributes='employer_address_line_2').exists()):
+                                                                  var=Mandatory.objects.filter(attributes='employer_address_line_2')[0].required
+                                                                  if (var == "Yes" and address_line_2 ==""):
+                                                                       array1=[]
+                                                                       bad_ind = 1
+                                                                       error_description = "address_line_2 is mandatory"
+                                                                       array1.append(serial)
+                                                                       array1.append(employerid)
+                                                                       array1.append(name)
+                                                                       array1.append(address_line_2)
+                                                                       array1.append(error_description)
+                                                                       array1.append(transmission_pk)
+                                                                       array_bad.append(array1)
+                                                                  else:
+                                                                       array2.append(address_line_2)
+                                                              else:
+                                                                      array2.append(address_line_2)
 
                                                               #validate address line 1
                                                               city=row[8]
@@ -1074,7 +1254,23 @@ def NonStdRefresh(request):
 
                                                               #validate address line 2
                                                               state=row[9]
-                                                              array2.append(state)
+                                                              if (Mandatory.objects.filter(attributes='employer_state').exists()):
+                                                                   var=Mandatory.objects.filter(attributes='employer_state')[0].required
+                                                                   if (var == "Yes" and state ==""):
+                                                                        array1=[]
+                                                                        bad_ind = 1
+                                                                        error_description = "state is mandatory"
+                                                                        array1.append(serial)
+                                                                        array1.append(employerid)
+                                                                        array1.append(name)
+                                                                        array1.append(state)
+                                                                        array1.append(error_description)
+                                                                        array1.append(transmission_pk)
+                                                                        array_bad.append(array1)
+                                                                   else:
+                                                                        array2.append(state)
+                                                              else:
+                                                                       array2.append(state)
 
                                                                    #validate city
                                                               zipcode=row[10]
@@ -1093,10 +1289,42 @@ def NonStdRefresh(request):
                                                                    array2.append(zipcode)
 
                                                               purpose=row[11]
-                                                              array2.append(purpose)
+                                                              if (Mandatory.objects.filter(attributes='employer_purpose').exists()):
+                                                                   var=Mandatory.objects.filter(attributes='employer_purpose')[0].required
+                                                                   if (var == "Yes" and purpose ==""):
+                                                                        array1=[]
+                                                                        bad_ind = 1
+                                                                        error_description = "purpose is mandatory"
+                                                                        array1.append(serial)
+                                                                        array1.append(employerid)
+                                                                        array1.append(name)
+                                                                        array1.append(purpose)
+                                                                        array1.append(error_description)
+                                                                        array1.append(transmission_pk)
+                                                                        array_bad.append(array1)
+                                                                   else:
+                                                                        array2.append(purpose)
+                                                              else:
+                                                                       array2.append(purpose)
 
                                                               planadmin_email=row[13]
-                                                              array2.append(planadmin_email)
+                                                              if (Mandatory.objects.filter(attributes='employer_planadmin_email').exists()):
+                                                                   var=Mandatory.objects.filter(attributes='employer_planadmin_email')[0].required
+                                                                   if (var == "Yes" and planadmin_email ==""):
+                                                                        array1=[]
+                                                                        bad_ind = 1
+                                                                        error_description = "planadmin_email is mandatory"
+                                                                        array1.append(serial)
+                                                                        array1.append(employerid)
+                                                                        array1.append(name)
+                                                                        array1.append(planadmin_email)
+                                                                        array1.append(error_description)
+                                                                        array1.append(transmission_pk)
+                                                                        array_bad.append(array1)
+                                                                   else:
+                                                                        array2.append(planadmin_email)
+                                                              else:
+                                                                       array2.append(planadmin_email)
 
                                                               if bad_ind == 0:
                                                                   array_good.append(array2)
@@ -1370,9 +1598,46 @@ def EmployerList(request):
         employer.slug=slugify(employer.name)
 
         employer.description = serializer.data["description"]
-        employer.description_html = misaka.html(employer.description),
+        if (Mandatory.objects.filter(attributes='employer_description').exists()):
+            var=Mandatory.objects.filter(attributes='employer_description')[0].required
+            if (var == "Yes" and employer.description ==""):
+                 array1=[]
+                 bad_ind = 1
+                 error_description = "Description is mandatory"
+                 array1.append(employer.employerid)
+                 array1.append(employer.name)
+                 array1.append(employer.description)
+                 array1.append(error_description)
+                 array_bad.append(array1)
+
+
+        employer.description_html = misaka.html(employer.description)
+
         employer.FederalEmployerIdentificationNumber = serializer.data["FederalEmployerIdentificationNumber"]
+        if (Mandatory.objects.filter(attributes='employer_FederalEmployerIdentificationNumber').exists()):
+            var=Mandatory.objects.filter(attributes='employer_FederalEmployerIdentificationNumber')[0].required
+            if (var == "Yes" and employer.FederalEmployerIdentificationNumber ==""):
+                 array1=[]
+                 bad_ind = 1
+                 error_description = "FederalEmployerIdentificationNumber is mandatory"
+                 array1.append(employer.employerid)
+                 array1.append(employer.name)
+                 array1.append(employer.FederalEmployerIdentificationNumber)
+                 array1.append(error_description)
+                 array_bad.append(array1)
+
         employer.CarrierMasterAgreementNumber = serializer.data["CarrierMasterAgreementNumber"]
+        if (Mandatory.objects.filter(attributes='employer_CarrierMasterAgreementNumber').exists()):
+            var=Mandatory.objects.filter(attributes='employer_CarrierMasterAgreementNumber')[0].required
+            if (var == "Yes" and employer.CarrierMasterAgreementNumber ==""):
+                 array1=[]
+                 bad_ind = 1
+                 error_description = "CarrierMasterAgreementNumber is mandatory"
+                 array1.append(employer.employerid)
+                 array1.append(employer.name)
+                 array1.append(employer.CarrierMasterAgreementNumber)
+                 array1.append(error_description)
+                 array_bad.append(array1)
 
         employer.address_line_1 = serializer.data["address_line_1"]
         array1=[]
@@ -1386,6 +1651,17 @@ def EmployerList(request):
             array_bad.append(array1)
 
         employer.address_line_2 = serializer.data["address_line_2"]
+        if (Mandatory.objects.filter(attributes='employer_address_line_2').exists()):
+            var=Mandatory.objects.filter(attributes='employer_address_line_2')[0].required
+            if (var == "Yes" and employer.address_line_2 ==""):
+                 array1=[]
+                 bad_ind = 1
+                 error_description = "address_line_2 is mandatory"
+                 array1.append(employer.employerid)
+                 array1.append(employer.name)
+                 array1.append(employer.address_line_2)
+                 array1.append(error_description)
+                 array_bad.append(array1)
 
         employer.city = serializer.data["city"]
         array1=[]
@@ -1421,23 +1697,47 @@ def EmployerList(request):
             array_bad.append(array1)
 
         employer.purpose = serializer.data["purpose"]
+        if (Mandatory.objects.filter(attributes='employer_purpose').exists()):
+            var=Mandatory.objects.filter(attributes='employer_purpose')[0].required
+            if (var == "Yes" and employer.purpose ==""):
+                 array1=[]
+                 bad_ind = 1
+                 error_description = "purpose is mandatory"
+                 array1.append(employer.employerid)
+                 array1.append(employer.name)
+                 array1.append(employer.purpose)
+                 array1.append(error_description)
+                 array_bad.append(array1)
+
         employer.planadmin_email = serializer.data["planadmin_email"]
+        if (Mandatory.objects.filter(attributes='employer_planadmin_email').exists()):
+            var=Mandatory.objects.filter(attributes='employer_planadmin_email')[0].required
+            if (var == "Yes" and employer.planadmin_email ==""):
+                 array1=[]
+                 bad_ind = 1
+                 error_description = "planadmin_email is mandatory"
+                 array1.append(employer.employerid)
+                 array1.append(employer.name)
+                 array1.append(employer.planadmin_email)
+                 array1.append(error_description)
+                 array_bad.append(array1)
 
         #get the most recent employer instance and pk
         employer.transmissionid=serializer.data["transmissionid"]
-        transmission_instance=Transmission.objects.filter(transmissionid=employer.transmissionid)[0]
-        transmission_ident=transmission_instance.pk
-        pk=transmission_ident
         array1=[]
-        if transmission_ident == "":
+        if employer.transmissionid == "":
             bad_ind=1
+            pk=0
             error_description = "Transmission Code is mandatory "
             array1.append(employer.employerid)
             array1.append(employer.name)
-            array1.append(transmission_ident)
+            array1.append(employer.transmissionid)
             array1.append(error_description)
             array_bad.append(array1)
         else:
+            transmission_instance=Transmission.objects.filter(transmissionid=employer.transmissionid)[0]
+            transmission_ident=transmission_instance.pk
+            pk=transmission_ident
             employer.transmission = get_object_or_404(Transmission, pk=pk)
 
         employer.source = "Post API"
