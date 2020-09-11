@@ -32,13 +32,13 @@ class EmployerFeedErrorAnalysis(widgets.ItemList):
 
     title = 'Employer bulk feed error analysis by Transmission'
     model = EmployerErrorAggregate
-    list_display = ('transmission', 'total', 'clean', 'error', 'error_date')
+    list_display = ('error_date', 'transmission', 'total', 'clean', 'error', 'volume_processed_in_this_run', 'execution_time_for_this_run')
 
 class EmployeeFeedErrorAnalysis(widgets.ItemList):
 
     title = 'Employee bulk feed error analysis by Employer'
     model = EmployeeErrorAggregate
-    list_display = ('employer', 'total', 'clean', 'error', 'error_date')
+    list_display = ('error_date', 'employer', 'total', 'clean', 'error', 'volume_processed_in_this_run', 'execution_time_for_this_run')
 
 class CoverageLimitsProducts(widgets.SingleBarChart):
     # label and series

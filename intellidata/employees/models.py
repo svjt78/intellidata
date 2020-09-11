@@ -308,6 +308,8 @@ class EmployeeErrorAggregate(models.Model):
     total = models.CharField(max_length=256)
     clean = models.CharField(max_length=256)
     error = models.CharField(max_length=256)
+    volume_processed_in_this_run=models.CharField(max_length=256, null=True, blank=True)
+    execution_time_for_this_run=models.CharField(max_length=256, null=True, blank=True)
     source = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):

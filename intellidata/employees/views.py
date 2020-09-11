@@ -55,6 +55,7 @@ from events.forms import EventForm
 from events.models import Event
 from mandatories.models import Mandatory
 from numchecks.models import Numcheck
+from datetime import datetime
 
 # For Rest rest_framework
 from rest_framework import status
@@ -714,6 +715,7 @@ def BulkUploadEmployee(request, pk, *args, **kwargs):
                         #array_bad = ["Serial#", "Employee_id", "Name", "Errorfield", "Description", "Employer_id", "Tramsmission_id", "Sender_Name"]
 
                         next(csv_file) # skip header line
+                        execution_start_time = datetime.now()
                         for row in csv.reader(csv_file):
                                                       bad_ind = 0
                                                       array1=[]
@@ -1554,7 +1556,7 @@ def BulkUploadEmployee(request, pk, *args, **kwargs):
                         email_address=models.Employer.objects.get(pk=pk).planadmin_email
                         if (email_address!="" and email_address!=None):
                             employer_name=models.Employer.objects.get(pk=pk).name
-                            attached_file = employer_name + "_error"
+                            attached_file = employer_name + "_employee_feed_error"
                             attachment_file = "employees_error.csv"
                             notification.EmailPlanAdmin(email_address, attachment_file, attached_file)
 
@@ -1581,6 +1583,9 @@ def BulkUploadEmployee(request, pk, *args, **kwargs):
                             bulk_mgr.done()
 
 
+                    execution_end_time = datetime.now()
+                    duration = (execution_end_time - execution_start_time)
+
                     error_report = EmployeeErrorAggregate()
                     error_report.employer = get_object_or_404(Employer, pk=pk)
 
@@ -1594,8 +1599,16 @@ def BulkUploadEmployee(request, pk, *args, **kwargs):
 
                     error_report.total=(error_report.clean + error_report.error)
 
+                    error_report.execution_time_for_this_run=duration
+
+                    with open('employees.csv', 'rt') as csv_file:
+                        next(csv_file) # skip header line
+                        lines= len(list(csv_file))
+                        print(lines)
+                        error_report.volume_processed_in_this_run=lines
+
                     #Refresh Error aggregate table for concerned employer
-                    EmployeeErrorAggregate.objects.filter(employer_id=pk).delete()
+                    #EmployeeErrorAggregate.objects.filter(employer_id=pk).delete()
 
 
                     error_report.save()

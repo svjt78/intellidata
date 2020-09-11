@@ -257,9 +257,12 @@ class EmployerError(models.Model):
     errorfield = models.CharField(max_length=256)
     error_description = models.CharField(max_length=256)
     transmission = models.ForeignKey(Transmission, on_delete=models.SET_NULL, null=True, blank=True, related_name="errored_employers")
+    transmissionid= models.CharField(max_length=255, null=True, blank=True)
+    sendername= models.CharField(max_length=255, null=True, blank=True)
     error_date = models.DateTimeField(auto_now=True)
     creator = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     source = models.CharField(max_length=255, null=True, blank=True)
+
 
     def __str__(self):
         return self.description
@@ -277,10 +280,13 @@ class EmployerError(models.Model):
 
 class EmployerErrorAggregate(models.Model):
     transmission = models.ForeignKey(Transmission, on_delete=models.SET_NULL, null=True, blank=True)
+    sendername=models.CharField(max_length=256, null=True, blank=True)
     error_date = models.DateTimeField(auto_now=True)
     total = models.CharField(max_length=256)
     clean = models.CharField(max_length=256)
     error = models.CharField(max_length=256)
+    volume_processed_in_this_run=models.CharField(max_length=256, null=True, blank=True)
+    execution_time_for_this_run=models.CharField(max_length=256, null=True, blank=True)
     source = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):

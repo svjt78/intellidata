@@ -32,7 +32,7 @@ from . import forms
 from employers.forms import EmployerForm
 from bulkuploads.forms import BulkUploadForm
 import csv
-from employers.utils import BulkCreateManager
+from employers.utils import BulkCreateManager, Notification
 from employers.utils import ApiDomains
 import os
 import os.path
@@ -52,6 +52,7 @@ import re
 from botocore.exceptions import NoCredentialsError
 import io
 from django.db.models import Count
+from datetime import datetime
 
 from events.forms import EventForm
 from events.models import Event
@@ -592,6 +593,10 @@ def BulkUploadEmployer(request):
                         array_bad = []
                         #array_bad =[]
                         next(csv_file) # skip header line
+
+                        execution_start_time = datetime.now()
+                        print(execution_start_time)
+
                         for row in csv.reader(csv_file):
                                                       bad_ind = 0
                                                       array1=[]
@@ -609,6 +614,9 @@ def BulkUploadEmployer(request):
                                                       transmission_instance=Transmission.objects.filter(transmissionid=transmission)[0]
                                                       transmission_ident=transmission_instance.pk
                                                       transmission_pk=transmission_ident
+                                                      transmissionid=transmission_instance.transmissionid
+                                                      sendername=transmission_instance.SenderName
+                                                      transmission_planadmin_email=transmission_instance.planadmin_email
                                                       array1=[]
                                                       if transmission == "":
                                                            bad_ind=1
@@ -619,6 +627,8 @@ def BulkUploadEmployer(request):
                                                            array1.append(transmission_pk)
                                                            array1.append(error_description)
                                                            array1.append(transmission_pk)
+                                                           array1.append(transmissionid)
+                                                           array1.append(sendername)
                                                            array_bad.append(array1)
                                                       else:
                                                            array2.append(transmission_pk)
@@ -635,6 +645,8 @@ def BulkUploadEmployer(request):
                                                           array1.append(name)
                                                           array1.append(error_description)
                                                           array1.append(transmission_pk)
+                                                          array1.append(transmissionid)
+                                                          array1.append(sendername)
                                                           array_bad.append(array1)
 
                                                       else:
@@ -656,6 +668,8 @@ def BulkUploadEmployer(request):
                                                                array1.append(description)
                                                                array1.append(error_description)
                                                                array1.append(transmission_pk)
+                                                               array1.append(transmissionid)
+                                                               array1.append(sendername)
                                                                array_bad.append(array1)
                                                           else:
                                                                array2.append(description)
@@ -677,6 +691,8 @@ def BulkUploadEmployer(request):
                                                                array1.append(FederalEmployerIdentificationNumber)
                                                                array1.append(error_description)
                                                                array1.append(transmission_pk)
+                                                               array1.append(transmissionid)
+                                                               array1.append(sendername)
                                                                array_bad.append(array1)
                                                           else:
                                                                array2.append(FederalEmployerIdentificationNumber)
@@ -697,6 +713,8 @@ def BulkUploadEmployer(request):
                                                                array1.append(CarrierMasterAgreementNumber)
                                                                array1.append(error_description)
                                                                array1.append(transmission_pk)
+                                                               array1.append(transmissionid)
+                                                               array1.append(sendername)
                                                                array_bad.append(array1)
                                                           else:
                                                                array2.append(CarrierMasterAgreementNumber)
@@ -715,6 +733,8 @@ def BulkUploadEmployer(request):
                                                           array1.append(address_line_1)
                                                           array1.append(error_description)
                                                           array1.append(transmission_pk)
+                                                          array1.append(transmissionid)
+                                                          array1.append(sendername)
                                                           array_bad.append(array1)
                                                       else:
                                                            array2.append(address_line_1)
@@ -732,6 +752,8 @@ def BulkUploadEmployer(request):
                                                                array1.append(address_line_2)
                                                                array1.append(error_description)
                                                                array1.append(transmission_pk)
+                                                               array1.append(transmissionid)
+                                                               array1.append(sendername)
                                                                array_bad.append(array1)
                                                           else:
                                                                array2.append(address_line_2)
@@ -750,6 +772,8 @@ def BulkUploadEmployer(request):
                                                            array1.append(city)
                                                            array1.append(error_description)
                                                            array1.append(transmission_pk)
+                                                           array1.append(transmissionid)
+                                                           array1.append(sendername)
                                                            array_bad.append(array1)
                                                       else:
                                                           array2.append(city)
@@ -769,6 +793,8 @@ def BulkUploadEmployer(request):
                                                                 array1.append(state)
                                                                 array1.append(error_description)
                                                                 array1.append(transmission_pk)
+                                                                array1.append(transmissionid)
+                                                                array1.append(sendername)
                                                                 array_bad.append(array1)
                                                            else:
                                                                 array2.append(state)
@@ -787,6 +813,8 @@ def BulkUploadEmployer(request):
                                                            array1.append(zipcode)
                                                            array1.append(error_description)
                                                            array1.append(transmission_pk)
+                                                           array1.append(transmissionid)
+                                                           array1.append(sendername)
                                                            array_bad.append(array1)
                                                       else:
                                                            array2.append(zipcode)
@@ -804,6 +832,8 @@ def BulkUploadEmployer(request):
                                                                 array1.append(purpose)
                                                                 array1.append(error_description)
                                                                 array1.append(transmission_pk)
+                                                                array1.append(transmissionid)
+                                                                array1.append(sendername)
                                                                 array_bad.append(array1)
                                                            else:
                                                                 array2.append(purpose)
@@ -823,6 +853,8 @@ def BulkUploadEmployer(request):
                                                                 array1.append(planadmin_email)
                                                                 array1.append(error_description)
                                                                 array1.append(transmission_pk)
+                                                                array1.append(transmissionid)
+                                                                array1.append(sendername)
                                                                 array_bad.append(array1)
                                                            else:
                                                                 array2.append(planadmin_email)
@@ -955,6 +987,16 @@ def BulkUploadEmployer(request):
                         # load the employer error table
                         s3.download_file('intellidatastatic1', 'media/employers_error.csv', 'employers_error.csv')
 
+                        if (os.stat("employers_error.csv").st_size != 0):
+                            email_address=transmission_planadmin_email
+                            print("email address is " + email_address)
+                            if (email_address!="" and email_address!=None):
+                                sender_name=sendername
+                                attached_file = sender_name + "_employer_feed_error"
+                                attachment_file = "employers_error.csv"
+                                notification=Notification()
+                                notification.EmailPlanAdmin(email_address, attachment_file, attached_file)
+
                         #Refresh Error table for concerned employer
                         EmployerError.objects.all().delete()
 
@@ -967,22 +1009,37 @@ def BulkUploadEmployer(request):
                                                           errorfield=row1[3],
                                                           error_description=row1[4],
                                                           transmission=get_object_or_404(models.Transmission, pk=row1[5]),
+                                                          transmissionid=row1[6],
+                                                          sendername=row1[7],
                                                           creator = request.user,
                                                           source="Standard Feed Bulk Upload"
                                                           ))
                             bulk_mgr.done()
 
+                    execution_end_time = datetime.now()
+                    duration = (execution_end_time - execution_start_time)
+                    print(duration)
 
                     error_report = EmployerErrorAggregate()
 
                     error_report.transmission = get_object_or_404(Transmission, pk=transmission_pk)
+                    error_report.sendername = sendername
+
                     error_report.clean=Employer.objects.count()
                     error_report.error=EmployerError.objects.count()
 
                     error_report.total=(error_report.clean + error_report.error)
 
+                    error_report.execution_time_for_this_run=duration
+
+                    with open('employers.csv', 'rt') as csv_file:
+                        next(csv_file) # skip header line
+                        lines= len(list(csv_file))
+                        print(lines)
+                        error_report.volume_processed_in_this_run=lines
+
                     #Refresh Error aggregate table for concerned employer
-                    EmployerErrorAggregate.objects.all().delete()
+                    #EmployerErrorAggregate.objects.all().delete()
 
                     error_report.save()
 

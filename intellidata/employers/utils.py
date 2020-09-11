@@ -238,7 +238,7 @@ class Notification:
         client = boto3.client('ses')
 
         message = MIMEMultipart()
-        message['Subject'] = 'Employee feed error - Please refer to attached file'
+        message['Subject'] = 'Feed error - Please refer to attached file'
         message['From'] = 'suvojit.dt@gmail.com'
         message['To'] = ', '.join([email_addr])
         # message body
