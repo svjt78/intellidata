@@ -27,4 +27,5 @@ urlpatterns = [
     url(r"^loadods/$",views.BulkUploadSOR,name="bulksor"),
     url(r"^ods/pull/(?P<pk>\d+)/$",views.BackendPull, name="backendpull"),
     url(r"^ods/history/(?P<pk>\d+)/$", views.ListEmployeesHistory, name="history"),
+    url(r"^TDS/export/$",views.ExportEmployeeDataToCSV,name="employees_download"),
 ]

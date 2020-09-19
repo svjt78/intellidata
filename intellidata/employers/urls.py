@@ -26,5 +26,6 @@ urlpatterns = [
     url(r"^employer/error/$",views.ViewEmployerErrorList.as_view(), name='feederrors'),
     url(r"^(?P<pk>\d+)/employees/show/$", views.ShowEmployeesList.as_view(), name="show_employees"),
     url(r"^(?P<pk>\d+)/agreements/show/$", views.ShowAgreementsList.as_view(), name="show_agreements"),
+    url(r"^TDS/export/$",views.ExportEmployerDataToCSV,name="employers_download"),
 
 ]

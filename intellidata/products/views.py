@@ -40,6 +40,7 @@ from django.utils.text import slugify
 import misaka
 import uuid
 from django.shortcuts import get_object_or_404
+from django.utils.encoding import smart_str
 
 import boto3
 import requests
@@ -671,7 +672,7 @@ def BulkUploadProduct(request):
                     error_report.total=(error_report.clean + error_report.error)
 
                     #Refresh Error aggregate table for concerned employer
-                    ProductErrorAggregate.objects.all().delete()
+                    #ProductErrorAggregate.objects.all().delete()
 
                     error_report.save()
 
@@ -823,3 +824,38 @@ class APIError(Exception):
 
     def __str__(self):
         return "APIError: status={}".format(self.status)
+
+
+def ExportProductDataToCSV(request):
+    # Create the HttpResponse object with the appropriate CSV header.
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="products.csv"'
+
+    writer = csv.writer(response)
+
+    writer.writerow(['Serial#', 'Productid', 'Name', 'Type', 'Slug', 'Description', 'Coverage_limit', 'Price_per_1000_units', 'Creator', 'Create_date', 'Source', 'Backend_SOR_connection', 'Commit_indicator', 'Record_status', 'Response', 'Bulk_upload_indicator'])
+    #writer.writerow(['Second row', 'A', 'B', 'C', '"Testing"', "Here's a quote"])
+    queryset=Product.objects.all().order_by('-product_date')
+    n=0
+    for obj in queryset:
+        n=n+1
+        writer.writerow([
+            smart_str(str(n)),
+            smart_str(obj.productid),
+            smart_str(obj.name),
+            smart_str(obj.type),
+            smart_str(obj.slug),
+            smart_str(obj.description),
+            smart_str(obj.coverage_limit),
+            smart_str(obj.price_per_1000_units),
+            smart_str(obj.creator),
+            smart_str(obj.product_date),
+            smart_str(obj.source),
+            smart_str(obj.backend_SOR_connection),
+            smart_str(obj.commit_indicator),
+            smart_str(obj.record_status),
+            smart_str(obj.response),
+            smart_str(obj.bulk_upload_indicator)
+        ])
+
+    return response

@@ -282,6 +282,7 @@ class EmployeeError(models.Model):
     errorfield = models.CharField(max_length=256)
     description = models.CharField(max_length=256)
     employer = models.ForeignKey(Employer, on_delete=models.SET_NULL, null=True, blank=True, related_name="errored_employees")
+    employerid = models.CharField(max_length=256, null=True, blank=True)
     error_date = models.DateTimeField(auto_now=True)
     creator = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     source = models.CharField(max_length=255, null=True, blank=True)
@@ -304,10 +305,10 @@ class EmployeeError(models.Model):
 
 class EmployeeErrorAggregate(models.Model):
     employer = models.ForeignKey(Employer, on_delete=models.SET_NULL, null=True, blank=True)
-    error_date = models.DateTimeField(auto_now=True)
-    total = models.CharField(max_length=256)
-    clean = models.CharField(max_length=256)
-    error = models.CharField(max_length=256)
+    run_date = models.DateTimeField(auto_now=True)
+    total_employees_till_date = models.CharField(max_length=256)
+    processed_clean = models.CharField(max_length=256)
+    number_of_error_occurences = models.CharField(max_length=256)
     volume_processed_in_this_run=models.CharField(max_length=256, null=True, blank=True)
     execution_time_for_this_run=models.CharField(max_length=256, null=True, blank=True)
     source = models.CharField(max_length=255, null=True, blank=True)
@@ -324,7 +325,7 @@ class EmployeeErrorAggregate(models.Model):
 
 
     class Meta:
-        ordering = ["-error_date"]
+        ordering = ["-run_date"]
 
 # Employee serializer
 class EmployeeSerializer(serializers.ModelSerializer):

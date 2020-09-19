@@ -50,6 +50,7 @@ import re
 from botocore.exceptions import NoCredentialsError
 import io
 from django.db.models import Count
+from django.utils.encoding import smart_str
 
 from events.forms import EventForm
 from events.models import Event
@@ -743,6 +744,7 @@ def BulkUploadEmployee(request, pk, *args, **kwargs):
                                                                array1.append(ssn)
                                                                array1.append(description)
                                                                array1.append(pk)
+                                                               array1.append(Employer.objects.get(pk=pk).employerid)
                                                                array1.append(transmissionid)
                                                                array1.append(sendername)
                                                                array_bad.append(array1)
@@ -765,6 +767,7 @@ def BulkUploadEmployee(request, pk, *args, **kwargs):
                                                           array1.append(name)
                                                           array1.append(description)
                                                           array1.append(pk)
+                                                          array1.append(Employer.objects.get(pk=pk).employerid)
                                                           array1.append(transmissionid)
                                                           array1.append(sendername)
                                                           array_bad.append(array1)
@@ -788,6 +791,7 @@ def BulkUploadEmployee(request, pk, *args, **kwargs):
                                                                array1.append(gendercode)
                                                                array1.append(description)
                                                                array1.append(pk)
+                                                               array1.append(Employer.objects.get(pk=pk).employerid)
                                                                array1.append(transmissionid)
                                                                array1.append(sendername)
                                                                array_bad.append(array1)
@@ -808,6 +812,7 @@ def BulkUploadEmployee(request, pk, *args, **kwargs):
                                                           array1.append(age)
                                                           array1.append(description)
                                                           array1.append(pk)
+                                                          array1.append(Employer.objects.get(pk=pk).employerid)
                                                           array1.append(transmissionid)
                                                           array1.append(sendername)
                                                           array_bad.append(array1)
@@ -820,6 +825,7 @@ def BulkUploadEmployee(request, pk, *args, **kwargs):
                                                           array1.append(age)
                                                           array1.append(description)
                                                           array1.append(pk)
+                                                          array1.append(Employer.objects.get(pk=pk).employerid)
                                                           array1.append(transmissionid)
                                                           array1.append(sendername)
                                                           array_bad.append(array1)
@@ -839,6 +845,7 @@ def BulkUploadEmployee(request, pk, *args, **kwargs):
                                                                array1.append(birthdate)
                                                                array1.append(description)
                                                                array1.append(pk)
+                                                               array1.append(Employer.objects.get(pk=pk).employerid)
                                                                array1.append(transmissionid)
                                                                array1.append(sendername)
                                                                array_bad.append(array1)
@@ -860,6 +867,7 @@ def BulkUploadEmployee(request, pk, *args, **kwargs):
                                                                array1.append(maritalstatus)
                                                                array1.append(description)
                                                                array1.append(pk)
+                                                               array1.append(Employer.objects.get(pk=pk).employerid)
                                                                array1.append(transmissionid)
                                                                array1.append(sendername)
                                                                array_bad.append(array1)
@@ -880,6 +888,7 @@ def BulkUploadEmployee(request, pk, *args, **kwargs):
                                                           array1.append(home_address_line_1)
                                                           array1.append(description)
                                                           array1.append(pk)
+                                                          array1.append(Employer.objects.get(pk=pk).employerid)
                                                           array1.append(transmissionid)
                                                           array1.append(sendername)
                                                           array_bad.append(array1)
@@ -901,6 +910,7 @@ def BulkUploadEmployee(request, pk, *args, **kwargs):
                                                                array1.append(home_address_line_2)
                                                                array1.append(description)
                                                                array1.append(pk)
+                                                               array1.append(Employer.objects.get(pk=pk).employerid)
                                                                array1.append(transmissionid)
                                                                array1.append(sendername)
                                                                array_bad.append(array1)
@@ -921,6 +931,7 @@ def BulkUploadEmployee(request, pk, *args, **kwargs):
                                                            array1.append(home_city)
                                                            array1.append(description)
                                                            array1.append(pk)
+                                                           array1.append(Employer.objects.get(pk=pk).employerid)
                                                            array1.append(transmissionid)
                                                            array1.append(sendername)
                                                            array_bad.append(array1)
@@ -939,6 +950,7 @@ def BulkUploadEmployee(request, pk, *args, **kwargs):
                                                            array1.append(home_state)
                                                            array1.append(description)
                                                            array1.append(pk)
+                                                           array1.append(Employer.objects.get(pk=pk).employerid)
                                                            array1.append(transmissionid)
                                                            array1.append(sendername)
                                                            array_bad.append(array1)
@@ -957,6 +969,7 @@ def BulkUploadEmployee(request, pk, *args, **kwargs):
                                                             array1.append(home_zipcode)
                                                             array1.append(description)
                                                             array1.append(pk)
+                                                            array1.append(Employer.objects.get(pk=pk).employerid)
                                                             array1.append(transmissionid)
                                                             array1.append(sendername)
                                                             array_bad.append(array1)
@@ -976,6 +989,7 @@ def BulkUploadEmployee(request, pk, *args, **kwargs):
                                                                array1.append(mail_address_line_1)
                                                                array1.append(description)
                                                                array1.append(pk)
+                                                               array1.append(Employer.objects.get(pk=pk).employerid)
                                                                array1.append(transmissionid)
                                                                array1.append(sendername)
                                                                array_bad.append(array1)
@@ -997,6 +1011,7 @@ def BulkUploadEmployee(request, pk, *args, **kwargs):
                                                                array1.append(mail_address_line_2)
                                                                array1.append(description)
                                                                array1.append(pk)
+                                                               array1.append(Employer.objects.get(pk=pk).employerid)
                                                                array1.append(transmissionid)
                                                                array1.append(sendername)
                                                                array_bad.append(array1)
@@ -1018,6 +1033,7 @@ def BulkUploadEmployee(request, pk, *args, **kwargs):
                                                                array1.append(mail_city)
                                                                array1.append(description)
                                                                array1.append(pk)
+                                                               array1.append(Employer.objects.get(pk=pk).employerid)
                                                                array1.append(transmissionid)
                                                                array1.append(sendername)
                                                                array_bad.append(array1)
@@ -1039,6 +1055,7 @@ def BulkUploadEmployee(request, pk, *args, **kwargs):
                                                                array1.append(mail_state)
                                                                array1.append(description)
                                                                array1.append(pk)
+                                                               array1.append(Employer.objects.get(pk=pk).employerid)
                                                                array1.append(transmissionid)
                                                                array1.append(sendername)
                                                                array_bad.append(array1)
@@ -1060,6 +1077,7 @@ def BulkUploadEmployee(request, pk, *args, **kwargs):
                                                                array1.append(mail_zipcode)
                                                                array1.append(description)
                                                                array1.append(pk)
+                                                               array1.append(Employer.objects.get(pk=pk).employerid)
                                                                array1.append(transmissionid)
                                                                array1.append(sendername)
                                                                array_bad.append(array1)
@@ -1081,6 +1099,7 @@ def BulkUploadEmployee(request, pk, *args, **kwargs):
                                                                array1.append(work_address_line_1)
                                                                array1.append(description)
                                                                array1.append(pk)
+                                                               array1.append(Employer.objects.get(pk=pk).employerid)
                                                                array1.append(transmissionid)
                                                                array1.append(sendername)
                                                                array_bad.append(array1)
@@ -1102,6 +1121,7 @@ def BulkUploadEmployee(request, pk, *args, **kwargs):
                                                                array1.append(work_address_line_2)
                                                                array1.append(description)
                                                                array1.append(pk)
+                                                               array1.append(Employer.objects.get(pk=pk).employerid)
                                                                array1.append(transmissionid)
                                                                array1.append(sendername)
                                                                array_bad.append(array1)
@@ -1123,6 +1143,7 @@ def BulkUploadEmployee(request, pk, *args, **kwargs):
                                                                array1.append(work_city)
                                                                array1.append(description)
                                                                array1.append(pk)
+                                                               array1.append(Employer.objects.get(pk=pk).employerid)
                                                                array1.append(transmissionid)
                                                                array1.append(sendername)
                                                                array_bad.append(array1)
@@ -1144,6 +1165,7 @@ def BulkUploadEmployee(request, pk, *args, **kwargs):
                                                                array1.append(work_state)
                                                                array1.append(description)
                                                                array1.append(pk)
+                                                               array1.append(Employer.objects.get(pk=pk).employerid)
                                                                array1.append(transmissionid)
                                                                array1.append(sendername)
                                                                array_bad.append(array1)
@@ -1165,6 +1187,7 @@ def BulkUploadEmployee(request, pk, *args, **kwargs):
                                                                array1.append(work_zipcode)
                                                                array1.append(description)
                                                                array1.append(pk)
+                                                               array1.append(Employer.objects.get(pk=pk).employerid)
                                                                array1.append(transmissionid)
                                                                array1.append(sendername)
                                                                array_bad.append(array1)
@@ -1186,6 +1209,7 @@ def BulkUploadEmployee(request, pk, *args, **kwargs):
                                                           array1.append(email)
                                                           array1.append(description)
                                                           array1.append(pk)
+                                                          array1.append(Employer.objects.get(pk=pk).employerid)
                                                           array1.append(transmissionid)
                                                           array1.append(sendername)
                                                           array_bad.append(array1)
@@ -1198,6 +1222,7 @@ def BulkUploadEmployee(request, pk, *args, **kwargs):
                                                           array1.append(email)
                                                           array1.append(description)
                                                           array1.append(pk)
+                                                          array1.append(Employer.objects.get(pk=pk).employerid)
                                                           array1.append(transmissionid)
                                                           array1.append(sendername)
                                                           array_bad.append(array1)
@@ -1217,6 +1242,7 @@ def BulkUploadEmployee(request, pk, *args, **kwargs):
                                                                array1.append(alternate_email)
                                                                array1.append(description)
                                                                array1.append(pk)
+                                                               array1.append(Employer.objects.get(pk=pk).employerid)
                                                                array1.append(transmissionid)
                                                                array1.append(sendername)
                                                                array_bad.append(array1)
@@ -1239,6 +1265,7 @@ def BulkUploadEmployee(request, pk, *args, **kwargs):
                                                                array1.append(home_phone)
                                                                array1.append(description)
                                                                array1.append(pk)
+                                                               array1.append(Employer.objects.get(pk=pk).employerid)
                                                                array1.append(transmissionid)
                                                                array1.append(sendername)
                                                                array_bad.append(array1)
@@ -1261,6 +1288,7 @@ def BulkUploadEmployee(request, pk, *args, **kwargs):
                                                                array1.append(work_phone)
                                                                array1.append(description)
                                                                array1.append(pk)
+                                                               array1.append(Employer.objects.get(pk=pk).employerid)
                                                                array1.append(transmissionid)
                                                                array1.append(sendername)
                                                                array_bad.append(array1)
@@ -1282,6 +1310,7 @@ def BulkUploadEmployee(request, pk, *args, **kwargs):
                                                           array1.append(mobile_phone)
                                                           array1.append(description)
                                                           array1.append(pk)
+                                                          array1.append(Employer.objects.get(pk=pk).employerid)
                                                           array1.append(transmissionid)
                                                           array1.append(sendername)
                                                           array_bad.append(array1)
@@ -1295,6 +1324,7 @@ def BulkUploadEmployee(request, pk, *args, **kwargs):
                                                           array1.append(mobile_phone)
                                                           array1.append(description)
                                                           array1.append(pk)
+                                                          array1.append(Employer.objects.get(pk=pk).employerid)
                                                           array1.append(transmissionid)
                                                           array1.append(sendername)
                                                           array_bad.append(array1)
@@ -1315,6 +1345,7 @@ def BulkUploadEmployee(request, pk, *args, **kwargs):
                                                                array1.append(enrollment_method)
                                                                array1.append(description)
                                                                array1.append(pk)
+                                                               array1.append(Employer.objects.get(pk=pk).employerid)
                                                                array1.append(transmissionid)
                                                                array1.append(sendername)
                                                                array_bad.append(array1)
@@ -1336,6 +1367,7 @@ def BulkUploadEmployee(request, pk, *args, **kwargs):
                                                                array1.append(employment_information)
                                                                array1.append(description)
                                                                array1.append(pk)
+                                                               array1.append(Employer.objects.get(pk=pk).employerid)
                                                                array1.append(transmissionid)
                                                                array1.append(sendername)
                                                                array_bad.append(array1)
@@ -1575,8 +1607,9 @@ def BulkUploadEmployee(request, pk, *args, **kwargs):
                                                           errorfield=row1[3],
                                                           description=row1[4],
                                                           employer=get_object_or_404(models.Employer, pk=row1[5]),
-                                                          transmissionid=row1[6],
-                                                          sendername=row1[7],
+                                                          employerid=row1[6],
+                                                          transmissionid=row1[7],
+                                                          sendername=row1[8],
                                                           creator = request.user,
                                                           source="Standard Feed Bulk Upload"
                                                           ))
@@ -1589,15 +1622,15 @@ def BulkUploadEmployee(request, pk, *args, **kwargs):
                     error_report = EmployeeErrorAggregate()
                     error_report.employer = get_object_or_404(Employer, pk=pk)
 
-                    error_report.clean=Employee.objects.filter(employer_id=pk).count()
-                    error_report.error=EmployeeError.objects.filter(employer_id=pk).count()
+                    error_report.processed_clean=Employee.objects.filter(employer_id=pk).count()
+                    error_report.number_of_error_occurences=EmployeeError.objects.filter(employer_id=pk).count()
 
                     #distinct = EmployeeError.objects.filter(employer_id=pk).values('serial').annotate(serial_count=Count('serial')).filter(serial_count=1)
                     #records = EmployeeError.objects.filter(serial__in=[item['serial'] for item in distinct]).count()
                     #error_report.error=records
 
 
-                    error_report.total=(error_report.clean + error_report.error)
+                    error_report.total_employees_till_date=(error_report.processed_clean + error_report.number_of_error_occurences)
 
                     error_report.execution_time_for_this_run=duration
 
@@ -1719,6 +1752,7 @@ def NonStdRefresh(request):
                                 #array_bad =[]
                                 next(csv_file) # skip header line
                                 #start here
+                                execution_start_time = datetime.now()
                                 for row in csv.reader(csv_file):
                                                               bad_ind = 0
                                                               array1=[]
@@ -1750,6 +1784,7 @@ def NonStdRefresh(request):
                                                                    array1.append(pk)
                                                                    array1.append(description)
                                                                    array1.append(pk)
+                                                                   array1.append(Employer.objects.get(pk=pk).employerid)
                                                                    array1.append(transmissionid)
                                                                    array1.append(sendername)
                                                                    array_bad.append(array1)
@@ -1768,6 +1803,7 @@ def NonStdRefresh(request):
                                                                   array1.append(name)
                                                                   array1.append(description)
                                                                   array1.append(pk)
+                                                                  array1.append(Employer.objects.get(pk=pk).employerid)
                                                                   array1.append(transmissionid)
                                                                   array1.append(sendername)
                                                                   array_bad.append(array1)
@@ -1791,6 +1827,7 @@ def NonStdRefresh(request):
                                                                        array1.append(ssn)
                                                                        array1.append(description)
                                                                        array1.append(pk)
+                                                                       array1.append(Employer.objects.get(pk=pk).employerid)
                                                                        array1.append(transmissionid)
                                                                        array1.append(sendername)
                                                                        array_bad.append(array1)
@@ -1814,6 +1851,7 @@ def NonStdRefresh(request):
                                                                        array1.append(gendercode)
                                                                        array1.append(description)
                                                                        array1.append(pk)
+                                                                       array1.append(Employer.objects.get(pk=pk).employerid)
                                                                        array1.append(transmissionid)
                                                                        array1.append(sendername)
                                                                        array_bad.append(array1)
@@ -1834,6 +1872,7 @@ def NonStdRefresh(request):
                                                                   array1.append(age)
                                                                   array1.append(description)
                                                                   array1.append(pk)
+                                                                  array1.append(Employer.objects.get(pk=pk).employerid)
                                                                   array1.append(transmissionid)
                                                                   array1.append(sendername)
                                                                   array_bad.append(array1)
@@ -1846,6 +1885,7 @@ def NonStdRefresh(request):
                                                                   array1.append(age)
                                                                   array1.append(description)
                                                                   array1.append(pk)
+                                                                  array1.append(Employer.objects.get(pk=pk).employerid)
                                                                   array1.append(transmissionid)
                                                                   array1.append(sendername)
                                                                   array_bad.append(array1)
@@ -1865,6 +1905,7 @@ def NonStdRefresh(request):
                                                                        array1.append(birthdate)
                                                                        array1.append(description)
                                                                        array1.append(pk)
+                                                                       array1.append(Employer.objects.get(pk=pk).employerid)
                                                                        array1.append(transmissionid)
                                                                        array1.append(sendername)
                                                                        array_bad.append(array1)
@@ -1886,6 +1927,7 @@ def NonStdRefresh(request):
                                                                        array1.append(maritalstatus)
                                                                        array1.append(description)
                                                                        array1.append(pk)
+                                                                       array1.append(Employer.objects.get(pk=pk).employerid)
                                                                        array1.append(transmissionid)
                                                                        array1.append(sendername)
                                                                        array_bad.append(array1)
@@ -1906,6 +1948,7 @@ def NonStdRefresh(request):
                                                                   array1.append(home_address_line_1)
                                                                   array1.append(description)
                                                                   array1.append(pk)
+                                                                  array1.append(Employer.objects.get(pk=pk).employerid)
                                                                   array1.append(transmissionid)
                                                                   array1.append(sendername)
                                                                   array_bad.append(array1)
@@ -1927,6 +1970,7 @@ def NonStdRefresh(request):
                                                                        array1.append(home_address_line_2)
                                                                        array1.append(description)
                                                                        array1.append(pk)
+                                                                       array1.append(Employer.objects.get(pk=pk).employerid)
                                                                        array1.append(transmissionid)
                                                                        array1.append(sendername)
                                                                        array_bad.append(array1)
@@ -1947,6 +1991,7 @@ def NonStdRefresh(request):
                                                                    array1.append(home_city)
                                                                    array1.append(description)
                                                                    array1.append(pk)
+                                                                   array1.append(Employer.objects.get(pk=pk).employerid)
                                                                    array1.append(transmissionid)
                                                                    array1.append(sendername)
                                                                    array_bad.append(array1)
@@ -1965,6 +2010,7 @@ def NonStdRefresh(request):
                                                                    array1.append(home_state)
                                                                    array1.append(description)
                                                                    array1.append(pk)
+                                                                   array1.append(Employer.objects.get(pk=pk).employerid)
                                                                    array1.append(transmissionid)
                                                                    array1.append(sendername)
                                                                    array_bad.append(array1)
@@ -1983,6 +2029,7 @@ def NonStdRefresh(request):
                                                                     array1.append(home_zipcode)
                                                                     array1.append(description)
                                                                     array1.append(pk)
+                                                                    array1.append(Employer.objects.get(pk=pk).employerid)
                                                                     array1.append(transmissionid)
                                                                     array1.append(sendername)
                                                                     array_bad.append(array1)
@@ -2002,6 +2049,7 @@ def NonStdRefresh(request):
                                                                        array1.append(mail_address_line_1)
                                                                        array1.append(description)
                                                                        array1.append(pk)
+                                                                       array1.append(Employer.objects.get(pk=pk).employerid)
                                                                        array1.append(transmissionid)
                                                                        array1.append(sendername)
                                                                        array_bad.append(array1)
@@ -2023,6 +2071,7 @@ def NonStdRefresh(request):
                                                                        array1.append(mail_address_line_2)
                                                                        array1.append(description)
                                                                        array1.append(pk)
+                                                                       array1.append(Employer.objects.get(pk=pk).employerid)
                                                                        array1.append(transmissionid)
                                                                        array1.append(sendername)
                                                                        array_bad.append(array1)
@@ -2044,6 +2093,7 @@ def NonStdRefresh(request):
                                                                        array1.append(mail_city)
                                                                        array1.append(description)
                                                                        array1.append(pk)
+                                                                       array1.append(Employer.objects.get(pk=pk).employerid)
                                                                        array1.append(transmissionid)
                                                                        array1.append(sendername)
                                                                        array_bad.append(array1)
@@ -2065,6 +2115,7 @@ def NonStdRefresh(request):
                                                                        array1.append(mail_state)
                                                                        array1.append(description)
                                                                        array1.append(pk)
+                                                                       array1.append(Employer.objects.get(pk=pk).employerid)
                                                                        array1.append(transmissionid)
                                                                        array1.append(sendername)
                                                                        array_bad.append(array1)
@@ -2086,6 +2137,7 @@ def NonStdRefresh(request):
                                                                        array1.append(mail_zipcode)
                                                                        array1.append(description)
                                                                        array1.append(pk)
+                                                                       array1.append(Employer.objects.get(pk=pk).employerid)
                                                                        array1.append(transmissionid)
                                                                        array1.append(sendername)
                                                                        array_bad.append(array1)
@@ -2107,6 +2159,7 @@ def NonStdRefresh(request):
                                                                        array1.append(work_address_line_1)
                                                                        array1.append(description)
                                                                        array1.append(pk)
+                                                                       array1.append(Employer.objects.get(pk=pk).employerid)
                                                                        array1.append(transmissionid)
                                                                        array1.append(sendername)
                                                                        array_bad.append(array1)
@@ -2128,6 +2181,7 @@ def NonStdRefresh(request):
                                                                        array1.append(work_address_line_2)
                                                                        array1.append(description)
                                                                        array1.append(pk)
+                                                                       array1.append(Employer.objects.get(pk=pk).employerid)
                                                                        array1.append(transmissionid)
                                                                        array1.append(sendername)
                                                                        array_bad.append(array1)
@@ -2149,6 +2203,7 @@ def NonStdRefresh(request):
                                                                        array1.append(work_city)
                                                                        array1.append(description)
                                                                        array1.append(pk)
+                                                                       array1.append(Employer.objects.get(pk=pk).employerid)
                                                                        array1.append(transmissionid)
                                                                        array1.append(sendername)
                                                                        array_bad.append(array1)
@@ -2170,6 +2225,7 @@ def NonStdRefresh(request):
                                                                        array1.append(work_state)
                                                                        array1.append(description)
                                                                        array1.append(pk)
+                                                                       array1.append(Employer.objects.get(pk=pk).employerid)
                                                                        array1.append(transmissionid)
                                                                        array1.append(sendername)
                                                                        array_bad.append(array1)
@@ -2191,6 +2247,7 @@ def NonStdRefresh(request):
                                                                        array1.append(work_zipcode)
                                                                        array1.append(description)
                                                                        array1.append(pk)
+                                                                       array1.append(Employer.objects.get(pk=pk).employerid)
                                                                        array1.append(transmissionid)
                                                                        array1.append(sendername)
                                                                        array_bad.append(array1)
@@ -2212,6 +2269,7 @@ def NonStdRefresh(request):
                                                                   array1.append(email)
                                                                   array1.append(description)
                                                                   array1.append(pk)
+                                                                  array1.append(Employer.objects.get(pk=pk).employerid)
                                                                   array1.append(transmissionid)
                                                                   array1.append(sendername)
                                                                   array_bad.append(array1)
@@ -2224,6 +2282,7 @@ def NonStdRefresh(request):
                                                                   array1.append(email)
                                                                   array1.append(description)
                                                                   array1.append(pk)
+                                                                  array1.append(Employer.objects.get(pk=pk).employerid)
                                                                   array1.append(transmissionid)
                                                                   array1.append(sendername)
                                                                   array_bad.append(array1)
@@ -2243,6 +2302,7 @@ def NonStdRefresh(request):
                                                                        array1.append(alternate_email)
                                                                        array1.append(description)
                                                                        array1.append(pk)
+                                                                       array1.append(Employer.objects.get(pk=pk).employerid)
                                                                        array1.append(transmissionid)
                                                                        array1.append(sendername)
                                                                        array_bad.append(array1)
@@ -2265,6 +2325,7 @@ def NonStdRefresh(request):
                                                                        array1.append(home_phone)
                                                                        array1.append(description)
                                                                        array1.append(pk)
+                                                                       array1.append(Employer.objects.get(pk=pk).employerid)
                                                                        array1.append(transmissionid)
                                                                        array1.append(sendername)
                                                                        array_bad.append(array1)
@@ -2287,6 +2348,7 @@ def NonStdRefresh(request):
                                                                        array1.append(work_phone)
                                                                        array1.append(description)
                                                                        array1.append(pk)
+                                                                       array1.append(Employer.objects.get(pk=pk).employerid)
                                                                        array1.append(transmissionid)
                                                                        array1.append(sendername)
                                                                        array_bad.append(array1)
@@ -2308,6 +2370,7 @@ def NonStdRefresh(request):
                                                                   array1.append(mobile_phone)
                                                                   array1.append(description)
                                                                   array1.append(pk)
+                                                                  array1.append(Employer.objects.get(pk=pk).employerid)
                                                                   array1.append(transmissionid)
                                                                   array1.append(sendername)
                                                                   array_bad.append(array1)
@@ -2321,6 +2384,7 @@ def NonStdRefresh(request):
                                                                   array1.append(mobile_phone)
                                                                   array1.append(description)
                                                                   array1.append(pk)
+                                                                  array1.append(Employer.objects.get(pk=pk).employerid)
                                                                   array1.append(transmissionid)
                                                                   array1.append(sendername)
                                                                   array_bad.append(array1)
@@ -2341,6 +2405,7 @@ def NonStdRefresh(request):
                                                                        array1.append(enrollment_method)
                                                                        array1.append(description)
                                                                        array1.append(pk)
+                                                                       array1.append(Employer.objects.get(pk=pk).employerid)
                                                                        array1.append(transmissionid)
                                                                        array1.append(sendername)
                                                                        array_bad.append(array1)
@@ -2362,6 +2427,7 @@ def NonStdRefresh(request):
                                                                        array1.append(employment_information)
                                                                        array1.append(description)
                                                                        array1.append(pk)
+                                                                       array1.append(Employer.objects.get(pk=pk).employerid)
                                                                        array1.append(transmissionid)
                                                                        array1.append(sendername)
                                                                        array_bad.append(array1)
@@ -2448,9 +2514,9 @@ def NonStdRefresh(request):
                                 for row in csv.reader(csv_file):
                                     if row[1] == "":
                                         bulk_mgr.add(models.Employee(employeeid = str(uuid.uuid4())[26:36],
-                                                                  ssn=row[2],
-                                                                  name=row[4],
-                                                                  slug=slugify(row[4]),
+                                                                  name=row[3],
+                                                                  slug=slugify(row[3]),
+                                                                  ssn=row[4],
                                                                   gendercode=row[5],
                                                                   age=int(row[6]),
                                                                   birthdate=row[7],
@@ -2477,8 +2543,8 @@ def NonStdRefresh(request):
                                                                   mobile_phone=row[28],
                                                                   enrollment_method=row[29],
                                                                   employment_information=row[30],
-                                                                  employer=get_object_or_404(models.Employer, pk=row[3]),
-                                                                  employerid=(models.Employer.objects.get(pk=row[3]).employerid),
+                                                                  employer=get_object_or_404(models.Employer, pk=row[2]),
+                                                                  employerid=(models.Employer.objects.get(pk=row[2]).employerid),
                                                                   creator = request.user,
                                                                   sms="Initial notification sent",
                                                                   emailer="Initial notification sent",
@@ -2488,9 +2554,9 @@ def NonStdRefresh(request):
                                                                   ))
                                     else:
                                         bulk_mgr.add(models.Employee(employeeid = row[1],
-                                                                  ssn=row[2],
-                                                                  name=row[4],
-                                                                  slug=slugify(row[4]),
+                                                                  name=row[3],
+                                                                  slug=slugify(row[3]),
+                                                                  ssn=row[4],
                                                                   gendercode=row[5],
                                                                   age=int(row[6]),
                                                                   birthdate=row[7],
@@ -2517,8 +2583,8 @@ def NonStdRefresh(request):
                                                                   mobile_phone=row[28],
                                                                   enrollment_method=row[29],
                                                                   employment_information=row[30],
-                                                                  employer=get_object_or_404(models.Employer, pk=row[3]),
-                                                                  employerid=(models.Employer.objects.get(pk=row[3]).employerid),
+                                                                  employer=get_object_or_404(models.Employer, pk=row[2]),
+                                                                  employerid=(models.Employer.objects.get(pk=row[2]).employerid),
                                                                   creator = request.user,
                                                                   sms="Initial notification sent",
                                                                   emailer="Initial notification sent",
@@ -2591,8 +2657,9 @@ def NonStdRefresh(request):
                                                                   errorfield=row1[3],
                                                                   description=row1[4],
                                                                   employer=get_object_or_404(models.Employer, pk=row1[5]),
-                                                                  transmissionid=row1[6],
-                                                                  sendername=row1[7],
+                                                                  employerid=row1[6],
+                                                                  transmissionid=row1[7],
+                                                                  sendername=row1[8],
                                                                   creator = request.user,
                                                                   source="Non-Standard Feed Bulk Upload"
                                                                   ))
@@ -2608,21 +2675,32 @@ def NonStdRefresh(request):
 
 
                             #Create the aggregate report
+                            execution_end_time = datetime.now()
+                            duration = (execution_end_time - execution_start_time)
+
                             error_report = EmployeeErrorAggregate()
                             error_report.employer = get_object_or_404(Employer, pk=pk)
 
-                            error_report.clean=Employee.objects.filter(employer_id=pk).count()
-                            error_report.error=EmployeeError.objects.filter(employer_id=pk).count()
+                            error_report.processed_clean=Employee.objects.filter(employer_id=pk).count()
+                            error_report.number_of_error_occurences=EmployeeError.objects.filter(employer_id=pk).count()
 
                             #distinct = EmployeeError.objects.filter(employer_id=pk).values('serial').annotate(serial_count=Count('serial')).filter(serial_count=1)
                             #records = EmployeeError.objects.filter(serial__in=[item['serial'] for item in distinct]).count()
                             #error_report.error=records
 
 
-                            error_report.total=(error_report.clean + error_report.error)
+                            error_report.total_employees_till_date=(error_report.processed_clean + error_report.number_of_error_occurences)
+
+                            error_report.execution_time_for_this_run=duration
+
+                            with open('employees.csv', 'rt') as csv_file:
+                                next(csv_file) # skip header line
+                                lines= len(list(csv_file))
+                                print(lines)
+                                error_report.volume_processed_in_this_run=lines
 
                             #Refresh Error aggregate table for concerned employer
-                            EmployeeErrorAggregate.objects.filter(employer_id=pk).delete()
+                            #EmployeeErrorAggregate.objects.filter(employer_id=pk).delete()
 
 
                             error_report.save()
@@ -3635,3 +3713,69 @@ class APIError(Exception):
 
     def __str__(self):
         return "APIError: status={}".format(self.status)
+
+
+def ExportEmployeeDataToCSV(request):
+    # Create the HttpResponse object with the appropriate CSV header.
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="employees.csv"'
+
+    writer = csv.writer(response)
+
+    writer.writerow(['Serial#', 'Employeeid', 'SSN', 'Name', 'Slug', 'Gendercode', 'Age', 'Birthdate', 'Marital_status',
+                     'Home_address_line_1', 'Home_address_line_2', 'Home_city', 'Home_state', 'Home_zipcode', 'Mail_address_line_1', 'Mail_address_line_2', 'Mail_city', 'Mail_state', 'Mail_zipcode',
+                     'Work_address_line_1', 'Work_address_line_2', 'Work_city', 'Work_state', 'Work_zipcode', 'Email', 'Alternate_email', 'Home_phone', 'Work_phone', 'Mobile_phone', 'Enrollment_method', 'Employment_information',
+                     'Employer_name', 'Employer_id', 'Creator', 'Create_Date', 'SMS', 'Emailer', 'Source',
+                     'Backend_SOR_connection', 'Commit_indicator', 'Record_status', 'Response', 'Bulk_upload_indicator'])
+    #writer.writerow(['Second row', 'A', 'B', 'C', '"Testing"', "Here's a quote"])
+    queryset=Employee.objects.all().order_by('-employee_date')
+    n=0
+    for obj in queryset:
+        n=n+1
+        writer.writerow([
+            smart_str(str(n)),
+            smart_str(obj.employeeid),
+            smart_str(obj.ssn),
+            smart_str(obj.name),
+            smart_str(obj.slug),
+            smart_str(obj.gendercode),
+            smart_str(obj.age),
+            smart_str(obj.birthdate),
+            smart_str(obj.maritalstatus),
+            smart_str(obj.home_address_line_1),
+            smart_str(obj.home_address_line_2),
+            smart_str(obj.home_city),
+            smart_str(obj.home_state),
+            smart_str(obj.home_zipcode),
+            smart_str(obj.mail_address_line_1),
+            smart_str(obj.mail_address_line_2),
+            smart_str(obj.mail_city),
+            smart_str(obj.mail_state),
+            smart_str(obj.mail_zipcode),
+            smart_str(obj.work_address_line_1),
+            smart_str(obj.work_address_line_2),
+            smart_str(obj.work_city),
+            smart_str(obj.work_state),
+            smart_str(obj.work_zipcode),
+            smart_str(obj.email),
+            smart_str(obj.alternate_email),
+            smart_str(obj.home_phone),
+            smart_str(obj.work_phone),
+            smart_str(obj.mobile_phone),
+            smart_str(obj.enrollment_method),
+            smart_str(obj.employment_information),
+            smart_str(obj.employer),
+            smart_str(obj.employerid),
+            smart_str(obj.creator),
+            smart_str(obj.employee_date),
+            smart_str(obj.sms),
+            smart_str(obj.emailer),
+            smart_str(obj.source),
+            smart_str(obj.backend_SOR_connection),
+            smart_str(obj.commit_indicator),
+            smart_str(obj.record_status),
+            smart_str(obj.response),
+            smart_str(obj.bulk_upload_indicator)
+        ])
+
+    return response

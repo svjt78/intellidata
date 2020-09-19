@@ -20,12 +20,14 @@
 
 		<br>
 		<div class="dropdown">
-		  <button class="dropbtn btn btn-primary btn-large">Upload Non-Standard Feed</button>
+		  <button class="dropbtn btn btn-primary btn-large">Manage Employees</button>
 		  <div class="dropdown-content">
-		  	<a href="{% url 'employees:spl_bulk' %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-arrow-up"></span>Upload Data</a>
+		  	<a href="{% url 'employees:spl_bulk' %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-arrow-up"></span>Upload Non-Standard Data</a>
 				&nbsp
-				<a href="{% url 'employees:refresh' %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-arrow-down"></span>Ingest Data</a>
+				<a href="{% url 'employees:refresh' %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-arrow-down"></span>Ingest Non-Standard Data</a>
 				&nbsp
+				<a href="{% url 'employees:employees_download' %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-arrow-down"></span> Download Employees!</a>
+				&nbsp;
 				<a href="{% url 'employees:feederrorsfull' %}" class="btn btn-md btn-fill btn-warning"><span class="glyphicon glyphicon-arrow-down"></span>View Errors</a>
 			</div>
 		</div>

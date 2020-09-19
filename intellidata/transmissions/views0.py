@@ -53,7 +53,6 @@ import io
 from django.db.models import Count
 
 from django.forms.models import model_to_dict
-from django.utils.encoding import smart_str
 
 
 # For Rest rest_framework
@@ -926,40 +925,3 @@ class APIError(Exception):
 
     def __str__(self):
         return "APIError: status={}".format(self.status)
-
-
-
-def ExportTransmissionDataToCSV(request):
-    # Create the HttpResponse object with the appropriate CSV header.
-    response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="transmissions.csv"'
-
-    writer = csv.writer(response)
-
-    writer.writerow(['Serial#', 'Transmissionid', 'SenderName', 'BenefitAdministratorPlatform', 'ReceiverName', 'TestProductionCode', 'TransmissionTypeCode', 'SystemVersionIdentifier', 'Source', 'Planadmin_email', 'Create_date', 'Creator', 'Backend_SOR_connection', 'Commit_indicator', 'Record_status', 'Response', 'Bulk_upload_indicator'])
-    #writer.writerow(['Second row', 'A', 'B', 'C', '"Testing"', "Here's a quote"])
-    queryset=Transmission.objects.all().order_by('-create_date')
-    n=0
-    for obj in queryset:
-        n=n+1
-        writer.writerow([
-            smart_str(str(n)),
-            smart_str(obj.transmissionid),
-            smart_str(obj.SenderName),
-            smart_str(obj.BenefitAdministratorPlatform),
-            smart_str(obj.ReceiverName),
-            smart_str(obj.TestProductionCode),
-            smart_str(obj.TransmissionTypeCode),
-            smart_str(obj.SystemVersionIdentifier),
-            smart_str(obj.source),
-            smart_str(obj.planadmin_email),
-            smart_str(obj.create_date),
-            smart_str(obj.creator),
-            smart_str(obj.backend_SOR_connection),
-            smart_str(obj.commit_indicator),
-            smart_str(obj.record_status),
-            smart_str(obj.response),
-            smart_str(obj.bulk_upload_indicator)
-        ])
-
-    return response

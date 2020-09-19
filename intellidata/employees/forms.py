@@ -80,6 +80,7 @@ class EmployeeForm(forms.ModelForm):
 class EmployeeErrorForm(forms.ModelForm):
 
     serial = forms.CharField(required=False, label='Serial#', widget=forms.TextInput(attrs={'readonly':'readonly'}))
+    employeeid = forms.CharField(required=False, label='Employee ID', widget=forms.TextInput(attrs={'readonly':'readonly'}))
     name = forms.CharField(required=False, label='Employee Name', widget=forms.TextInput(attrs={'readonly':'readonly'}))
     errorfield = forms.CharField(required=False, label='Field At Error', widget=forms.TextInput(attrs={'readonly':'readonly'}))
     description = forms.CharField(required=False, label='Error description_html', widget=forms.TextInput(attrs={'readonly':'readonly'}))

@@ -20,6 +20,7 @@ urlpatterns = [
     url(r"^delete/(?P<pk>\d+)/$",views.DeleteTransmission.as_view(),name="delete"),
     url(r"^transmission/error/$",views.ViewTransmissionErrorList.as_view(), name='feederrors'),
     url(r"^(?P<pk>\d+)/employers/show/$", views.ShowEmployersList.as_view(), name="show_employers"),
+    url(r"^TDS/export/$", views.ExportTransmissionDataToCSV, name="export_transmissions"),
 
     url(r"^rest/transmissionlist/$",views.TransmissionList, name="rest"),
     url(r"^rest/transmissionlist/parms/$",views.TransmissionListByParm, name="transmissionsbyparms"),

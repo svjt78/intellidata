@@ -44,6 +44,7 @@ from django.shortcuts import get_object_or_404
 from transmissions.models import Transmission
 from mandatories.models import Mandatory
 from numchecks.models import Numcheck
+from django.utils.encoding import smart_str
 
 import boto3
 import requests
@@ -1025,10 +1026,10 @@ def BulkUploadEmployer(request):
                     error_report.transmission = get_object_or_404(Transmission, pk=transmission_pk)
                     error_report.sendername = sendername
 
-                    error_report.clean=Employer.objects.count()
-                    error_report.error=EmployerError.objects.count()
+                    error_report.processed_clean=Employer.objects.count()
+                    error_report.number_of_error_occurences=EmployerError.objects.count()
 
-                    error_report.total=(error_report.clean + error_report.error)
+                    error_report.total_employers_till_date=(error_report.processed_clean + error_report.number_of_error_occurences)
 
                     error_report.execution_time_for_this_run=duration
 
@@ -1146,6 +1147,7 @@ def NonStdRefresh(request):
                                 array_bad = []
                                 #array_bad =[]
                                 next(csv_file) # skip header line
+                                execution_start_time = datetime.now()
                                 for row in csv.reader(csv_file):
                                                               bad_ind = 0
                                                               array1=[]
@@ -1526,16 +1528,27 @@ def NonStdRefresh(request):
                                     bulk_mgr.done()
 
 
+                            execution_end_time = datetime.now()
+                            duration = (execution_end_time - execution_start_time)
+
                             error_report = EmployerErrorAggregate()
 
                             error_report.transmission = get_object_or_404(Transmission, pk=transmission_pk)
-                            error_report.clean=Employer.objects.count()
-                            error_report.error=EmployerError.objects.count()
+                            error_report.processed_clean=Employer.objects.count()
+                            error_report.number_of_error_occurences=EmployerError.objects.count()
 
-                            error_report.total=(error_report.clean + error_report.error)
+                            error_report.total_employers_till_date=(error_report.processed_clean + error_report.number_of_error_occurences)
+
+                            error_report.execution_time_for_this_run=duration
+
+                            with open('employers.csv', 'rt') as csv_file:
+                                next(csv_file) # skip header line
+                                lines= len(list(csv_file))
+                                print(lines)
+                                error_report.volume_processed_in_this_run=lines
 
                             #Refresh Error aggregate table for concerned employer
-                            EmployerErrorAggregate.objects.all().delete()
+                            #EmployerErrorAggregate.objects.all().delete()
 
                             error_report.save()
 
@@ -1897,3 +1910,48 @@ class APIError(Exception):
 
     def __str__(self):
         return "APIError: status={}".format(self.status)
+
+
+def ExportEmployerDataToCSV(request):
+    # Create the HttpResponse object with the appropriate CSV header.
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="employers.csv"'
+
+    writer = csv.writer(response)
+
+    writer.writerow(['Serial#', 'Employerid', 'Name', 'Slug', 'Description', 'FederalEmployerIdentificationNumber', 'CarrierMasterAgreementNumber',
+                     'Address_line_1', 'Address_line_2', 'City', 'State', 'Zipcode', 'Transmission_Sender_Name', 'Transmission_id', 'Creator', 'Create_date', 'Purpose', 'Planadmin_email', 'Source',
+                     'Backend_SOR_connection', 'Commit_indicator', 'Record_status', 'Response', 'Bulk_upload_indicator'])
+    #writer.writerow(['Second row', 'A', 'B', 'C', '"Testing"', "Here's a quote"])
+    queryset=Employer.objects.all().order_by('-employer_date')
+    n=0
+    for obj in queryset:
+        n=n+1
+        writer.writerow([
+            smart_str(str(n)),
+            smart_str(obj.employerid),
+            smart_str(obj.name),
+            smart_str(obj.slug),
+            smart_str(obj.description),
+            smart_str(obj.FederalEmployerIdentificationNumber),
+            smart_str(obj.CarrierMasterAgreementNumber),
+            smart_str(obj.address_line_1),
+            smart_str(obj.address_line_2),
+            smart_str(obj.city),
+            smart_str(obj.state),
+            smart_str(obj.zipcode),
+            smart_str(obj.transmission),
+            smart_str(obj.transmissionid),
+            smart_str(obj.creator),
+            smart_str(obj.employer_date),
+            smart_str(obj.purpose),
+            smart_str(obj.planadmin_email),
+            smart_str(obj.source),
+            smart_str(obj.backend_SOR_connection),
+            smart_str(obj.commit_indicator),
+            smart_str(obj.record_status),
+            smart_str(obj.response),
+            smart_str(obj.bulk_upload_indicator)
+        ])
+
+    return response

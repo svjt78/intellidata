@@ -183,7 +183,7 @@ class ProductError(models.Model):
         ordering = ["-error_date"]
 
 class ProductErrorAggregate(models.Model):
-    error_date = models.DateTimeField(auto_now=True)
+    run_date = models.DateTimeField(auto_now=True)
     total = models.CharField(max_length=256)
     clean = models.CharField(max_length=256)
     error = models.CharField(max_length=256)
@@ -201,7 +201,7 @@ class ProductErrorAggregate(models.Model):
 
 
     class Meta:
-        ordering = ["-error_date"]
+        ordering = ["-run_date"]
 
 
 class ProductSerializer(serializers.ModelSerializer):

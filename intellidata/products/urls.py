@@ -11,6 +11,7 @@ urlpatterns = [
     url(r"^new/$", views.CreateProduct.as_view(), name="create"),
     url(r"^bulkupload/$",views.BulkUploadProduct,name="bulk"),
     url(r"^bulkuploadods/$",views.BulkUploadSOR,name="bulksor"),
+    url(r"^TDS/export/$",views.ExportProductDataToCSV,name="products_download"),
     url(r"^version/(?P<pk>\d+)/$",views.VersionProduct, name="version"),
     url(r"^ods/pull/(?P<pk>\d+)/$",views.BackendPull, name="backendpull"),
     url(r"^search/$", views.SearchProductsForm, name="search"),

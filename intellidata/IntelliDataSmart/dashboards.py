@@ -15,30 +15,39 @@ from transmissions.models import TransmissionErrorAggregate
 
 #
 
+class EmployerFeedErrorAnalysis(widgets.ItemList):
+
+    title = 'Employer bulk feed analysis by Transmission'
+    model = EmployerErrorAggregate
+    list_display = ('run_date', 'transmission', 'total_employers_till_date', 'processed_clean', 'number_of_error_occurences', 'volume_processed_in_this_run', 'execution_time_for_this_run')
+
+class EmployeeFeedErrorAnalysis(widgets.ItemList):
+
+    title = 'Employee bulk feed analysis by Employer'
+    model = EmployeeErrorAggregate
+    list_display = ('run_date', 'employer', 'total_employees_till_date', 'processed_clean', 'number_of_error_occurences', 'volume_processed_in_this_run', 'execution_time_for_this_run')
+
 class TransmissionFeedErrorAnalysis(widgets.ItemList):
     # This widget displays a list of transmissions ordered in the Employer
-    title = 'Transmission bulk feed error analysis'
+    title = 'Transmission bulk feed analysis'
     model = TransmissionErrorAggregate
-    list_display = ('total', 'clean', 'error', 'error_date')
+    list_display = ('run_date', 'total', 'clean', 'error')
 
 
 class ProductFeedErrorAnalysis(widgets.ItemList):
     # This widget displays a list of transmissions ordered in the Employer
-    title = 'Product bulk feed error analysis'
+    title = 'Product bulk feed analysis'
     model = ProductErrorAggregate
-    list_display = ('total', 'clean', 'error', 'error_date')
+    list_display = ('run_date', 'total', 'clean', 'error')
 
-class EmployerFeedErrorAnalysis(widgets.ItemList):
 
-    title = 'Employer bulk feed error analysis by Transmission'
-    model = EmployerErrorAggregate
-    list_display = ('error_date', 'transmission', 'total', 'clean', 'error', 'volume_processed_in_this_run', 'execution_time_for_this_run')
+class EmployeeOriginPie(widgets.SingleBarChart):
+    # label and series
+    values_list = ('source', 'count')
+    # Data source
+    queryset = Employee.objects.values('source').annotate(count=Count('pk')).order_by('-count')
 
-class EmployeeFeedErrorAnalysis(widgets.ItemList):
 
-    title = 'Employee bulk feed error analysis by Employer'
-    model = EmployeeErrorAggregate
-    list_display = ('error_date', 'employer', 'total', 'clean', 'error', 'volume_processed_in_this_run', 'execution_time_for_this_run')
 
 class CoverageLimitsProducts(widgets.SingleBarChart):
     # label and series
@@ -110,10 +119,11 @@ class EmployerList(widgets.ItemList):
 
 class MyDashboard(Dashboard):
     widgets = (
-        TransmissionFeedErrorAnalysis,
-        ProductFeedErrorAnalysis,
         EmployerFeedErrorAnalysis,
         EmployeeFeedErrorAnalysis,
+        TransmissionFeedErrorAnalysis,
+        ProductFeedErrorAnalysis,
+        EmployeeOriginPie,
         CoverageLimitsProducts,
         RateByProducts,
         EmployeeByAge,

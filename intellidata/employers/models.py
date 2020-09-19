@@ -281,10 +281,10 @@ class EmployerError(models.Model):
 class EmployerErrorAggregate(models.Model):
     transmission = models.ForeignKey(Transmission, on_delete=models.SET_NULL, null=True, blank=True)
     sendername=models.CharField(max_length=256, null=True, blank=True)
-    error_date = models.DateTimeField(auto_now=True)
-    total = models.CharField(max_length=256)
-    clean = models.CharField(max_length=256)
-    error = models.CharField(max_length=256)
+    run_date = models.DateTimeField(auto_now=True)
+    total_employers_till_date = models.CharField(max_length=256)
+    processed_clean = models.CharField(max_length=256)
+    number_of_error_occurences = models.CharField(max_length=256)
     volume_processed_in_this_run=models.CharField(max_length=256, null=True, blank=True)
     execution_time_for_this_run=models.CharField(max_length=256, null=True, blank=True)
     source = models.CharField(max_length=255, null=True, blank=True)
@@ -301,7 +301,7 @@ class EmployerErrorAggregate(models.Model):
 
 
     class Meta:
-        ordering = ["-error_date"]
+        ordering = ["-run_date"]
 
 
 class EmployerSerializer(serializers.ModelSerializer):

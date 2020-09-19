@@ -151,7 +151,7 @@ class TransmissionError(models.Model):
 
 
 class TransmissionErrorAggregate(models.Model):
-    error_date = models.DateTimeField(auto_now=True)
+    run_date = models.DateTimeField(auto_now=True)
     total = models.CharField(max_length=256)
     clean = models.CharField(max_length=256)
     error = models.CharField(max_length=256)
@@ -169,7 +169,7 @@ class TransmissionErrorAggregate(models.Model):
 
 
     class Meta:
-        ordering = ["-error_date"]
+        ordering = ["-run_date"]
 
 class TransmissionSerializer(serializers.ModelSerializer):
 
