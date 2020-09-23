@@ -600,6 +600,17 @@ def BulkUploadEmployer(request):
 
                         for row in csv.reader(csv_file):
                                                       bad_ind = 0
+                                                      name_bad_ind=0
+                                                      description_bad_ind=0
+                                                      FederalEmployerIdentificationNumber_bad_ind=0
+                                                      CarrierMasterAgreementNumber_bad_ind=0
+                                                      address_line_1_bad_ind=0
+                                                      address_line_2_bad_ind=0
+                                                      city_bad_ind=0
+                                                      state_bad_ind=0
+                                                      zipcode_bad_ind=0
+                                                      purpose_bad_ind=0
+                                                      planadmin_email_bad_ind=0
                                                       array1=[]
                                                       array2=[]
 
@@ -639,6 +650,7 @@ def BulkUploadEmployer(request):
                                                       array1=[]
                                                       if name == "":
                                                           bad_ind = 1
+                                                          name_bad_ind=1
                                                           error_description = "Name is mandatory"
                                                           array1.append(serial)
                                                           array1.append(employerid)
@@ -650,18 +662,37 @@ def BulkUploadEmployer(request):
                                                           array1.append(sendername)
                                                           array_bad.append(array1)
 
-                                                      else:
+                                                      if (Numcheck.objects.filter(attributes='employer_name').exists()):
+                                                         var=Numcheck.objects.filter(attributes='employer_name')[0].numberfield
+                                                         if (var == "Yes" and not name.isdigit()):
+                                                              array1=[]
+                                                              bad_ind = 1
+                                                              name_bad_ind = 1
+                                                              error_description = "name must be numeric"
+                                                              array1.append(serial)
+                                                              array1.append(employerid)
+                                                              array1.append(name)
+                                                              array1.append(name)
+                                                              array1.append(error_description)
+                                                              array1.append(transmission_pk)
+                                                              array1.append(transmissionid)
+                                                              array1.append(sendername)
+                                                              array_bad.append(array1)
+
+                                                      if name_bad_ind == 0:
                                                           array2.append(name)
 
                                                       slug=slugify(name)
                                                       #array2.append(slug)
 
+                                                      #validate description
                                                       description=row[3]
                                                       if (Mandatory.objects.filter(attributes='employer_description').exists()):
                                                           var=Mandatory.objects.filter(attributes='employer_description')[0].required
                                                           if (var == "Yes" and description ==""):
                                                                array1=[]
                                                                bad_ind = 1
+                                                               description_bad_ind = 1
                                                                error_description = "Description is mandatory"
                                                                array1.append(serial)
                                                                array1.append(employerid)
@@ -672,10 +703,27 @@ def BulkUploadEmployer(request):
                                                                array1.append(transmissionid)
                                                                array1.append(sendername)
                                                                array_bad.append(array1)
-                                                          else:
-                                                               array2.append(description)
-                                                      else:
-                                                              array2.append(description)
+
+
+                                                      if (Numcheck.objects.filter(attributes='employer_description').exists()):
+                                                         var=Numcheck.objects.filter(attributes='employer_description')[0].numberfield
+                                                         if (var == "Yes" and not description.isdigit()):
+                                                              array1=[]
+                                                              bad_ind = 1
+                                                              description_bad_ind = 1
+                                                              error_description = "Description must be numeric"
+                                                              array1.append(serial)
+                                                              array1.append(employerid)
+                                                              array1.append(name)
+                                                              array1.append(description)
+                                                              array1.append(error_description)
+                                                              array1.append(transmission_pk)
+                                                              array1.append(transmissionid)
+                                                              array1.append(sendername)
+                                                              array_bad.append(array1)
+
+                                                      if description_bad_ind == 0:
+                                                          array2.append(description)
 
                                                       description_html = misaka.html(description)
 
@@ -685,6 +733,7 @@ def BulkUploadEmployer(request):
                                                           if (var == "Yes" and FederalEmployerIdentificationNumber ==""):
                                                                array1=[]
                                                                bad_ind = 1
+                                                               FederalEmployerIdentificationNumber_bad_ind=1
                                                                error_description = "FederalEmployerIdentificationNumber is mandatory"
                                                                array1.append(serial)
                                                                array1.append(employerid)
@@ -695,11 +744,26 @@ def BulkUploadEmployer(request):
                                                                array1.append(transmissionid)
                                                                array1.append(sendername)
                                                                array_bad.append(array1)
-                                                          else:
-                                                               array2.append(FederalEmployerIdentificationNumber)
-                                                      else:
-                                                              array2.append(FederalEmployerIdentificationNumber)
 
+                                                      if (Numcheck.objects.filter(attributes='employer_FederalEmployerIdentificationNumber').exists()):
+                                                          var=Numcheck.objects.filter(attributes='employer_FederalEmployerIdentificationNumber')[0].numberfield
+                                                          if (var == "Yes" and not FederalEmployerIdentificationNumber.isdigit()):
+                                                               array1=[]
+                                                               bad_ind = 1
+                                                               FederalEmployerIdentificationNumber_bad_ind=1
+                                                               error_description = "FederalEmployerIdentificationNumber must be numeric"
+                                                               array1.append(serial)
+                                                               array1.append(employerid)
+                                                               array1.append(name)
+                                                               array1.append(FederalEmployerIdentificationNumber)
+                                                               array1.append(error_description)
+                                                               array1.append(transmission_pk)
+                                                               array1.append(transmissionid)
+                                                               array1.append(sendername)
+                                                               array_bad.append(array1)
+
+                                                      if FederalEmployerIdentificationNumber_bad_ind == 0:
+                                                          array2.append(FederalEmployerIdentificationNumber)
 
                                                       CarrierMasterAgreementNumber=row[5]
                                                       if (Mandatory.objects.filter(attributes='employer_CarrierMasterAgreementNumber').exists()):
@@ -707,6 +771,7 @@ def BulkUploadEmployer(request):
                                                           if (var == "Yes" and CarrierMasterAgreementNumber ==""):
                                                                array1=[]
                                                                bad_ind = 1
+                                                               CarrierMasterAgreementNumber_bad_ind=1
                                                                error_description = "CarrierMasterAgreementNumber is mandatory"
                                                                array1.append(serial)
                                                                array1.append(employerid)
@@ -717,16 +782,33 @@ def BulkUploadEmployer(request):
                                                                array1.append(transmissionid)
                                                                array1.append(sendername)
                                                                array_bad.append(array1)
-                                                          else:
-                                                               array2.append(CarrierMasterAgreementNumber)
-                                                      else:
-                                                              array2.append(CarrierMasterAgreementNumber)
+
+                                                      if (Numcheck.objects.filter(attributes='employer_CarrierMasterAgreementNumber').exists()):
+                                                          var=Numcheck.objects.filter(attributes='CarrierMasterAgreementNumber')[0].numberfield
+                                                          if (var == "Yes" and not CarrierMasterAgreementNumber.isdigit()):
+                                                               array1=[]
+                                                               bad_ind = 1
+                                                               CarrierMasterAgreementNumber_bad_ind=1
+                                                               error_description = "CarrierMasterAgreementNumber must be numeric"
+                                                               array1.append(serial)
+                                                               array1.append(employerid)
+                                                               array1.append(name)
+                                                               array1.append(CarrierMasterAgreementNumber)
+                                                               array1.append(error_description)
+                                                               array1.append(transmission_pk)
+                                                               array1.append(transmissionid)
+                                                               array1.append(sendername)
+                                                               array_bad.append(array1)
+
+                                                      if CarrierMasterAgreementNumber_bad_ind == 0:
+                                                          array2.append(CarrierMasterAgreementNumber)
 
                                                       #validate address
                                                       address_line_1=row[6]
                                                       array1=[]
                                                       if address_line_1 == "":
                                                           bad_ind=1
+                                                          address_line_1_bad_ind=1
                                                           error_description = "Address line 1 is mandatory "
                                                           array1.append(serial)
                                                           array1.append(employerid)
@@ -737,8 +819,26 @@ def BulkUploadEmployer(request):
                                                           array1.append(transmissionid)
                                                           array1.append(sendername)
                                                           array_bad.append(array1)
-                                                      else:
-                                                           array2.append(address_line_1)
+
+                                                      if (Numcheck.objects.filter(attributes='employer_address_line_1').exists()):
+                                                          var=Numcheck.objects.filter(attributes='employer_address_line_1')[0].numberfield
+                                                          if (var == "Yes" and not address_line_1.isdigit()):
+                                                               array1=[]
+                                                               bad_ind = 1
+                                                               address_line_1_bad_ind=1
+                                                               error_description = "address_line_1 must be numeric"
+                                                               array1.append(serial)
+                                                               array1.append(employerid)
+                                                               array1.append(name)
+                                                               array1.append(address_line_1)
+                                                               array1.append(error_description)
+                                                               array1.append(transmission_pk)
+                                                               array1.append(transmissionid)
+                                                               array1.append(sendername)
+                                                               array_bad.append(array1)
+
+                                                      if address_line_1_bad_ind == 0:
+                                                          array2.append(address_line_1)
 
                                                       address_line_2=row[7]
                                                       if (Mandatory.objects.filter(attributes='employer_address_line_2').exists()):
@@ -746,6 +846,7 @@ def BulkUploadEmployer(request):
                                                           if (var == "Yes" and address_line_2 ==""):
                                                                array1=[]
                                                                bad_ind = 1
+                                                               address_line_2_bad_ind=1
                                                                error_description = "address_line_2 is mandatory"
                                                                array1.append(serial)
                                                                array1.append(employerid)
@@ -756,37 +857,75 @@ def BulkUploadEmployer(request):
                                                                array1.append(transmissionid)
                                                                array1.append(sendername)
                                                                array_bad.append(array1)
-                                                          else:
-                                                               array2.append(address_line_2)
-                                                      else:
-                                                              array2.append(address_line_2)
+
+                                                      if (Numcheck.objects.filter(attributes='employer_address_line_2').exists()):
+                                                          var=Numcheck.objects.filter(attributes='employer_address_line_2')[0].numberfield
+                                                          if (var == "Yes" and not address_line_2.isdigit()):
+                                                               array1=[]
+                                                               bad_ind = 1
+                                                               address_line_2_bad_ind=1
+                                                               error_description = "address_line_2 must be numeric"
+                                                               array1.append(serial)
+                                                               array1.append(employerid)
+                                                               array1.append(name)
+                                                               array1.append(address_line_2)
+                                                               array1.append(error_description)
+                                                               array1.append(transmission_pk)
+                                                               array1.append(transmissionid)
+                                                               array1.append(sendername)
+                                                               array_bad.append(array1)
+
+                                                      if address_line_2_bad_ind == 0:
+                                                          array2.append(address_line_2)
 
                                                       #validate address line 1
                                                       city=row[8]
-                                                      array1=[]
-                                                      if city == "":
-                                                           bad_ind=1
-                                                           error_description = "City is mandatory "
-                                                           array1.append(serial)
-                                                           array1.append(employerid)
-                                                           array1.append(name)
-                                                           array1.append(city)
-                                                           array1.append(error_description)
-                                                           array1.append(transmission_pk)
-                                                           array1.append(transmissionid)
-                                                           array1.append(sendername)
-                                                           array_bad.append(array1)
-                                                      else:
+                                                      if (Mandatory.objects.filter(attributes='employer_city').exists()):
+                                                          var=Mandatory.objects.filter(attributes='employer_city')[0].required
+                                                          if (var == "Yes" and city ==""):
+                                                               array1=[]
+                                                               bad_ind = 1
+                                                               city_bad_ind=1
+                                                               error_description = "city is mandatory"
+                                                               array1.append(serial)
+                                                               array1.append(employerid)
+                                                               array1.append(name)
+                                                               array1.append(city)
+                                                               array1.append(error_description)
+                                                               array1.append(transmission_pk)
+                                                               array1.append(transmissionid)
+                                                               array1.append(sendername)
+                                                               array_bad.append(array1)
+
+                                                      if (Numcheck.objects.filter(attributes='employer_city').exists()):
+                                                          var=Numcheck.objects.filter(attributes='employer_city')[0].numberfield
+                                                          if (var == "Yes" and not city.isdigit()):
+                                                               array1=[]
+                                                               bad_ind = 1
+                                                               city_bad_ind=1
+                                                               error_description = "city must be numeric"
+                                                               array1.append(serial)
+                                                               array1.append(employerid)
+                                                               array1.append(name)
+                                                               array1.append(city)
+                                                               array1.append(error_description)
+                                                               array1.append(transmission_pk)
+                                                               array1.append(transmissionid)
+                                                               array1.append(sendername)
+                                                               array_bad.append(array1)
+
+                                                      if city_bad_ind == 0:
                                                           array2.append(city)
 
 
-                                                      #validate address line 2
+
                                                       state=row[9]
                                                       if (Mandatory.objects.filter(attributes='employer_state').exists()):
                                                            var=Mandatory.objects.filter(attributes='employer_state')[0].required
                                                            if (var == "Yes" and state ==""):
                                                                 array1=[]
                                                                 bad_ind = 1
+                                                                state_bad_ind=1
                                                                 error_description = "state is mandatory"
                                                                 array1.append(serial)
                                                                 array1.append(employerid)
@@ -797,28 +936,65 @@ def BulkUploadEmployer(request):
                                                                 array1.append(transmissionid)
                                                                 array1.append(sendername)
                                                                 array_bad.append(array1)
-                                                           else:
-                                                                array2.append(state)
-                                                      else:
-                                                               array2.append(state)
+
+                                                      if (Numcheck.objects.filter(attributes='employer_state').exists()):
+                                                          var=Numcheck.objects.filter(attributes='employer_state')[0].numberfield
+                                                          if (var == "Yes" and not state.isdigit()):
+                                                               array1=[]
+                                                               bad_ind = 1
+                                                               state_bad_ind=1
+                                                               error_description = "state must be numeric"
+                                                               array1.append(serial)
+                                                               array1.append(employerid)
+                                                               array1.append(name)
+                                                               array1.append(state)
+                                                               array1.append(error_description)
+                                                               array1.append(transmission_pk)
+                                                               array1.append(transmissionid)
+                                                               array1.append(sendername)
+                                                               array_bad.append(array1)
+
+                                                      if state_bad_ind == 0:
+                                                          array2.append(state)
 
                                                            #validate city
                                                       zipcode=row[10]
-                                                      array1=[]
-                                                      if zipcode == "":
-                                                           bad_ind=1
-                                                           error_description = "Zipcode is mandatory "
-                                                           array1.append(serial)
-                                                           array1.append(employerid)
-                                                           array1.append(name)
-                                                           array1.append(zipcode)
-                                                           array1.append(error_description)
-                                                           array1.append(transmission_pk)
-                                                           array1.append(transmissionid)
-                                                           array1.append(sendername)
-                                                           array_bad.append(array1)
-                                                      else:
-                                                           array2.append(zipcode)
+                                                      if (Mandatory.objects.filter(attributes='employer_zipcode').exists()):
+                                                           var=Mandatory.objects.filter(attributes='employer_zipcode')[0].required
+                                                           if (var == "Yes" and zipcode ==""):
+                                                                array1=[]
+                                                                bad_ind = 1
+                                                                error_description = "zipcode is mandatory"
+                                                                array1.append(serial)
+                                                                array1.append(employerid)
+                                                                array1.append(name)
+                                                                array1.append(zipcode)
+                                                                array1.append(error_description)
+                                                                array1.append(transmission_pk)
+                                                                array1.append(transmissionid)
+                                                                array1.append(sendername)
+                                                                array_bad.append(array1)
+
+                                                      if (Numcheck.objects.filter(attributes='employer_zipcode').exists()):
+                                                          var=Numcheck.objects.filter(attributes='employer_zipcode')[0].numberfield
+                                                          if (var == "Yes" and not zipcode.isdigit()):
+                                                               array1=[]
+                                                               bad_ind = 1
+                                                               zipcode_bad_ind=1
+                                                               error_description = "zipcode must be numeric"
+                                                               array1.append(serial)
+                                                               array1.append(employerid)
+                                                               array1.append(name)
+                                                               array1.append(zipcode)
+                                                               array1.append(error_description)
+                                                               array1.append(transmission_pk)
+                                                               array1.append(transmissionid)
+                                                               array1.append(sendername)
+                                                               array_bad.append(array1)
+
+                                                      if zipcode_bad_ind == 0:
+                                                          array2.append(zipcode)
+
 
                                                       purpose=row[11]
                                                       if (Mandatory.objects.filter(attributes='employer_purpose').exists()):
@@ -826,6 +1002,7 @@ def BulkUploadEmployer(request):
                                                            if (var == "Yes" and purpose ==""):
                                                                 array1=[]
                                                                 bad_ind = 1
+                                                                purpose_bad_ind=1
                                                                 error_description = "purpose is mandatory"
                                                                 array1.append(serial)
                                                                 array1.append(employerid)
@@ -836,10 +1013,26 @@ def BulkUploadEmployer(request):
                                                                 array1.append(transmissionid)
                                                                 array1.append(sendername)
                                                                 array_bad.append(array1)
-                                                           else:
-                                                                array2.append(purpose)
-                                                      else:
-                                                               array2.append(purpose)
+
+                                                      if (Numcheck.objects.filter(attributes='employer_purpose').exists()):
+                                                          var=Numcheck.objects.filter(attributes='employer_purpose')[0].numberfield
+                                                          if (var == "Yes" and not purpose.isdigit()):
+                                                               array1=[]
+                                                               bad_ind = 1
+                                                               purpose_bad_ind=1
+                                                               error_description = "purpose must be numeric"
+                                                               array1.append(serial)
+                                                               array1.append(employerid)
+                                                               array1.append(name)
+                                                               array1.append(purpose)
+                                                               array1.append(error_description)
+                                                               array1.append(transmission_pk)
+                                                               array1.append(transmissionid)
+                                                               array1.append(sendername)
+                                                               array_bad.append(array1)
+
+                                                      if purpose_bad_ind == 0:
+                                                          array2.append(purpose)
 
                                                       planadmin_email=row[13]
                                                       if (Mandatory.objects.filter(attributes='employer_planadmin_email').exists()):
@@ -847,6 +1040,7 @@ def BulkUploadEmployer(request):
                                                            if (var == "Yes" and planadmin_email ==""):
                                                                 array1=[]
                                                                 bad_ind = 1
+                                                                planadmin_email_bad_ind=1
                                                                 error_description = "planadmin_email is mandatory"
                                                                 array1.append(serial)
                                                                 array1.append(employerid)
@@ -857,10 +1051,26 @@ def BulkUploadEmployer(request):
                                                                 array1.append(transmissionid)
                                                                 array1.append(sendername)
                                                                 array_bad.append(array1)
-                                                           else:
-                                                                array2.append(planadmin_email)
-                                                      else:
-                                                               array2.append(planadmin_email)
+
+                                                      if (Numcheck.objects.filter(attributes='employer_planadmin_email').exists()):
+                                                          var=Numcheck.objects.filter(attributes='employer_planadmin_email')[0].numberfield
+                                                          if (var == "Yes" and not planadmin_email.isdigit()):
+                                                               array1=[]
+                                                               bad_ind = 1
+                                                               planadmin_email_bad_ind=1
+                                                               error_description = "planadmin_email must be numeric"
+                                                               array1.append(serial)
+                                                               array1.append(employerid)
+                                                               array1.append(name)
+                                                               array1.append(planadmin_email)
+                                                               array1.append(error_description)
+                                                               array1.append(transmission_pk)
+                                                               array1.append(transmissionid)
+                                                               array1.append(sendername)
+                                                               array_bad.append(array1)
+
+                                                      if planadmin_email_bad_ind == 0:
+                                                          array2.append(planadmin_email)
 
 
                                                       if bad_ind == 0:
@@ -1665,6 +1875,19 @@ def EmployerList(request):
             array1.append(error_description)
             array_bad.append(array1)
 
+        if (Numcheck.objects.filter(attributes='employer_name').exists()):
+           var=Numcheck.objects.filter(attributes='employer_name')[0].numberfield
+           if (var == "Yes" and not employer.name.isdigit()):
+                array1=[]
+                bad_ind = 1
+                name_bad_ind = 1
+                error_description = "name must be numeric"
+                array1.append(employerid)
+                array1.append(employer.name)
+                array1.append(employer.name)
+                array1.append(error_description)
+                array_bad.append(array1)
+
         employer.slug=slugify(employer.name)
 
         employer.description = serializer.data["description"]
@@ -1680,6 +1903,19 @@ def EmployerList(request):
                  array1.append(error_description)
                  array_bad.append(array1)
 
+        if (Numcheck.objects.filter(attributes='employer_description').exists()):
+           var=Numcheck.objects.filter(attributes='employer_description')[0].numberfield
+           if (var == "Yes" and not employer.description.isdigit()):
+                array1=[]
+                bad_ind = 1
+                description_bad_ind = 1
+                error_description = "Description must be numeric"
+                array1.append(employer.employerid)
+                array1.append(employer.name)
+                array1.append(employer.description)
+                array1.append(error_description)
+                array_bad.append(array1)
+
 
         employer.description_html = misaka.html(employer.description)
 
@@ -1690,6 +1926,20 @@ def EmployerList(request):
                  array1=[]
                  bad_ind = 1
                  error_description = "FederalEmployerIdentificationNumber is mandatory"
+                 array1.append(employer.employerid)
+                 array1.append(employer.name)
+                 array1.append(employer.FederalEmployerIdentificationNumber)
+                 array1.append(error_description)
+                 array_bad.append(array1)
+
+
+        if (Numcheck.objects.filter(attributes='employer_FederalEmployerIdentificationNumber').exists()):
+            var=Numcheck.objects.filter(attributes='employer_FederalEmployerIdentificationNumber')[0].numberfield
+            if (var == "Yes" and not employer.FederalEmployerIdentificationNumber.isdigit()):
+                 array1=[]
+                 bad_ind = 1
+                 FederalEmployerIdentificationNumber_bad_ind=1
+                 error_description = "FederalEmployerIdentificationNumber must be numeric"
                  array1.append(employer.employerid)
                  array1.append(employer.name)
                  array1.append(employer.FederalEmployerIdentificationNumber)
@@ -1709,6 +1959,20 @@ def EmployerList(request):
                  array1.append(error_description)
                  array_bad.append(array1)
 
+
+        if (Numcheck.objects.filter(attributes='employer_CarrierMasterAgreementNumber').exists()):
+            var=Numcheck.objects.filter(attributes='CarrierMasterAgreementNumber')[0].numberfield
+            if (var == "Yes" and not employer.CarrierMasterAgreementNumber.isdigit()):
+                 array1=[]
+                 bad_ind = 1
+                 CarrierMasterAgreementNumber_bad_ind=1
+                 error_description = "CarrierMasterAgreementNumber must be numeric"
+                 array1.append(employer.employerid)
+                 array1.append(employer.name)
+                 array1.append(employer.CarrierMasterAgreementNumber)
+                 array1.append(error_description)
+                 array_bad.append(array1)
+
         employer.address_line_1 = serializer.data["address_line_1"]
         array1=[]
         if employer.address_line_1 == "":
@@ -1720,6 +1984,19 @@ def EmployerList(request):
             array1.append(error_description)
             array_bad.append(array1)
 
+        if (Numcheck.objects.filter(attributes='employer_address_line_1').exists()):
+            var=Numcheck.objects.filter(attributes='employer_address_line_1')[0].numberfield
+            if (var == "Yes" and not employer.address_line_1.isdigit()):
+                 array1=[]
+                 bad_ind = 1
+                 address_line_1_bad_ind=1
+                 error_description = "address_line_1 must be numeric"
+                 array1.append(employer.employerid)
+                 array1.append(employer.name)
+                 array1.append(employer.address_line_1)
+                 array1.append(error_description)
+                 array_bad.append(array1)
+
         employer.address_line_2 = serializer.data["address_line_2"]
         if (Mandatory.objects.filter(attributes='employer_address_line_2').exists()):
             var=Mandatory.objects.filter(attributes='employer_address_line_2')[0].required
@@ -1727,6 +2004,19 @@ def EmployerList(request):
                  array1=[]
                  bad_ind = 1
                  error_description = "address_line_2 is mandatory"
+                 array1.append(employer.employerid)
+                 array1.append(employer.name)
+                 array1.append(employer.address_line_2)
+                 array1.append(error_description)
+                 array_bad.append(array1)
+
+        if (Numcheck.objects.filter(attributes='employer_address_line_2').exists()):
+            var=Numcheck.objects.filter(attributes='employer_address_line_2')[0].numberfield
+            if (var == "Yes" and not employer.address_line_2.isdigit()):
+                 array1=[]
+                 bad_ind = 1
+                 address_line_2_bad_ind=1
+                 error_description = "address_line_2 must be numeric"
                  array1.append(employer.employerid)
                  array1.append(employer.name)
                  array1.append(employer.address_line_2)
@@ -1744,6 +2034,19 @@ def EmployerList(request):
             array1.append(error_description)
             array_bad.append(array1)
 
+        if (Numcheck.objects.filter(attributes='employer_city').exists()):
+            var=Numcheck.objects.filter(attributes='employer_city')[0].numberfield
+            if (var == "Yes" and not employer.city.isdigit()):
+                 array1=[]
+                 bad_ind = 1
+                 city_bad_ind=1
+                 error_description = "city must be numeric"
+                 array1.append(employer.employerid)
+                 array1.append(employer.name)
+                 array1.append(employer.city)
+                 array1.append(error_description)
+                 array_bad.append(array1)
+
         employer.state = serializer.data["state"]
         array1=[]
         if employer.state == "":
@@ -1755,6 +2058,19 @@ def EmployerList(request):
             array1.append(error_description)
             array_bad.append(array1)
 
+        if (Numcheck.objects.filter(attributes='employer_state').exists()):
+            var=Numcheck.objects.filter(attributes='employer_state')[0].numberfield
+            if (var == "Yes" and not employer.state.isdigit()):
+                 array1=[]
+                 bad_ind = 1
+                 state_bad_ind=1
+                 error_description = "state must be numeric"
+                 array1.append(employer.employerid)
+                 array1.append(employer.name)
+                 array1.append(employer.state)
+                 array1.append(error_description)
+                 array_bad.append(array1)
+
         employer.zipcode = serializer.data["zipcode"]
         array1=[]
         if employer.zipcode == "":
@@ -1765,6 +2081,20 @@ def EmployerList(request):
             array1.append(employer.zipcode)
             array1.append(error_description)
             array_bad.append(array1)
+
+
+        if (Numcheck.objects.filter(attributes='employer_zipcode').exists()):
+            var=Numcheck.objects.filter(attributes='employer_zipcode')[0].numberfield
+            if (var == "Yes" and not employer.zipcode.isdigit()):
+                 array1=[]
+                 bad_ind = 1
+                 zipcode_bad_ind=1
+                 error_description = "zipcode must be numeric"
+                 array1.append(employer.employerid)
+                 array1.append(employer.name)
+                 array1.append(employer.zipcode)
+                 array1.append(error_description)
+                 array_bad.append(array1)
 
         employer.purpose = serializer.data["purpose"]
         if (Mandatory.objects.filter(attributes='employer_purpose').exists()):
@@ -1779,6 +2109,19 @@ def EmployerList(request):
                  array1.append(error_description)
                  array_bad.append(array1)
 
+        if (Numcheck.objects.filter(attributes='employer_purpose').exists()):
+            var=Numcheck.objects.filter(attributes='employer_purpose')[0].numberfield
+            if (var == "Yes" and not employer.purpose.isdigit()):
+                 array1=[]
+                 bad_ind = 1
+                 purpose_bad_ind=1
+                 error_description = "purpose must be numeric"
+                 array1.append(employer.employerid)
+                 array1.append(employer.name)
+                 array1.append(employer.purpose)
+                 array1.append(error_description)
+                 array_bad.append(array1)
+
         employer.planadmin_email = serializer.data["planadmin_email"]
         if (Mandatory.objects.filter(attributes='employer_planadmin_email').exists()):
             var=Mandatory.objects.filter(attributes='employer_planadmin_email')[0].required
@@ -1786,6 +2129,20 @@ def EmployerList(request):
                  array1=[]
                  bad_ind = 1
                  error_description = "planadmin_email is mandatory"
+                 array1.append(employer.employerid)
+                 array1.append(employer.name)
+                 array1.append(employer.planadmin_email)
+                 array1.append(error_description)
+                 array_bad.append(array1)
+
+
+        if (Numcheck.objects.filter(attributes='employer_planadmin_email').exists()):
+            var=Numcheck.objects.filter(attributes='employer_planadmin_email')[0].numberfield
+            if (var == "Yes" and not employer.planadmin_email.isdigit()):
+                 array1=[]
+                 bad_ind = 1
+                 planadmin_email_bad_ind=1
+                 error_description = "planadmin_email must be numeric"
                  array1.append(employer.employerid)
                  array1.append(employer.name)
                  array1.append(employer.planadmin_email)
