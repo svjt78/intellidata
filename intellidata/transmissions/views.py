@@ -144,7 +144,9 @@ def BackendPull(request, pk):
             obj.TestProductionCode = json_data["TEST_PRODUCTION_CODE"]
             obj.TransmissionTypeCode = json_data["TRANSMISSION_TYPE_CODE"]
             obj.SystemVersionIdentifier = json_data["SYSTEM_VERSION_IDENTIFIER"]
-            obj.planadmin_email = json_data["PLANADMIN_EMAIL"]
+            #obj.planadmin_email = json_data["PLANADMIN_EMAIL"]
+            #obj.planadmin_email = json_data.get("PLANADMIN_EMAIL")
+            obj.planadmin_email = json_data.get("PLANADMIN_EMAIL")
             obj.creator = User.objects.get(pk=int(json_data["CREATOR"]))
             #obj.crerator = get_object_or_404(User, pk=obj.creatorid)
             obj.create_date = json_data["CREATE_DATE"]
@@ -205,7 +207,8 @@ def ListTransmissionsHistory(request, pk):
                      obj.TestProductionCode = json_data[ix]["TEST_PRODUCTION_CODE"]
                      obj.TransmissionTypeCode = json_data[ix]["TRANSMISSION_TYPE_CODE"]
                      obj.SystemVersionIdentifier = json_data[ix]["SYSTEM_VERSION_IDENTIFIER"]
-                     obj.planadmin_email = json_data[ix]["PLANADMIN_EMAIL"]
+                     #obj.planadmin_email = json_data[ix]["PLANADMIN_EMAIL"]
+                     obj.planadmin_email = json_data[ix].get("PLANADMIN_EMAIL")
                      #obj.photo = json_data[ix]["PHOTO"]
                      obj.creator = User.objects.get(pk=int(json_data[ix]["CREATOR"]))
                      obj.create_date = json_data[ix]["CREATE_DATE"]
@@ -269,7 +272,8 @@ def RefreshTransmission(request, pk):
             obj1.TestProductionCode = json_data["TEST_PRODUCTION_CODE"]
             obj1.TransmissionTypeCode = json_data["TRANSMISSION_TYPE_CODE"]
             obj1.SystemVersionIdentifier = json_data["SYSTEM_VERSION_IDENTIFIER"]
-            obj1.planadmin_email = json_data["PLANADMIN_EMAIL"]
+            #obj1.planadmin_email = json_data["PLANADMIN_EMAIL"]
+            obj1.planadmin_email = json_data.get("PLANADMIN_EMAIL")
 
             obj1.creator = User.objects.get(pk=int(json_data["CREATOR"]))
             #obj.crerator = get_object_or_404(User, pk=obj.creatorid)
@@ -457,7 +461,8 @@ class SearchTransmissionsList(LoginRequiredMixin, generic.ListView):
                 obj1.TestProductionCode = json_data["TEST_PRODUCTION_CODE"]
                 obj1.TransmissionTypeCode = json_data["TRANSMISSION_TYPE_CODE"]
                 obj1.SystemVersionIdentifier = json_data["SYSTEM_VERSION_IDENTIFIER"]
-                obj1.planadmin_email = json_data["PLANADMIN_EMAIL"]
+                #obj1.planadmin_email = json_data["PLANADMIN_EMAIL"]
+                obj1.planadmin_email = json_data.get("PLANADMIN_EMAIL")
 
                 obj1.creator = User.objects.get(pk=int(json_data["CREATOR"]))
                 #obj.crerator = get_object_or_404(User, pk=obj.creatorid)

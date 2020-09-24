@@ -3597,20 +3597,6 @@ def EmployeeList(request):
             array1.append(pk)
             array_bad.append(array1)
 
-        if (Numcheck.objects.filter(attributes='employee_name').exists()):
-           var=Numcheck.objects.filter(attributes='employee_name')[0].numberfield
-           if (var == "Yes" and not employee.name.isdigit()):
-                array1=[]
-                bad_ind = 1
-                name_bad_ind = 1
-                description = "name must be numeric"
-                array1.append(employee.employeeid)
-                array1.append(employee.name)
-                array1.append(employee.name)
-                array1.append(description)
-                array1.append(pk)
-                array_bad.append(array1)
-
         employee.slug=slugify(employee.name)
 
         employee.ssn = serializer.data["ssn"]
@@ -3627,20 +3613,6 @@ def EmployeeList(request):
                  array1.append(pk)
                  array_bad.append(array1)
 
-        if (Numcheck.objects.filter(attributes='employee_ssn').exists()):
-           var=Numcheck.objects.filter(attributes='employee_ssn')[0].numberfield
-           if (var == "Yes" and not employee.ssn.isdigit()):
-                array1=[]
-                bad_ind = 1
-                ssn_bad_ind = 1
-                description = "SSN must be numeric"
-                array1.append(employee.employeeid)
-                array1.append(employee.name)
-                array1.append(employee.ssn)
-                array1.append(description)
-                array1.append(pk)
-                array_bad.append(array1)
-
         employee.gendercode = serializer.data["gendercode"]
         if (Mandatory.objects.filter(attributes='employee_gendercode').exists()):
             var=Mandatory.objects.filter(attributes='employee_gendercode')[0].required
@@ -3654,20 +3626,6 @@ def EmployeeList(request):
                  array1.append(description)
                  array1.append(pk)
                  array_bad.append(array1)
-
-        if (Numcheck.objects.filter(attributes='employee_gendercode').exists()):
-           var=Numcheck.objects.filter(attributes='employee_gendercode')[0].numberfield
-           if (var == "Yes" and not employee.gendercode.isdigit()):
-                array1=[]
-                bad_ind = 1
-                gendercode_bad_ind = 1
-                description = "gendercode must be numeric"
-                array1.append(employee.employeeid)
-                array1.append(employee.name)
-                array1.append(employee.gendercode)
-                array1.append(description)
-                array1.append(pk)
-                array_bad.append(array1)
 
         employee.age = serializer.data["age"]
         array1=[]
@@ -3690,20 +3648,6 @@ def EmployeeList(request):
             array1.append(pk)
             array_bad.append(array1)
 
-        if (Numcheck.objects.filter(attributes='employee_age').exists()):
-           var=Numcheck.objects.filter(attributes='employee_age')[0].numberfield
-           if (var == "Yes" and not employee.age.isdigit()):
-                array1=[]
-                bad_ind = 1
-                age_bad_ind = 1
-                description = "age must be numeric"
-                array1.append(employee.employeeid)
-                array1.append(employee.name)
-                array1.append(employee.age)
-                array1.append(description)
-                array1.append(pk)
-                array_bad.append(array1)
-
         employee.birthdate = serializer.data["birthdate"]
         if (Mandatory.objects.filter(attributes='employee_birthdate').exists()):
             var=Mandatory.objects.filter(attributes='employee_birthdate')[0].required
@@ -3717,21 +3661,6 @@ def EmployeeList(request):
                  array1.append(description)
                  array1.append(pk)
                  array_bad.append(array1)
-
-
-        if (Numcheck.objects.filter(attributes='employee_birthdate').exists()):
-           var=Numcheck.objects.filter(attributes='employee_birthdate')[0].numberfield
-           if (var == "Yes" and not employee.birthdate.isdigit()):
-                array1=[]
-                bad_ind = 1
-                birthdate_bad_ind = 1
-                description = "birthdate must be numeric"
-                array1.append(employee.employeeid)
-                array1.append(employee.name)
-                array1.append(employee.birthdate)
-                array1.append(description)
-                array1.append(pk)
-                array_bad.append(array1)
 
         employee.maritalstatus = serializer.data["maritalstatus"]
         if (Mandatory.objects.filter(attributes='employee_maritalstatus').exists()):
@@ -3747,21 +3676,6 @@ def EmployeeList(request):
                  array1.append(pk)
                  array_bad.append(array1)
 
-
-        if (Numcheck.objects.filter(attributes='employee_maritalstatus').exists()):
-           var=Numcheck.objects.filter(attributes='employee_maritalstatus')[0].numberfield
-           if (var == "Yes" and not employee.maritalstatus.isdigit()):
-                array1=[]
-                bad_ind = 1
-                maritalstatus_bad_ind = 1
-                description = "maritalstatus must be numeric"
-                array1.append(employee.employeeid)
-                array1.append(employee.name)
-                array1.append(employee.maritalstatus)
-                array1.append(description)
-                array1.append(pk)
-                array_bad.append(array1)
-
         employee.home_address_line_1 = serializer.data["home_address_line_1"]
         array1=[]
         if employee.home_address_line_1 == "":
@@ -3774,109 +3688,31 @@ def EmployeeList(request):
             array1.append(pk)
             array_bad.append(array1)
 
-
-        if (Numcheck.objects.filter(attributes='employee_home_address_line_1').exists()):
-           var=Numcheck.objects.filter(attributes='employee_home_address_line_1')[0].numberfield
-           if (var == "Yes" and not employee.home_address_line_1.isdigit()):
-                array1=[]
-                bad_ind = 1
-                home_address_line_1_bad_ind = 1
-                description = "home_address_line_1 must be numeric"
-                array1.append(employee.employeeid)
-                array1.append(employee.name)
-                array1.append(employee.home_address_line_1)
-                array1.append(description)
-                array1.append(pk)
-                array_bad.append(array1)
-
         employee.home_address_line_2 = serializer.data["home_address_line_2"]
-        if (Mandatory.objects.filter(attributes='employee_home_address_line_2').exists()):
-            var=Mandatory.objects.filter(attributes='employee_home_address_line_2')[0].required
-            if (var == "Yes" and employee.home_address_line_2 ==""):
-                 array1=[]
-                 bad_ind = 1
-                 description = "home_address_line_2 is mandatory"
-                 array1.append(employee.employeeid)
-                 array1.append(employee.name)
-                 array1.append(employee.home_address_line_2)
-                 array1.append(description)
-                 array1.append(pk)
-                 array_bad.append(array1)
-
-
-        if (Numcheck.objects.filter(attributes='employee_home_address_line_2').exists()):
-           var=Numcheck.objects.filter(attributes='employee_home_address_line_2')[0].numberfield
-           if (var == "Yes" and not employee.home_address_line_2.isdigit()):
-                array1=[]
-                bad_ind = 1
-                home_address_line_2_bad_ind = 1
-                description = "home_address_line_2 must be numeric"
-                array1.append(employee.employeeid)
-                array1.append(employee.name)
-                array1.append(employee.home_address_line_2)
-                array1.append(description)
-                array1.append(pk)
-                array_bad.append(array1)
 
         employee.home_city = serializer.data["home_city"]
-        if (Mandatory.objects.filter(attributes='employee_home_city').exists()):
-            var=Mandatory.objects.filter(attributes='employee_home_city')[0].required
-            if (var == "Yes" and employee.home_city ==""):
-                 array1=[]
-                 bad_ind = 1
-                 home_city_bad_ind=1
-                 description = "home_city is mandatory"
-                 array1.append(employee.employeeid)
-                 array1.append(employee.name)
-                 array1.append(employee.home_city)
-                 array1.append(description)
-                 array1.append(pk)
-                 array_bad.append(array1)
-
-        if (Numcheck.objects.filter(attributes='employee_home_city').exists()):
-           var=Numcheck.objects.filter(attributes='employee_home_city')[0].numberfield
-           if (var == "Yes" and not employee.home_city.isdigit()):
-                array1=[]
-                bad_ind = 1
-                home_city_bad_ind = 1
-                description = "home_city must be numeric"
-                array1.append(employee.employeeid)
-                array1.append(employee.name)
-                array1.append(employee.home_city)
-                array1.append(description)
-                array1.append(pk)
-                array_bad.append(array1)
-
+        array1=[]
+        if employee.home_city == "":
+            bad_ind = 1
+            description = "Home city is mandatory"
+            array1.append(employee.employeeid)
+            array1.append(employee.name)
+            array1.append(employee.home_city)
+            array1.append(description)
+            array1.append(pk)
+            array_bad.append(array1)
 
         employee.home_state = serializer.data["home_state"]
-        if (Mandatory.objects.filter(attributes='employee_home_state').exists()):
-            var=Mandatory.objects.filter(attributes='employee_home_state')[0].required
-            if (var == "Yes" and employee.home_state ==""):
-                 array1=[]
-                 bad_ind = 1
-                 home_state_bad_ind=1
-                 description = "home_state is mandatory"
-                 array1.append(employee.employeeid)
-                 array1.append(employee.name)
-                 array1.append(employee.home_state)
-                 array1.append(description)
-                 array1.append(pk)
-                 array_bad.append(array1)
-
-
-        if (Numcheck.objects.filter(attributes='employee_home_state').exists()):
-           var=Numcheck.objects.filter(attributes='employee_home_state')[0].numberfield
-           if (var == "Yes" and not employee.home_state.isdigit()):
-                array1=[]
-                bad_ind = 1
-                home_state_bad_ind = 1
-                description = "home_state must be numeric"
-                array1.append(employee.employeeid)
-                array1.append(employee.name)
-                array1.append(employee.home_state)
-                array1.append(description)
-                array1.append(pk)
-                array_bad.append(array1)
+        array1=[]
+        if employee.home_state == "":
+            bad_ind = 1
+            description = "Home state is mandatory"
+            array1.append(employee.employeeid)
+            array1.append(employee.name)
+            array1.append(employee.home_state)
+            array1.append(description)
+            array1.append(pk)
+            array_bad.append(array1)
 
         employee.home_zipcode = serializer.data["home_zipcode"]
         array1=[]
@@ -3889,35 +3725,6 @@ def EmployeeList(request):
             array1.append(description)
             array1.append(pk)
             array_bad.append(array1)
-
-        if (Mandatory.objects.filter(attributes='employee_home_zipcode').exists()):
-            var=Mandatory.objects.filter(attributes='employee_home_zipcode')[0].required
-            if (var == "Yes" and employee.home_zipcode ==""):
-                 array1=[]
-                 bad_ind = 1
-                 home_zipcode_bad_ind=1
-                 description = "home_zipcode is mandatory"
-                 array1.append(employee.employeeid)
-                 array1.append(employee.name)
-                 array1.append(employee.zipcode)
-                 array1.append(description)
-                 array1.append(pk)
-                 array_bad.append(array1)
-
-        if (Numcheck.objects.filter(attributes='employee_home_zipcode').exists()):
-           var=Numcheck.objects.filter(attributes='employee_home_zipcode')[0].numberfield
-           if (var == "Yes" and not employee.home_zipcode.isdigit()):
-                array1=[]
-                bad_ind = 1
-                home_zipcode_bad_ind = 1
-                description = "home_zipcode must be numeric"
-                array1.append(employee.employeeid)
-                array1.append(employee.name)
-                array1.append(employee.zipcode)
-                array1.append(description)
-                array1.append(pk)
-                array_bad.append(array1)
-
 
         employee.mail_address_line_1 = serializer.data["mail_address_line_1"]
         if (Mandatory.objects.filter(attributes='employee_mail_address_line_1').exists()):
@@ -3933,21 +3740,6 @@ def EmployeeList(request):
                  array1.append(pk)
                  array_bad.append(array1)
 
-
-        if (Numcheck.objects.filter(attributes='employee_mail_address_line_1').exists()):
-           var=Numcheck.objects.filter(attributes='employee_mail_address_line_1')[0].numberfield
-           if (var == "Yes" and not employee.mail_address_line_1.isdigit()):
-                array1=[]
-                bad_ind = 1
-                mail_address_line_1_bad_ind = 1
-                description = "mail_address_line_1 must be numeric"
-                array1.append(employee.employeeid)
-                array1.append(employee.name)
-                array1.append(employee.mail_address_line_1)
-                array1.append(description)
-                array1.append(pk)
-                array_bad.append(array1)
-
         employee.mail_address_line_2 = serializer.data["mail_address_line_2"]
         if (Mandatory.objects.filter(attributes='employee_mail_address_line_2').exists()):
             var=Mandatory.objects.filter(attributes='employee_mail_address_line_2')[0].required
@@ -3961,21 +3753,6 @@ def EmployeeList(request):
                  array1.append(description)
                  array1.append(pk)
                  array_bad.append(array1)
-
-
-        if (Numcheck.objects.filter(attributes='employee_mail_address_line_2').exists()):
-           var=Numcheck.objects.filter(attributes='employee_mail_address_line_2')[0].numberfield
-           if (var == "Yes" and not employee.home_address_line_2.isdigit()):
-                array1=[]
-                bad_ind = 1
-                mail_address_line_2_bad_ind = 1
-                description = "mail_address_line_2 must be numeric"
-                array1.append(employee.employeeid)
-                array1.append(employee.name)
-                array1.append(employee.mail_address_line_2)
-                array1.append(description)
-                array1.append(pk)
-                array_bad.append(array1)
 
         employee.mail_city = serializer.data["mail_city"]
         if (Mandatory.objects.filter(attributes='employee_mail_city').exists()):
@@ -3992,21 +3769,6 @@ def EmployeeList(request):
                  array_bad.append(array1)
 
 
-        if (Numcheck.objects.filter(attributes='employee_mail_city').exists()):
-           var=Numcheck.objects.filter(attributes='employee_mail_city')[0].numberfield
-           if (var == "Yes" and not employee.mail_city.isdigit()):
-                array1=[]
-                bad_ind = 1
-                mail_city_bad_ind = 1
-                description = "mail_city must be numeric"
-                array1.append(employee.employeeid)
-                array1.append(employee.name)
-                array1.append(employee.mail_city)
-                array1.append(description)
-                array1.append(pk)
-                array_bad.append(array1)
-
-
         employee.mail_state = serializer.data["mail_state"]
         if (Mandatory.objects.filter(attributes='employee_mail_state').exists()):
             var=Mandatory.objects.filter(attributes='employee_mail_state')[0].required
@@ -4020,22 +3782,6 @@ def EmployeeList(request):
                  array1.append(description)
                  array1.append(pk)
                  array_bad.append(array1)
-
-
-        if (Numcheck.objects.filter(attributes='employee_mail_state').exists()):
-           var=Numcheck.objects.filter(attributes='employee_mail_state')[0].numberfield
-           if (var == "Yes" and not employee.mail_state.isdigit()):
-                array1=[]
-                bad_ind = 1
-                mail_state_bad_ind = 1
-                description = "mail_state must be numeric"
-                array1.append(employee.employeeid)
-                array1.append(employee.name)
-                array1.append(employee.mail_state)
-                array1.append(description)
-                array1.append(pk)
-                array_bad.append(array1)
-
 
         employee.mail_zipcode = serializer.data["mail_zipcode"]
         if (Mandatory.objects.filter(attributes='employee_mail_zipcode').exists()):
@@ -4052,20 +3798,6 @@ def EmployeeList(request):
                  array_bad.append(array1)
 
 
-        if (Numcheck.objects.filter(attributes='employee_mail_zipcode').exists()):
-           var=Numcheck.objects.filter(attributes='employee_mail_zipcode')[0].numberfield
-           if (var == "Yes" and not employee.mail_zipcode.isdigit()):
-                array1=[]
-                bad_ind = 1
-                mail_zipcode_bad_ind = 1
-                description = "mail_zipcode must be numeric"
-                array1.append(employee.employeeid)
-                array1.append(employee.name)
-                array1.append(employee.mail_zipcode)
-                array1.append(description)
-                array1.append(pk)
-                array_bad.append(array1)
-
         employee.work_address_line_1 = serializer.data["work_address_line_1"]
         if (Mandatory.objects.filter(attributes='employee_work_address_line_1').exists()):
             var=Mandatory.objects.filter(attributes='employee_work_address_line_1')[0].required
@@ -4079,21 +3811,6 @@ def EmployeeList(request):
                  array1.append(description)
                  array1.append(pk)
                  array_bad.append(array1)
-
-
-        if (Numcheck.objects.filter(attributes='employee_work_address_line_1').exists()):
-           var=Numcheck.objects.filter(attributes='employee_work_address_line_1')[0].numberfield
-           if (var == "Yes" and not employee.work_address_line_1.isdigit()):
-                array1=[]
-                bad_ind = 1
-                work_address_line_1_bad_ind = 1
-                description = "work_address_line_1 must be numeric"
-                array1.append(employee.employeeid)
-                array1.append(employee.name)
-                array1.append(employee.work_address_line_1)
-                array1.append(description)
-                array1.append(pk)
-                array_bad.append(array1)
 
         employee.work_address_line_2 = serializer.data["work_address_line_2"]
         if (Mandatory.objects.filter(attributes='employee_work_address_line_2').exists()):
@@ -4109,21 +3826,6 @@ def EmployeeList(request):
                  array1.append(pk)
                  array_bad.append(array1)
 
-
-        if (Numcheck.objects.filter(attributes='employee_work_address_line_2').exists()):
-           var=Numcheck.objects.filter(attributes='employee_work_address_line_2')[0].numberfield
-           if (var == "Yes" and not employee.work_address_line_2.isdigit()):
-                array1=[]
-                bad_ind = 1
-                work_address_line_2_bad_ind = 1
-                description = "work_address_line_2 must be numeric"
-                array1.append(employee.employeeid)
-                array1.append(employee.name)
-                array1.append(employee.work_address_line_2)
-                array1.append(description)
-                array1.append(pk)
-                array_bad.append(array1)
-
         employee.work_city = serializer.data["work_city"]
         if (Mandatory.objects.filter(attributes='employee_work_city').exists()):
             var=Mandatory.objects.filter(attributes='employee_work_city')[0].required
@@ -4137,22 +3839,6 @@ def EmployeeList(request):
                  array1.append(description)
                  array1.append(pk)
                  array_bad.append(array1)
-
-
-        if (Numcheck.objects.filter(attributes='employee_work_city').exists()):
-           var=Numcheck.objects.filter(attributes='employee_work_city')[0].numberfield
-           if (var == "Yes" and not employee.work_city.isdigit()):
-                array1=[]
-                bad_ind = 1
-                work_city_bad_ind = 1
-                description = "work_city must be numeric"
-                array1.append(employee.employeeid)
-                array1.append(employee.name)
-                array1.append(employee.work_city)
-                array1.append(description)
-                array1.append(pk)
-                array_bad.append(array1)
-
 
         employee.work_state = serializer.data["work_state"]
         if (Mandatory.objects.filter(attributes='employee_work_state').exists()):
@@ -4168,21 +3854,6 @@ def EmployeeList(request):
                  array1.append(pk)
                  array_bad.append(array1)
 
-
-        if (Numcheck.objects.filter(attributes='employee_work_state').exists()):
-           var=Numcheck.objects.filter(attributes='employee_work_state')[0].numberfield
-           if (var == "Yes" and not employee.work_state.isdigit()):
-                array1=[]
-                bad_ind = 1
-                work_state_bad_ind = 1
-                description = "work_state must be numeric"
-                array1.append(employee.employeeid)
-                array1.append(employee.name)
-                array1.append(employee.work_state)
-                array1.append(description)
-                array1.append(pk)
-                array_bad.append(array1)
-
         employee.work_zipcode = serializer.data["work_zipcode"]
         if (Mandatory.objects.filter(attributes='employee_work_zipcode').exists()):
             var=Mandatory.objects.filter(attributes='employee_work_zipcode')[0].required
@@ -4196,21 +3867,6 @@ def EmployeeList(request):
                  array1.append(description)
                  array1.append(pk)
                  array_bad.append(array1)
-
-
-        if (Numcheck.objects.filter(attributes='employee_work_zipcode').exists()):
-           var=Numcheck.objects.filter(attributes='employee_work_zipcode')[0].numberfield
-           if (var == "Yes" and not employee.work_zipcode.isdigit()):
-                array1=[]
-                bad_ind = 1
-                work_zipcode_bad_ind = 1
-                description = "work_zipcode must be numeric"
-                array1.append(employee.employeeid)
-                array1.append(employee.name)
-                array1.append(employee.work_zipcode)
-                array1.append(description)
-                array1.append(pk)
-                array_bad.append(array1)
 
         employee.email = serializer.data["email"]
         array1=[]
@@ -4303,21 +3959,6 @@ def EmployeeList(request):
                  array1.append(pk)
                  array_bad.append(array1)
 
-
-        if (Numcheck.objects.filter(attributes='employee_enrollment_method').exists()):
-           var=Numcheck.objects.filter(attributes='employee_enrollment_method')[0].numberfield
-           if (var == "Yes" and not employee.enrollment_method.isdigit()):
-                array1=[]
-                bad_ind = 1
-                enrollment_method_bad_ind = 1
-                description = "enrollment_method must be numeric"
-                array1.append(employee.employeeid)
-                array1.append(employee.name)
-                array1.append(employee.enrollment_method)
-                array1.append(description)
-                array1.append(pk)
-                array_bad.append(array1)
-
         employee.employment_information = serializer.data["employment_information"]
         if (Mandatory.objects.filter(attributes='employee_employment_information').exists()):
             var=Mandatory.objects.filter(attributes='employee_employment_information')[0].required
@@ -4331,21 +3972,6 @@ def EmployeeList(request):
                  array1.append(description)
                  array1.append(pk)
                  array_bad.append(array1)
-
-        if (Numcheck.objects.filter(attributes='employee_employment_information').exists()):
-           var=Numcheck.objects.filter(attributes='employee_employment_information')[0].numberfield
-           if (var == "Yes" and not employee.employment_information.isdigit()):
-                array1=[]
-                bad_ind = 1
-                employment_information_bad_ind = 1
-                description = "employment_information must be numeric"
-                array1.append(employee.employeeid)
-                array1.append(employee.name)
-                array1.append(employee.employment_information)
-                array1.append(description)
-                array1.append(pk)
-                array_bad.append(array1)
-
 
         employee.source = "Post API"
 

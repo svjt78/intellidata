@@ -58,6 +58,7 @@ from datetime import datetime
 from events.forms import EventForm
 from events.models import Event
 from botocore.errorfactory import ClientError
+from collections import defaultdict
 
 # For Rest rest_framework
 from rest_framework import status
@@ -210,6 +211,7 @@ def ListEmployersHistory(request, pk):
                     dict_data=[]
                     obj_data=[]
                     json_data = resp.json()
+                    #json_data = defaultdict(lambda: -1, json_data)
 
                     #print(json_data[0])
                     #print(json_data[1])
@@ -232,7 +234,8 @@ def ListEmployersHistory(request, pk):
                      obj.zipcode = json_data[ix]["ZIPCODE"]
 
                      obj.purpose = json_data[ix]["PURPOSE"]
-                     obj.planadmin_email = json_data[ix]["PLANADMIN_EMAIL"]
+                     #obj.planadmin_email = json_data[ix]["PLANADMIN_EMAIL"]
+                     obj.planadmin_email = json_data[ix].get("PLANADMIN_EMAIL")
 
                      obj.photo = json_data[ix]["PHOTO"]
                      obj.creator = User.objects.get(pk=int(json_data[ix]["CREATOR"]))
@@ -243,7 +246,8 @@ def ListEmployersHistory(request, pk):
                      transmission_obj = get_object_or_404(Transmission, pk = transmission_id)
                      obj.transmission = transmission_obj
                      obj.source = json_data[ix]["SOURCE"]
-                     obj.transmissionid = json_data[ix]["TRANSMISSIONID"]
+                     #obj.transmissionid = json_data[ix]["TRANSMISSIONID"]
+                     obj.transmissionid = json_data[ix].get("TRANSMISSIONID")
 
                      obj.backend_SOR_connection = json_data[ix]["CONNECTION"]
                      obj.response = json_data[ix]["RESPONSE"]

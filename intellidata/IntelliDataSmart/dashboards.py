@@ -41,7 +41,7 @@ class ProductFeedErrorAnalysis(widgets.ItemList):
     list_display = ('run_date', 'total', 'clean', 'error')
 
 
-class EmployeeOriginPie(widgets.SingleBarChart):
+class EmployeeDataByOrigin(widgets.SingleBarChart):
     # label and series
     values_list = ('source', 'count')
     # Data source
@@ -123,7 +123,7 @@ class MyDashboard(Dashboard):
         EmployeeFeedErrorAnalysis,
         TransmissionFeedErrorAnalysis,
         ProductFeedErrorAnalysis,
-        EmployeeOriginPie,
+        EmployeeDataByOrigin,
         CoverageLimitsProducts,
         RateByProducts,
         EmployeeByAge,
