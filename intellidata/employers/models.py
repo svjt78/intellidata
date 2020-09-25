@@ -160,7 +160,8 @@ class Employer(models.Model):
 
     zipcode = models.CharField(max_length=256)
 
-    transmission = models.ForeignKey(Transmission, on_delete=models.DO_NOTHING, related_name="employer_set")
+    transmission = models.ForeignKey(Transmission, on_delete=models.SET_NULL, null=True, blank=True, related_name="employer_set")
+    #transmission = models.ForeignKey(Transmission, on_delete=models.DO_NOTHING, related_name="employer_set")
     transmissionid = models.CharField(max_length=255, null=True, blank=True)
 
     creator = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)

@@ -153,4 +153,4 @@ class Numcheck(models.Model):
         return reverse("numchecks:single", kwargs={"pk": self.pk})
 
     class Meta:
-        ordering = ["attributes", "-create_date"]
+        ordering = ["-create_date"]

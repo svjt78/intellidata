@@ -761,7 +761,7 @@ def BulkUploadEmployee(request, pk, *args, **kwargs):
                                                                array1=[]
                                                                bad_ind = 1
                                                                ssn_bad_ind = 1
-                                                               description = "Name is mandatory"
+                                                               description = "SSN is mandatory"
                                                                array1.append(serial)
                                                                array1.append(employeeid)
                                                                array1.append(name)
