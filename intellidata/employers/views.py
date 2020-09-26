@@ -1059,22 +1059,20 @@ def BulkUploadEmployer(request):
                                                                 array1.append(sendername)
                                                                 array_bad.append(array1)
 
-                                                      if (Numcheck.objects.filter(attributes='employer_planadmin_email').exists()):
-                                                          var=Numcheck.objects.filter(attributes='employer_planadmin_email')[0].numberfield
-                                                          if (var == "Yes" and not planadmin_email.isdigit()):
-                                                               array1=[]
-                                                               bad_ind = 1
-                                                               planadmin_email_bad_ind=1
-                                                               error_description = "planadmin_email must be numeric"
-                                                               array1.append(serial)
-                                                               array1.append(employerid)
-                                                               array1.append(name)
-                                                               array1.append(planadmin_email)
-                                                               array1.append(error_description)
-                                                               array1.append(transmission_pk)
-                                                               array1.append(transmissionid)
-                                                               array1.append(sendername)
-                                                               array_bad.append(array1)
+                                                      if not re.match(r"^[A-Za-z0-9\.\+_-]+@[A-Za-z0-9\._-]+\.[a-zA-Z]*$", planadmin_email):
+                                                           bad_ind = 1
+                                                           planadmin_email_bad_ind = 1
+                                                           array1=[]
+                                                           description = "Invalid email format"
+                                                           array1.append(serial)
+                                                           array1.append(employerid)
+                                                           array1.append(name)
+                                                           array1.append(planadmin_email)
+                                                           array1.append(error_description)
+                                                           array1.append(transmission_pk)
+                                                           array1.append(transmissionid)
+                                                           array1.append(sendername)
+                                                           array_bad.append(array1)
 
                                                       if planadmin_email_bad_ind == 0:
                                                           array2.append(planadmin_email)
@@ -1816,22 +1814,21 @@ def NonStdRefresh(request):
                                                                         array1.append(sendername)
                                                                         array_bad.append(array1)
 
-                                                              if (Numcheck.objects.filter(attributes='employer_planadmin_email').exists()):
-                                                                  var=Numcheck.objects.filter(attributes='employer_planadmin_email')[0].numberfield
-                                                                  if (var == "Yes" and not planadmin_email.isdigit()):
-                                                                       array1=[]
-                                                                       bad_ind = 1
-                                                                       planadmin_email_bad_ind=1
-                                                                       error_description = "planadmin_email must be numeric"
-                                                                       array1.append(serial)
-                                                                       array1.append(employerid)
-                                                                       array1.append(name)
-                                                                       array1.append(planadmin_email)
-                                                                       array1.append(error_description)
-                                                                       array1.append(transmission_pk)
-                                                                       array1.append(transmissionid)
-                                                                       array1.append(sendername)
-                                                                       array_bad.append(array1)
+                                                              if not re.match(r"^[A-Za-z0-9\.\+_-]+@[A-Za-z0-9\._-]+\.[a-zA-Z]*$", planadmin_email):
+                                                                   bad_ind = 1
+                                                                   planadmin_email_bad_ind = 1
+                                                                   array1=[]
+                                                                   description = "Invalid email format"
+                                                                   array1.append(serial)
+                                                                   array1.append(employerid)
+                                                                   array1.append(name)
+                                                                   array1.append(planadmin_email)
+                                                                   array1.append(error_description)
+                                                                   array1.append(transmission_pk)
+                                                                   array1.append(transmissionid)
+                                                                   array1.append(sendername)
+                                                                   array_bad.append(array1)
+
 
                                                               if planadmin_email_bad_ind == 0:
                                                                   array2.append(planadmin_email)
@@ -2120,7 +2117,7 @@ def EmployerList(request):
         if employer.name == "":
             bad_ind = 1
             error_description = "Name is mandatory"
-            array1.append(employerid)
+            array1.append(employer.employerid)
             array1.append(employer.name)
             array1.append(employer.name)
             array1.append(error_description)
@@ -2133,7 +2130,7 @@ def EmployerList(request):
                 bad_ind = 1
                 name_bad_ind = 1
                 error_description = "name must be numeric"
-                array1.append(employerid)
+                array1.append(employer.employerid)
                 array1.append(employer.name)
                 array1.append(employer.name)
                 array1.append(error_description)

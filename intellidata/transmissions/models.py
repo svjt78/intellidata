@@ -179,6 +179,15 @@ class TransmissionSerializer(serializers.ModelSerializer):
         fields = ['id', 'transmissionid', 'SenderName', 'BenefitAdministratorPlatform', 'ReceiverName', 'TestProductionCode', 'TransmissionTypeCode', 'SystemVersionIdentifier', 'source', 'planadmin_email', 'create_date', 'creator', 'backend_SOR_connection', 'commit_indicator', 'record_status', 'response', 'bulk_upload_indicator', 'employer_set']
 
 
+
+class TransmissionErrorSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = TransmissionError
+        fields = '__all__'
+
+
+
 #class for handling built-in API errors
 class APIError(Exception):
     """An API Error Exception"""

@@ -740,10 +740,6 @@ def BulkUploadEmployee(request, pk, *args, **kwargs):
                                                       work_city_bad_ind=0
                                                       work_state_bad_ind=0
                                                       work_zipcode_bad_ind=0
-                                                      alternate_email_bad_ind=0
-                                                      home_phone_bad_ind=0
-                                                      work_phone_bad_ind=0
-                                                      mobile_phone_bad_ind=0
                                                       enrollment_method_bad_ind=0
                                                       employment_information_bad_ind=0
                                                       array1=[]
@@ -1622,29 +1618,10 @@ def BulkUploadEmployee(request, pk, *args, **kwargs):
 
                                                             #validate email
                                                       email=row[23]
-                                                      if (Mandatory.objects.filter(attributes='employee_email').exists()):
-                                                          var=Mandatory.objects.filter(attributes='employee_email')[0].required
-                                                          if (var == "Yes" and email ==""):
-                                                               array1=[]
-                                                               bad_ind = 1
-                                                               email_bad_ind = 1
-                                                               description = "email is mandatory"
-                                                               array1.append(serial)
-                                                               array1.append(employeeid)
-                                                               array1.append(name)
-                                                               array1.append(email)
-                                                               array1.append(description)
-                                                               array1.append(pk)
-                                                               array1.append(Employer.objects.get(pk=pk).employerid)
-                                                               array1.append(transmissionid)
-                                                               array1.append(sendername)
-                                                               array_bad.append(array1)
-
-
-                                                      if not re.match(r"^[A-Za-z0-9\.\+_-]+@[A-Za-z0-9\._-]+\.[a-zA-Z]*$", email):
-                                                          bad_ind = 1
-                                                          email_bad_ind = 1
-                                                          description = "Invalid email format"
+                                                      array1=[]
+                                                      if email == "":
+                                                          bad_ind=1
+                                                          description = "Email is mandatory "
                                                           array1.append(serial)
                                                           array1.append(employeeid)
                                                           array1.append(name)
@@ -1655,9 +1632,21 @@ def BulkUploadEmployee(request, pk, *args, **kwargs):
                                                           array1.append(transmissionid)
                                                           array1.append(sendername)
                                                           array_bad.append(array1)
-
-                                                      if email_bad_ind == 0:
-                                                        array2.append(email)
+                                                      elif not re.match(r"^[A-Za-z0-9\.\+_-]+@[A-Za-z0-9\._-]+\.[a-zA-Z]*$", email):
+                                                          bad_ind = 1
+                                                          description = "Invalid email"
+                                                          array1.append(serial)
+                                                          array1.append(employeeid)
+                                                          array1.append(name)
+                                                          array1.append(email)
+                                                          array1.append(description)
+                                                          array1.append(pk)
+                                                          array1.append(Employer.objects.get(pk=pk).employerid)
+                                                          array1.append(transmissionid)
+                                                          array1.append(sendername)
+                                                          array_bad.append(array1)
+                                                      else:
+                                                          array2.append(email)
 
                                                       alternate_email=row[24]
                                                       if (Mandatory.objects.filter(attributes='employee_alternate_email').exists()):
@@ -1665,7 +1654,6 @@ def BulkUploadEmployee(request, pk, *args, **kwargs):
                                                           if (var == "Yes" and alternate_email ==""):
                                                                array1=[]
                                                                bad_ind = 1
-                                                               alternate_email_bad_ind = 1
                                                                description = "alternate_email is mandatory"
                                                                array1.append(serial)
                                                                array1.append(employeeid)
@@ -1677,25 +1665,10 @@ def BulkUploadEmployee(request, pk, *args, **kwargs):
                                                                array1.append(transmissionid)
                                                                array1.append(sendername)
                                                                array_bad.append(array1)
-
-                                                      if not re.match(r"^[A-Za-z0-9\.\+_-]+@[A-Za-z0-9\._-]+\.[a-zA-Z]*$", alternate_email):
-                                                          bad_ind = 1
-                                                          alternate_email_bad_ind = 1
-                                                          array1=[]
-                                                          description = "Invalid email format"
-                                                          array1.append(serial)
-                                                          array1.append(employeeid)
-                                                          array1.append(name)
-                                                          array1.append(alternate_email)
-                                                          array1.append(description)
-                                                          array1.append(pk)
-                                                          array1.append(Employer.objects.get(pk=pk).employerid)
-                                                          array1.append(transmissionid)
-                                                          array1.append(sendername)
-                                                          array_bad.append(array1)
-
-                                                      if alternate_email_bad_ind == 0:
-                                                        array2.append(alternate_email)
+                                                          else:
+                                                               array2.append(alternate_email)
+                                                      else:
+                                                              array2.append(alternate_email)
 
                                                       #validate phone
                                                       home_phone=row[25]
@@ -1704,7 +1677,6 @@ def BulkUploadEmployee(request, pk, *args, **kwargs):
                                                           if (var == "Yes" and home_phone ==""):
                                                                array1=[]
                                                                bad_ind = 1
-                                                               home_phone_bad_ind=1
                                                                description = "home_phone is mandatory"
                                                                array1.append(serial)
                                                                array1.append(employeeid)
@@ -1716,44 +1688,10 @@ def BulkUploadEmployee(request, pk, *args, **kwargs):
                                                                array1.append(transmissionid)
                                                                array1.append(sendername)
                                                                array_bad.append(array1)
-
-                                                      array1=[]
-                                                      p=[]
-                                                      p = home_phone
-                                                      if p.isnumeric() == False:
-                                                          bad_ind=1
-                                                          home_phone_bad_ind=1
-                                                          description = "home_phone must be numbers "
-                                                          array1.append(serial)
-                                                          array1.append(employeeid)
-                                                          array1.append(name)
-                                                          array1.append(home_phone)
-                                                          array1.append(description)
-                                                          array1.append(pk)
-                                                          array1.append(Employer.objects.get(pk=pk).employerid)
-                                                          array1.append(transmissionid)
-                                                          array1.append(sendername)
-                                                          array_bad.append(array1)
-
-                                                      if len(p) != (10 and 11):
-                                                          print(len(p))
-                                                          bad_ind=1
-                                                          home_phone_bad_ind=1
-                                                          array1=[]
-                                                          description = "Length of home_phone is not correct "
-                                                          array1.append(serial)
-                                                          array1.append(employeeid)
-                                                          array1.append(name)
-                                                          array1.append(home_phone)
-                                                          array1.append(description)
-                                                          array1.append(pk)
-                                                          array1.append(Employer.objects.get(pk=pk).employerid)
-                                                          array1.append(transmissionid)
-                                                          array1.append(sendername)
-                                                          array_bad.append(array1)
-
-                                                      if home_phone_bad_ind == 0:
-                                                            array2.append(home_phone)
+                                                          else:
+                                                               array2.append(home_phone)
+                                                      else:
+                                                              array2.append(home_phone)
 
 
                                                       work_phone=row[26]
@@ -1762,7 +1700,6 @@ def BulkUploadEmployee(request, pk, *args, **kwargs):
                                                           if (var == "Yes" and work_phone ==""):
                                                                array1=[]
                                                                bad_ind = 1
-                                                               work_phone_bad_ind=1
                                                                description = "work_phone is mandatory"
                                                                array1.append(serial)
                                                                array1.append(employeeid)
@@ -1774,65 +1711,12 @@ def BulkUploadEmployee(request, pk, *args, **kwargs):
                                                                array1.append(transmissionid)
                                                                array1.append(sendername)
                                                                array_bad.append(array1)
-
-                                                      array1=[]
-                                                      p=[]
-                                                      p = work_phone
-                                                      if p.isnumeric() == False:
-                                                          bad_ind=1
-                                                          work_phone_bad_ind=1
-                                                          description = "work_phone must be numbers "
-                                                          array1.append(serial)
-                                                          array1.append(employeeid)
-                                                          array1.append(name)
-                                                          array1.append(work_phone)
-                                                          array1.append(description)
-                                                          array1.append(pk)
-                                                          array1.append(Employer.objects.get(pk=pk).employerid)
-                                                          array1.append(transmissionid)
-                                                          array1.append(sendername)
-                                                          array_bad.append(array1)
-
-                                                      if len(p) != (10 and 11):
-                                                          print(len(p))
-                                                          bad_ind=1
-                                                          work_phone_bad_ind=1
-                                                          array1=[]
-                                                          description = "Length of work_phone is not correct "
-                                                          array1.append(serial)
-                                                          array1.append(employeeid)
-                                                          array1.append(name)
-                                                          array1.append(work_phone)
-                                                          array1.append(description)
-                                                          array1.append(pk)
-                                                          array1.append(Employer.objects.get(pk=pk).employerid)
-                                                          array1.append(transmissionid)
-                                                          array1.append(sendername)
-                                                          array_bad.append(array1)
-
-                                                      if work_phone_bad_ind == 0:
-                                                         array2.append(work_phone)
+                                                          else:
+                                                               array2.append(work_phone)
+                                                      else:
+                                                              array2.append(work_phone)
 
                                                       mobile_phone=row[27]
-                                                      if (Mandatory.objects.filter(attributes='employee_mobile_phone').exists()):
-                                                          var=Mandatory.objects.filter(attributes='employee_mobile_phone')[0].required
-                                                          if (var == "Yes" and home_phone ==""):
-                                                               array1=[]
-                                                               bad_ind = 1
-                                                               mobile_phone_bad_ind=1
-                                                               description = "mobile_phone is mandatory"
-                                                               array1.append(serial)
-                                                               array1.append(employeeid)
-                                                               array1.append(name)
-                                                               array1.append(mobile_phone)
-                                                               array1.append(description)
-                                                               array1.append(pk)
-                                                               array1.append(Employer.objects.get(pk=pk).employerid)
-                                                               array1.append(transmissionid)
-                                                               array1.append(sendername)
-                                                               array_bad.append(array1)
-
-
                                                       array1=[]
                                                       p=[]
                                                       p = mobile_phone
@@ -1849,11 +1733,9 @@ def BulkUploadEmployee(request, pk, *args, **kwargs):
                                                           array1.append(transmissionid)
                                                           array1.append(sendername)
                                                           array_bad.append(array1)
-
-                                                      if len(p) != (10 and 11):
+                                                      elif len(p) != (10 and 11):
                                                           print(len(p))
                                                           bad_ind=1
-                                                          mobile_phone_bad_ind=1
                                                           description = "Length of mobile phone number is not correct "
                                                           array1.append(serial)
                                                           array1.append(employeeid)
@@ -1865,9 +1747,8 @@ def BulkUploadEmployee(request, pk, *args, **kwargs):
                                                           array1.append(transmissionid)
                                                           array1.append(sendername)
                                                           array_bad.append(array1)
-
-                                                      if mobile_phone_bad_ind == 0:
-                                                         array2.append(mobile_phone)
+                                                      else:
+                                                           array2.append(mobile_phone)
 
 
                                                       enrollment_method=row[28]
@@ -2329,33 +2210,6 @@ def NonStdRefresh(request):
                                 execution_start_time = datetime.now()
                                 for row in csv.reader(csv_file):
                                                               bad_ind = 0
-                                                              ssn_bad_ind=0
-                                                              name_bad_ind=0
-                                                              gendercode_bad_ind=0
-                                                              age_bad_ind=0
-                                                              birthdate_bad_ind=0
-                                                              maritalstatus_bad_ind=0
-                                                              home_address_line_1_bad_ind=0
-                                                              home_address_line_2_bad_ind=0
-                                                              home_city_bad_ind=0
-                                                              home_state_bad_ind=0
-                                                              home_zipcode_bad_ind=0
-                                                              mail_address_line_1_bad_ind=0
-                                                              mail_address_line_2_bad_ind=0
-                                                              mail_city_bad_ind=0
-                                                              mail_state_bad_ind=0
-                                                              mail_zipcode_bad_ind=0
-                                                              work_address_line_1_bad_ind=0
-                                                              work_address_line_2_bad_ind=0
-                                                              work_city_bad_ind=0
-                                                              work_state_bad_ind=0
-                                                              work_zipcode_bad_ind=0
-                                                              alternate_email_bad_ind=0
-                                                              home_phone_bad_ind=0
-                                                              work_phone_bad_ind=0
-                                                              mobile_phone_bad_ind=0
-                                                              enrollment_method_bad_ind=0
-                                                              employment_information_bad_ind=0
                                                               array1=[]
                                                               array2=[]
 
@@ -2397,7 +2251,6 @@ def NonStdRefresh(request):
                                                               array1=[]
                                                               if name == "":
                                                                   bad_ind = 1
-                                                                  name_bad_ind = 1
                                                                   description = "Name is mandatory"
                                                                   array1.append(serial)
                                                                   array1.append(employeeid)
@@ -2410,25 +2263,7 @@ def NonStdRefresh(request):
                                                                   array1.append(sendername)
                                                                   array_bad.append(array1)
 
-                                                              if (Numcheck.objects.filter(attributes='employee_name').exists()):
-                                                                 var=Numcheck.objects.filter(attributes='employee_name')[0].numberfield
-                                                                 if (var == "Yes" and not name.isdigit()):
-                                                                      array1=[]
-                                                                      bad_ind = 1
-                                                                      name_bad_ind = 1
-                                                                      description = "name must be numeric"
-                                                                      array1.append(serial)
-                                                                      array1.append(employeeid)
-                                                                      array1.append(name)
-                                                                      array1.append(name)
-                                                                      array1.append(description)
-                                                                      array1.append(pk)
-                                                                      array1.append(Employer.objects.get(pk=pk).employerid)
-                                                                      array1.append(transmissionid)
-                                                                      array1.append(sendername)
-                                                                      array_bad.append(array1)
-
-                                                              if name_bad_ind == 0:
+                                                              else:
                                                                   array2.append(name)
 
                                                               slug=slugify(row[3])
@@ -2440,7 +2275,6 @@ def NonStdRefresh(request):
                                                                   if (var == "Yes" and ssn ==""):
                                                                        array1=[]
                                                                        bad_ind = 1
-                                                                       ssn_bad_ind = 1
                                                                        description = "SSN is mandatory"
                                                                        array1.append(serial)
                                                                        array1.append(employeeid)
@@ -2452,27 +2286,10 @@ def NonStdRefresh(request):
                                                                        array1.append(transmissionid)
                                                                        array1.append(sendername)
                                                                        array_bad.append(array1)
-
-                                                              if (Numcheck.objects.filter(attributes='employee_ssn').exists()):
-                                                                 var=Numcheck.objects.filter(attributes='employee_ssn')[0].numberfield
-                                                                 if (var == "Yes" and not ssn.isdigit()):
-                                                                      array1=[]
-                                                                      bad_ind = 1
-                                                                      ssn_bad_ind = 1
-                                                                      description = "SSN must be numeric"
-                                                                      array1.append(serial)
-                                                                      array1.append(employeeid)
-                                                                      array1.append(name)
-                                                                      array1.append(ssn)
-                                                                      array1.append(description)
-                                                                      array1.append(pk)
-                                                                      array1.append(Employer.objects.get(pk=pk).employerid)
-                                                                      array1.append(transmissionid)
-                                                                      array1.append(sendername)
-                                                                      array_bad.append(array1)
-
-                                                              if ssn_bad_ind == 0:
-                                                                  array2.append(ssn)
+                                                                  else:
+                                                                       array2.append(ssn)
+                                                              else:
+                                                                      array2.append(ssn)
 
 
 
@@ -2482,7 +2299,6 @@ def NonStdRefresh(request):
                                                                   if (var == "Yes" and gendercode ==""):
                                                                        array1=[]
                                                                        bad_ind = 1
-                                                                       gendercode_bad_ind = 1
                                                                        description = "Gendercode is mandatory"
                                                                        array1.append(serial)
                                                                        array1.append(employeeid)
@@ -2494,34 +2310,16 @@ def NonStdRefresh(request):
                                                                        array1.append(transmissionid)
                                                                        array1.append(sendername)
                                                                        array_bad.append(array1)
-
-                                                              if (Numcheck.objects.filter(attributes='employee_gendercode').exists()):
-                                                                 var=Numcheck.objects.filter(attributes='employee_gendercode')[0].numberfield
-                                                                 if (var == "Yes" and not gendercode.isdigit()):
-                                                                      array1=[]
-                                                                      bad_ind = 1
-                                                                      gendercode_bad_ind = 1
-                                                                      description = "gendercode must be numeric"
-                                                                      array1.append(serial)
-                                                                      array1.append(employeeid)
-                                                                      array1.append(name)
-                                                                      array1.append(gendercode)
-                                                                      array1.append(description)
-                                                                      array1.append(pk)
-                                                                      array1.append(Employer.objects.get(pk=pk).employerid)
-                                                                      array1.append(transmissionid)
-                                                                      array1.append(sendername)
-                                                                      array_bad.append(array1)
-
-                                                              if gendercode_bad_ind == 0:
-                                                                  array2.append(gendercode)
+                                                                  else:
+                                                                       array2.append(gendercode)
+                                                              else:
+                                                                      array2.append(gendercode)
 
                                                               #validate age
                                                               age=int(row[5])
                                                               array1=[]
                                                               if age == "":
                                                                   bad_ind=1
-                                                                  age_bad_ind=1
                                                                   description = "Age must be numeric "
                                                                   array1.append(serial)
                                                                   array1.append(employeeid)
@@ -2533,10 +2331,8 @@ def NonStdRefresh(request):
                                                                   array1.append(transmissionid)
                                                                   array1.append(sendername)
                                                                   array_bad.append(array1)
-
-                                                              if (age <= 0 or age >= 100):
+                                                              elif (age <= 0 or age >= 100):
                                                                   bad_ind=1
-                                                                  age_bad_ind=1
                                                                   description = "Age must be between 1 and 99 years "
                                                                   array1.append(serial)
                                                                   array1.append(employeeid)
@@ -2548,27 +2344,8 @@ def NonStdRefresh(request):
                                                                   array1.append(transmissionid)
                                                                   array1.append(sendername)
                                                                   array_bad.append(array1)
-
-                                                              if (Numcheck.objects.filter(attributes='employee_age').exists()):
-                                                                 var=Numcheck.objects.filter(attributes='employee_age')[0].numberfield
-                                                                 if (var == "Yes" and not age.isdigit()):
-                                                                      array1=[]
-                                                                      bad_ind = 1
-                                                                      age_bad_ind = 1
-                                                                      description = "age must be numeric"
-                                                                      array1.append(serial)
-                                                                      array1.append(employeeid)
-                                                                      array1.append(name)
-                                                                      array1.append(age)
-                                                                      array1.append(description)
-                                                                      array1.append(pk)
-                                                                      array1.append(Employer.objects.get(pk=pk).employerid)
-                                                                      array1.append(transmissionid)
-                                                                      array1.append(sendername)
-                                                                      array_bad.append(array1)
-
-                                                              if age_bad_ind == 0:
-                                                                  array2.append(age)
+                                                              else:
+                                                                   array2.append(age)
 
                                                               birthdate=row[6]
                                                               if (Mandatory.objects.filter(attributes='employee_birthdate').exists()):
@@ -2576,7 +2353,6 @@ def NonStdRefresh(request):
                                                                   if (var == "Yes" and birthdate ==""):
                                                                        array1=[]
                                                                        bad_ind = 1
-                                                                       birthdate_bad_ind = 1
                                                                        description = "Birthdate is mandatory"
                                                                        array1.append(serial)
                                                                        array1.append(employeeid)
@@ -2588,27 +2364,10 @@ def NonStdRefresh(request):
                                                                        array1.append(transmissionid)
                                                                        array1.append(sendername)
                                                                        array_bad.append(array1)
-
-                                                              if (Numcheck.objects.filter(attributes='employee_birthdate').exists()):
-                                                                 var=Numcheck.objects.filter(attributes='employee_birthdate')[0].numberfield
-                                                                 if (var == "Yes" and not birthdate.isdigit()):
-                                                                      array1=[]
-                                                                      bad_ind = 1
-                                                                      birthdate_bad_ind = 1
-                                                                      description = "birthdate must be numeric"
-                                                                      array1.append(serial)
-                                                                      array1.append(employeeid)
-                                                                      array1.append(name)
-                                                                      array1.append(birthdate)
-                                                                      array1.append(description)
-                                                                      array1.append(pk)
-                                                                      array1.append(Employer.objects.get(pk=pk).employerid)
-                                                                      array1.append(transmissionid)
-                                                                      array1.append(sendername)
-                                                                      array_bad.append(array1)
-
-                                                              if birthdate_bad_ind == 0:
-                                                                  array2.append(birthdate)
+                                                                  else:
+                                                                       array2.append(birthdate)
+                                                              else:
+                                                                      array2.append(birthdate)
 
                                                               maritalstatus=row[7]
                                                               if (Mandatory.objects.filter(attributes='employee_maritalstatus').exists()):
@@ -2616,7 +2375,6 @@ def NonStdRefresh(request):
                                                                   if (var == "Yes" and maritalstatus ==""):
                                                                        array1=[]
                                                                        bad_ind = 1
-                                                                       maritalstatus_bad_ind = 1
                                                                        description = "Marital status is mandatory"
                                                                        array1.append(serial)
                                                                        array1.append(employeeid)
@@ -2628,34 +2386,16 @@ def NonStdRefresh(request):
                                                                        array1.append(transmissionid)
                                                                        array1.append(sendername)
                                                                        array_bad.append(array1)
-
-                                                              if (Numcheck.objects.filter(attributes='employee_maritalstatus').exists()):
-                                                                 var=Numcheck.objects.filter(attributes='employee_maritalstatus')[0].numberfield
-                                                                 if (var == "Yes" and not maritalstatus.isdigit()):
-                                                                      array1=[]
-                                                                      bad_ind = 1
-                                                                      maritalstatus_bad_ind = 1
-                                                                      description = "maritalstatus must be numeric"
-                                                                      array1.append(serial)
-                                                                      array1.append(employeeid)
-                                                                      array1.append(name)
-                                                                      array1.append(maritalstatus)
-                                                                      array1.append(description)
-                                                                      array1.append(pk)
-                                                                      array1.append(Employer.objects.get(pk=pk).employerid)
-                                                                      array1.append(transmissionid)
-                                                                      array1.append(sendername)
-                                                                      array_bad.append(array1)
-
-                                                              if maritalstatus_bad_ind == 0:
-                                                                  array2.append(maritalstatus)
+                                                                  else:
+                                                                       array2.append(maritalstatus)
+                                                              else:
+                                                                      array2.append(maritalstatus)
 
                                                               #validate address line 1
                                                               home_address_line_1=row[8]
                                                               array1=[]
                                                               if home_address_line_1 == "":
                                                                   bad_ind = 1
-                                                                  home_address_line_1_bad_ind = 1
                                                                   description = "Home address line 1 is mandatory"
                                                                   array1.append(serial)
                                                                   array1.append(employeeid)
@@ -2667,26 +2407,7 @@ def NonStdRefresh(request):
                                                                   array1.append(transmissionid)
                                                                   array1.append(sendername)
                                                                   array_bad.append(array1)
-
-                                                              if (Numcheck.objects.filter(attributes='employee_home_address_line_1').exists()):
-                                                                 var=Numcheck.objects.filter(attributes='employee_home_address_line_1')[0].numberfield
-                                                                 if (var == "Yes" and not home_address_line_1.isdigit()):
-                                                                      array1=[]
-                                                                      bad_ind = 1
-                                                                      home_address_line_1_bad_ind = 1
-                                                                      description = "home_address_line_1 must be numeric"
-                                                                      array1.append(serial)
-                                                                      array1.append(employeeid)
-                                                                      array1.append(name)
-                                                                      array1.append(home_address_line_1)
-                                                                      array1.append(description)
-                                                                      array1.append(pk)
-                                                                      array1.append(Employer.objects.get(pk=pk).employerid)
-                                                                      array1.append(transmissionid)
-                                                                      array1.append(sendername)
-                                                                      array_bad.append(array1)
-
-                                                              if home_address_line_1_bad_ind == 0:
+                                                              else:
                                                                   array2.append(home_address_line_1)
 
 
@@ -2697,7 +2418,6 @@ def NonStdRefresh(request):
                                                                   if (var == "Yes" and home_address_line_2 ==""):
                                                                        array1=[]
                                                                        bad_ind = 1
-                                                                       home_address_line_2_bad_ind = 1
                                                                        description = "Home address 2 is mandatory"
                                                                        array1.append(serial)
                                                                        array1.append(employeeid)
@@ -2709,34 +2429,16 @@ def NonStdRefresh(request):
                                                                        array1.append(transmissionid)
                                                                        array1.append(sendername)
                                                                        array_bad.append(array1)
-
-                                                              if (Numcheck.objects.filter(attributes='employee_home_address_line_2').exists()):
-                                                                 var=Numcheck.objects.filter(attributes='employee_home_address_line_2')[0].numberfield
-                                                                 if (var == "Yes" and not home_address_line_2.isdigit()):
-                                                                      array1=[]
-                                                                      bad_ind = 1
-                                                                      home_address_line_2_bad_ind = 1
-                                                                      description = "home_address_line_2 must be numeric"
-                                                                      array1.append(serial)
-                                                                      array1.append(employeeid)
-                                                                      array1.append(name)
-                                                                      array1.append(home_address_line_2)
-                                                                      array1.append(description)
-                                                                      array1.append(pk)
-                                                                      array1.append(Employer.objects.get(pk=pk).employerid)
-                                                                      array1.append(transmissionid)
-                                                                      array1.append(sendername)
-                                                                      array_bad.append(array1)
-
-                                                              if home_address_line_2_bad_ind == 0:
-                                                                  array2.append(home_address_line_2)
+                                                                  else:
+                                                                       array2.append(home_address_line_2)
+                                                              else:
+                                                                      array2.append(home_address_line_2)
 
                                                                    #validate city
                                                               home_city=row[10]
                                                               array1=[]
                                                               if home_city == "":
                                                                    bad_ind = 1
-                                                                   home_city_bad_ind = 1
                                                                    description = "Home city is mandatory"
                                                                    array1.append(serial)
                                                                    array1.append(employeeid)
@@ -2748,34 +2450,14 @@ def NonStdRefresh(request):
                                                                    array1.append(transmissionid)
                                                                    array1.append(sendername)
                                                                    array_bad.append(array1)
-
-                                                              if (Numcheck.objects.filter(attributes='employee_home_city').exists()):
-                                                                 var=Numcheck.objects.filter(attributes='employee_home_city')[0].numberfield
-                                                                 if (var == "Yes" and not home_city.isdigit()):
-                                                                      array1=[]
-                                                                      bad_ind = 1
-                                                                      home_city_bad_ind = 1
-                                                                      description = "home_city must be numeric"
-                                                                      array1.append(serial)
-                                                                      array1.append(employeeid)
-                                                                      array1.append(name)
-                                                                      array1.append(home_city)
-                                                                      array1.append(description)
-                                                                      array1.append(pk)
-                                                                      array1.append(Employer.objects.get(pk=pk).employerid)
-                                                                      array1.append(transmissionid)
-                                                                      array1.append(sendername)
-                                                                      array_bad.append(array1)
-
-                                                              if home_city_bad_ind == 0:
-                                                                  array2.append(home_city)
+                                                              else:
+                                                                   array2.append(home_city)
 
                                                                    #validate state
                                                               home_state=row[11]
                                                               array1=[]
                                                               if home_state == "":
                                                                    bad_ind = 1
-                                                                   home_state_bad_ind = 1
                                                                    description = "Home state is mandatory"
                                                                    array1.append(serial)
                                                                    array1.append(employeeid)
@@ -2787,26 +2469,7 @@ def NonStdRefresh(request):
                                                                    array1.append(transmissionid)
                                                                    array1.append(sendername)
                                                                    array_bad.append(array1)
-
-                                                              if (Numcheck.objects.filter(attributes='employee_home_state').exists()):
-                                                                 var=Numcheck.objects.filter(attributes='employee_home_state')[0].numberfield
-                                                                 if (var == "Yes" and not home_state.isdigit()):
-                                                                      array1=[]
-                                                                      bad_ind = 1
-                                                                      home_state_bad_ind = 1
-                                                                      description = "home_state must be numeric"
-                                                                      array1.append(serial)
-                                                                      array1.append(employeeid)
-                                                                      array1.append(name)
-                                                                      array1.append(home_state)
-                                                                      array1.append(description)
-                                                                      array1.append(pk)
-                                                                      array1.append(Employer.objects.get(pk=pk).employerid)
-                                                                      array1.append(transmissionid)
-                                                                      array1.append(sendername)
-                                                                      array_bad.append(array1)
-
-                                                              if home_state_bad_ind == 0:
+                                                              else:
                                                                   array2.append(home_state)
 
                                                                   #validate zipcode
@@ -2814,7 +2477,6 @@ def NonStdRefresh(request):
                                                               array1=[]
                                                               if home_zipcode == "":
                                                                     bad_ind = 1
-                                                                    home_zipcode_bad_ind = 1
                                                                     description = "Zipcode is mandatory"
                                                                     array1.append(serial)
                                                                     array1.append(employeeid)
@@ -2826,27 +2488,8 @@ def NonStdRefresh(request):
                                                                     array1.append(transmissionid)
                                                                     array1.append(sendername)
                                                                     array_bad.append(array1)
-
-                                                              if (Numcheck.objects.filter(attributes='employee_home_zipcode').exists()):
-                                                                 var=Numcheck.objects.filter(attributes='employee_home_zipcode')[0].numberfield
-                                                                 if (var == "Yes" and not home_zipcode.isdigit()):
-                                                                      array1=[]
-                                                                      bad_ind = 1
-                                                                      home_zipcode_bad_ind = 1
-                                                                      description = "home_zipcode must be numeric"
-                                                                      array1.append(serial)
-                                                                      array1.append(employeeid)
-                                                                      array1.append(name)
-                                                                      array1.append(home_zipcode)
-                                                                      array1.append(description)
-                                                                      array1.append(pk)
-                                                                      array1.append(Employer.objects.get(pk=pk).employerid)
-                                                                      array1.append(transmissionid)
-                                                                      array1.append(sendername)
-                                                                      array_bad.append(array1)
-
-                                                              if home_zipcode_bad_ind == 0:
-                                                                  array2.append(home_zipcode)
+                                                              else:
+                                                                   array2.append(home_zipcode)
 
                                                               mail_address_line_1=row[13]
                                                               if (Mandatory.objects.filter(attributes='employee_mail_address_line_1').exists()):
@@ -2854,7 +2497,6 @@ def NonStdRefresh(request):
                                                                   if (var == "Yes" and mail_address_line_1 ==""):
                                                                        array1=[]
                                                                        bad_ind = 1
-                                                                       mail_address_line_1_bad_ind = 1
                                                                        description = "Mail_address_line_1 is mandatory"
                                                                        array1.append(serial)
                                                                        array1.append(employeeid)
@@ -2866,27 +2508,10 @@ def NonStdRefresh(request):
                                                                        array1.append(transmissionid)
                                                                        array1.append(sendername)
                                                                        array_bad.append(array1)
-
-                                                              if (Numcheck.objects.filter(attributes='employee_mail_address_line_1').exists()):
-                                                                 var=Numcheck.objects.filter(attributes='employee_mail_address_line_1')[0].numberfield
-                                                                 if (var == "Yes" and not mail_address_line_1.isdigit()):
-                                                                      array1=[]
-                                                                      bad_ind = 1
-                                                                      mail_address_line_1_bad_ind = 1
-                                                                      description = "mail_address_line_1 must be numeric"
-                                                                      array1.append(serial)
-                                                                      array1.append(employeeid)
-                                                                      array1.append(name)
-                                                                      array1.append(mail_address_line_1)
-                                                                      array1.append(description)
-                                                                      array1.append(pk)
-                                                                      array1.append(Employer.objects.get(pk=pk).employerid)
-                                                                      array1.append(transmissionid)
-                                                                      array1.append(sendername)
-                                                                      array_bad.append(array1)
-
-                                                              if mail_address_line_1_bad_ind == 0:
-                                                                  array2.append(mail_address_line_1)
+                                                                  else:
+                                                                       array2.append(mail_address_line_1)
+                                                              else:
+                                                                      array2.append(mail_address_line_1)
 
                                                               mail_address_line_2=row[14]
                                                               if (Mandatory.objects.filter(attributes='employee_mail_address_line_2').exists()):
@@ -2894,7 +2519,6 @@ def NonStdRefresh(request):
                                                                   if (var == "Yes" and mail_address_line_2 ==""):
                                                                        array1=[]
                                                                        bad_ind = 1
-                                                                       mail_address_line_2_bad_ind = 1
                                                                        description = "mail_address_line_2 is mandatory"
                                                                        array1.append(serial)
                                                                        array1.append(employeeid)
@@ -2906,27 +2530,10 @@ def NonStdRefresh(request):
                                                                        array1.append(transmissionid)
                                                                        array1.append(sendername)
                                                                        array_bad.append(array1)
-
-                                                              if (Numcheck.objects.filter(attributes='employee_mail_address_line_2').exists()):
-                                                                 var=Numcheck.objects.filter(attributes='employee_mail_address_line_2')[0].numberfield
-                                                                 if (var == "Yes" and not home_address_line_2.isdigit()):
-                                                                      array1=[]
-                                                                      bad_ind = 1
-                                                                      mail_address_line_2_bad_ind = 1
-                                                                      description = "mail_address_line_2 must be numeric"
-                                                                      array1.append(serial)
-                                                                      array1.append(employeeid)
-                                                                      array1.append(name)
-                                                                      array1.append(mail_address_line_2)
-                                                                      array1.append(description)
-                                                                      array1.append(pk)
-                                                                      array1.append(Employer.objects.get(pk=pk).employerid)
-                                                                      array1.append(transmissionid)
-                                                                      array1.append(sendername)
-                                                                      array_bad.append(array1)
-
-                                                              if mail_address_line_2_bad_ind == 0:
-                                                                  array2.append(mail_address_line_2)
+                                                                  else:
+                                                                       array2.append(mail_address_line_2)
+                                                              else:
+                                                                      array2.append(mail_address_line_2)
 
                                                               mail_city=row[15]
                                                               if (Mandatory.objects.filter(attributes='employee_mail_city').exists()):
@@ -2934,7 +2541,6 @@ def NonStdRefresh(request):
                                                                   if (var == "Yes" and mail_city ==""):
                                                                        array1=[]
                                                                        bad_ind = 1
-                                                                       mail_city_bad_ind = 1
                                                                        description = "mail_city is mandatory"
                                                                        array1.append(serial)
                                                                        array1.append(employeeid)
@@ -2946,27 +2552,10 @@ def NonStdRefresh(request):
                                                                        array1.append(transmissionid)
                                                                        array1.append(sendername)
                                                                        array_bad.append(array1)
-
-                                                              if (Numcheck.objects.filter(attributes='employee_mail_city').exists()):
-                                                                 var=Numcheck.objects.filter(attributes='employee_mail_city')[0].numberfield
-                                                                 if (var == "Yes" and not mail_city.isdigit()):
-                                                                      array1=[]
-                                                                      bad_ind = 1
-                                                                      mail_city_bad_ind = 1
-                                                                      description = "mail_city must be numeric"
-                                                                      array1.append(serial)
-                                                                      array1.append(employeeid)
-                                                                      array1.append(name)
-                                                                      array1.append(mail_city)
-                                                                      array1.append(description)
-                                                                      array1.append(pk)
-                                                                      array1.append(Employer.objects.get(pk=pk).employerid)
-                                                                      array1.append(transmissionid)
-                                                                      array1.append(sendername)
-                                                                      array_bad.append(array1)
-
-                                                              if mail_city_bad_ind == 0:
-                                                                  array2.append(mail_city)
+                                                                  else:
+                                                                       array2.append(mail_city)
+                                                              else:
+                                                                      array2.append(mail_city)
 
                                                               mail_state=row[16]
                                                               if (Mandatory.objects.filter(attributes='employee_mail_state').exists()):
@@ -2974,7 +2563,6 @@ def NonStdRefresh(request):
                                                                   if (var == "Yes" and mail_state ==""):
                                                                        array1=[]
                                                                        bad_ind = 1
-                                                                       mail_state_bad_ind = 1
                                                                        description = "mail_state is mandatory"
                                                                        array1.append(serial)
                                                                        array1.append(employeeid)
@@ -2986,27 +2574,10 @@ def NonStdRefresh(request):
                                                                        array1.append(transmissionid)
                                                                        array1.append(sendername)
                                                                        array_bad.append(array1)
-
-                                                              if (Numcheck.objects.filter(attributes='employee_mail_state').exists()):
-                                                                 var=Numcheck.objects.filter(attributes='employee_mail_state')[0].numberfield
-                                                                 if (var == "Yes" and not mail_state.isdigit()):
-                                                                      array1=[]
-                                                                      bad_ind = 1
-                                                                      mail_state_bad_ind = 1
-                                                                      description = "mail_state must be numeric"
-                                                                      array1.append(serial)
-                                                                      array1.append(employeeid)
-                                                                      array1.append(name)
-                                                                      array1.append(mail_state)
-                                                                      array1.append(description)
-                                                                      array1.append(pk)
-                                                                      array1.append(Employer.objects.get(pk=pk).employerid)
-                                                                      array1.append(transmissionid)
-                                                                      array1.append(sendername)
-                                                                      array_bad.append(array1)
-
-                                                              if mail_state_bad_ind == 0:
-                                                                  array2.append(mail_state)
+                                                                  else:
+                                                                       array2.append(mail_state)
+                                                              else:
+                                                                      array2.append(mail_state)
 
                                                               mail_zipcode=row[17]
                                                               if (Mandatory.objects.filter(attributes='employee_mail_zipcode').exists()):
@@ -3014,7 +2585,6 @@ def NonStdRefresh(request):
                                                                   if (var == "Yes" and mail_zipcode ==""):
                                                                        array1=[]
                                                                        bad_ind = 1
-                                                                       mail_zipcode_bad_ind = 1
                                                                        description = "mail_zipcode is mandatory"
                                                                        array1.append(serial)
                                                                        array1.append(employeeid)
@@ -3026,27 +2596,10 @@ def NonStdRefresh(request):
                                                                        array1.append(transmissionid)
                                                                        array1.append(sendername)
                                                                        array_bad.append(array1)
-
-                                                              if (Numcheck.objects.filter(attributes='employee_mail_zipcode').exists()):
-                                                                 var=Numcheck.objects.filter(attributes='employee_mail_zipcode')[0].numberfield
-                                                                 if (var == "Yes" and not mail_zipcode.isdigit()):
-                                                                      array1=[]
-                                                                      bad_ind = 1
-                                                                      mail_zipcode_bad_ind = 1
-                                                                      description = "mail_zipcode must be numeric"
-                                                                      array1.append(serial)
-                                                                      array1.append(employeeid)
-                                                                      array1.append(name)
-                                                                      array1.append(mail_zipcode)
-                                                                      array1.append(description)
-                                                                      array1.append(pk)
-                                                                      array1.append(Employer.objects.get(pk=pk).employerid)
-                                                                      array1.append(transmissionid)
-                                                                      array1.append(sendername)
-                                                                      array_bad.append(array1)
-
-                                                              if mail_zipcode_bad_ind == 0:
-                                                                  array2.append(mail_zipcode)
+                                                                  else:
+                                                                       array2.append(mail_zipcode)
+                                                              else:
+                                                                      array2.append(mail_zipcode)
 
                                                               work_address_line_1=row[18]
                                                               if (Mandatory.objects.filter(attributes='employee_work_address_line_1').exists()):
@@ -3054,7 +2607,6 @@ def NonStdRefresh(request):
                                                                   if (var == "Yes" and work_address_line_1 ==""):
                                                                        array1=[]
                                                                        bad_ind = 1
-                                                                       work_address_line_1_bad_ind = 1
                                                                        description = "work_address_line_1 is mandatory"
                                                                        array1.append(serial)
                                                                        array1.append(employeeid)
@@ -3066,27 +2618,10 @@ def NonStdRefresh(request):
                                                                        array1.append(transmissionid)
                                                                        array1.append(sendername)
                                                                        array_bad.append(array1)
-
-                                                              if (Numcheck.objects.filter(attributes='employee_work_address_line_1').exists()):
-                                                                 var=Numcheck.objects.filter(attributes='employee_work_address_line_1')[0].numberfield
-                                                                 if (var == "Yes" and not work_address_line_1.isdigit()):
-                                                                      array1=[]
-                                                                      bad_ind = 1
-                                                                      work_address_line_1_bad_ind = 1
-                                                                      description = "work_address_line_1 must be numeric"
-                                                                      array1.append(serial)
-                                                                      array1.append(employeeid)
-                                                                      array1.append(name)
-                                                                      array1.append(work_address_line_1)
-                                                                      array1.append(description)
-                                                                      array1.append(pk)
-                                                                      array1.append(Employer.objects.get(pk=pk).employerid)
-                                                                      array1.append(transmissionid)
-                                                                      array1.append(sendername)
-                                                                      array_bad.append(array1)
-
-                                                              if work_address_line_1_bad_ind == 0:
-                                                                  array2.append(work_address_line_1)
+                                                                  else:
+                                                                       array2.append(work_address_line_1)
+                                                              else:
+                                                                      array2.append(work_address_line_1)
 
                                                               work_address_line_2=row[19]
                                                               if (Mandatory.objects.filter(attributes='employee_work_address_line_2').exists()):
@@ -3094,7 +2629,6 @@ def NonStdRefresh(request):
                                                                   if (var == "Yes" and work_address_line_2 ==""):
                                                                        array1=[]
                                                                        bad_ind = 1
-                                                                       work_address_line_2_bad_ind = 1
                                                                        description = "work_address_line_2 is mandatory"
                                                                        array1.append(serial)
                                                                        array1.append(employeeid)
@@ -3106,27 +2640,10 @@ def NonStdRefresh(request):
                                                                        array1.append(transmissionid)
                                                                        array1.append(sendername)
                                                                        array_bad.append(array1)
-
-                                                              if (Numcheck.objects.filter(attributes='employee_work_address_line_2').exists()):
-                                                                 var=Numcheck.objects.filter(attributes='employee_work_address_line_2')[0].numberfield
-                                                                 if (var == "Yes" and not work_address_line_2.isdigit()):
-                                                                      array1=[]
-                                                                      bad_ind = 1
-                                                                      work_address_line_2_bad_ind = 1
-                                                                      description = "work_address_line_2 must be numeric"
-                                                                      array1.append(serial)
-                                                                      array1.append(employeeid)
-                                                                      array1.append(name)
-                                                                      array1.append(work_address_line_2)
-                                                                      array1.append(description)
-                                                                      array1.append(pk)
-                                                                      array1.append(Employer.objects.get(pk=pk).employerid)
-                                                                      array1.append(transmissionid)
-                                                                      array1.append(sendername)
-                                                                      array_bad.append(array1)
-
-                                                              if work_address_line_2_bad_ind == 0:
-                                                                  array2.append(work_address_line_2)
+                                                                  else:
+                                                                       array2.append(work_address_line_2)
+                                                              else:
+                                                                      array2.append(work_address_line_2)
 
                                                               work_city=row[20]
                                                               if (Mandatory.objects.filter(attributes='employee_work_city').exists()):
@@ -3134,7 +2651,6 @@ def NonStdRefresh(request):
                                                                   if (var == "Yes" and work_city ==""):
                                                                        array1=[]
                                                                        bad_ind = 1
-                                                                       work_city_bad_ind = 1
                                                                        description = "work_city is mandatory"
                                                                        array1.append(serial)
                                                                        array1.append(employeeid)
@@ -3146,27 +2662,10 @@ def NonStdRefresh(request):
                                                                        array1.append(transmissionid)
                                                                        array1.append(sendername)
                                                                        array_bad.append(array1)
-
-                                                              if (Numcheck.objects.filter(attributes='employee_work_city').exists()):
-                                                                 var=Numcheck.objects.filter(attributes='employee_work_city')[0].numberfield
-                                                                 if (var == "Yes" and not work_city.isdigit()):
-                                                                      array1=[]
-                                                                      bad_ind = 1
-                                                                      work_city_bad_ind = 1
-                                                                      description = "work_city must be numeric"
-                                                                      array1.append(serial)
-                                                                      array1.append(employeeid)
-                                                                      array1.append(name)
-                                                                      array1.append(work_city)
-                                                                      array1.append(description)
-                                                                      array1.append(pk)
-                                                                      array1.append(Employer.objects.get(pk=pk).employerid)
-                                                                      array1.append(transmissionid)
-                                                                      array1.append(sendername)
-                                                                      array_bad.append(array1)
-
-                                                              if work_city_bad_ind == 0:
-                                                                  array2.append(work_city)
+                                                                  else:
+                                                                       array2.append(work_city)
+                                                              else:
+                                                                      array2.append(work_city)
 
                                                               work_state=row[21]
                                                               if (Mandatory.objects.filter(attributes='employee_work_state').exists()):
@@ -3174,7 +2673,6 @@ def NonStdRefresh(request):
                                                                   if (var == "Yes" and work_state ==""):
                                                                        array1=[]
                                                                        bad_ind = 1
-                                                                       work_state_bad_ind = 1
                                                                        description = "work_state is mandatory"
                                                                        array1.append(serial)
                                                                        array1.append(employeeid)
@@ -3186,27 +2684,10 @@ def NonStdRefresh(request):
                                                                        array1.append(transmissionid)
                                                                        array1.append(sendername)
                                                                        array_bad.append(array1)
-
-                                                              if (Numcheck.objects.filter(attributes='employee_work_state').exists()):
-                                                                 var=Numcheck.objects.filter(attributes='employee_work_state')[0].numberfield
-                                                                 if (var == "Yes" and not work_state.isdigit()):
-                                                                      array1=[]
-                                                                      bad_ind = 1
-                                                                      work_state_bad_ind = 1
-                                                                      description = "work_state must be numeric"
-                                                                      array1.append(serial)
-                                                                      array1.append(employeeid)
-                                                                      array1.append(name)
-                                                                      array1.append(work_state)
-                                                                      array1.append(description)
-                                                                      array1.append(pk)
-                                                                      array1.append(Employer.objects.get(pk=pk).employerid)
-                                                                      array1.append(transmissionid)
-                                                                      array1.append(sendername)
-                                                                      array_bad.append(array1)
-
-                                                              if work_state_bad_ind == 0:
-                                                                  array2.append(work_state)
+                                                                  else:
+                                                                       array2.append(work_state)
+                                                              else:
+                                                                      array2.append(work_state)
 
                                                               work_zipcode=row[22]
                                                               if (Mandatory.objects.filter(attributes='employee_work_zipcode').exists()):
@@ -3214,7 +2695,6 @@ def NonStdRefresh(request):
                                                                   if (var == "Yes" and work_zipcode ==""):
                                                                        array1=[]
                                                                        bad_ind = 1
-                                                                       work_zipcode_bad_ind = 1
                                                                        description = "work_zipcode is mandatory"
                                                                        array1.append(serial)
                                                                        array1.append(employeeid)
@@ -3226,54 +2706,18 @@ def NonStdRefresh(request):
                                                                        array1.append(transmissionid)
                                                                        array1.append(sendername)
                                                                        array_bad.append(array1)
-
-                                                              if (Numcheck.objects.filter(attributes='employee_work_zipcode').exists()):
-                                                                 var=Numcheck.objects.filter(attributes='employee_work_zipcode')[0].numberfield
-                                                                 if (var == "Yes" and not work_zipcode.isdigit()):
-                                                                      array1=[]
-                                                                      bad_ind = 1
-                                                                      work_zipcode_bad_ind = 1
-                                                                      description = "work_zipcode must be numeric"
-                                                                      array1.append(serial)
-                                                                      array1.append(employeeid)
-                                                                      array1.append(name)
-                                                                      array1.append(work_zipcode)
-                                                                      array1.append(description)
-                                                                      array1.append(pk)
-                                                                      array1.append(Employer.objects.get(pk=pk).employerid)
-                                                                      array1.append(transmissionid)
-                                                                      array1.append(sendername)
-                                                                      array_bad.append(array1)
-
-                                                              if work_zipcode_bad_ind == 0:
-                                                                  array2.append(work_zipcode)
+                                                                  else:
+                                                                       array2.append(work_zipcode)
+                                                              else:
+                                                                      array2.append(work_zipcode)
 
 
                                                                     #validate email
                                                               email=row[23]
-                                                              if (Mandatory.objects.filter(attributes='employee_email').exists()):
-                                                                  var=Mandatory.objects.filter(attributes='employee_email')[0].required
-                                                                  if (var == "Yes" and email ==""):
-                                                                       array1=[]
-                                                                       bad_ind = 1
-                                                                       email_bad_ind = 1
-                                                                       description = "email is mandatory"
-                                                                       array1.append(serial)
-                                                                       array1.append(employeeid)
-                                                                       array1.append(name)
-                                                                       array1.append(email)
-                                                                       array1.append(description)
-                                                                       array1.append(pk)
-                                                                       array1.append(Employer.objects.get(pk=pk).employerid)
-                                                                       array1.append(transmissionid)
-                                                                       array1.append(sendername)
-                                                                       array_bad.append(array1)
-
-
-                                                              if not re.match(r"^[A-Za-z0-9\.\+_-]+@[A-Za-z0-9\._-]+\.[a-zA-Z]*$", email):
-                                                                  bad_ind = 1
-                                                                  email_bad_ind = 1
-                                                                  description = "Invalid email format"
+                                                              array1=[]
+                                                              if email == "":
+                                                                  bad_ind=1
+                                                                  description = "Email is mandatory "
                                                                   array1.append(serial)
                                                                   array1.append(employeeid)
                                                                   array1.append(name)
@@ -3284,9 +2728,21 @@ def NonStdRefresh(request):
                                                                   array1.append(transmissionid)
                                                                   array1.append(sendername)
                                                                   array_bad.append(array1)
-
-                                                              if email_bad_ind == 0:
-                                                                array2.append(email)
+                                                              elif not re.match(r"^[A-Za-z0-9\.\+_-]+@[A-Za-z0-9\._-]+\.[a-zA-Z]*$", email):
+                                                                  bad_ind = 1
+                                                                  description = "Invalid email"
+                                                                  array1.append(serial)
+                                                                  array1.append(employeeid)
+                                                                  array1.append(name)
+                                                                  array1.append(email)
+                                                                  array1.append(description)
+                                                                  array1.append(pk)
+                                                                  array1.append(Employer.objects.get(pk=pk).employerid)
+                                                                  array1.append(transmissionid)
+                                                                  array1.append(sendername)
+                                                                  array_bad.append(array1)
+                                                              else:
+                                                                  array2.append(email)
 
                                                               alternate_email=row[24]
                                                               if (Mandatory.objects.filter(attributes='employee_alternate_email').exists()):
@@ -3294,7 +2750,6 @@ def NonStdRefresh(request):
                                                                   if (var == "Yes" and alternate_email ==""):
                                                                        array1=[]
                                                                        bad_ind = 1
-                                                                       alternate_email_bad_ind = 1
                                                                        description = "alternate_email is mandatory"
                                                                        array1.append(serial)
                                                                        array1.append(employeeid)
@@ -3306,25 +2761,10 @@ def NonStdRefresh(request):
                                                                        array1.append(transmissionid)
                                                                        array1.append(sendername)
                                                                        array_bad.append(array1)
-
-                                                              if not re.match(r"^[A-Za-z0-9\.\+_-]+@[A-Za-z0-9\._-]+\.[a-zA-Z]*$", alternate_email):
-                                                                  bad_ind = 1
-                                                                  alternate_email_bad_ind = 1
-                                                                  array1=[]
-                                                                  description = "Invalid email format"
-                                                                  array1.append(serial)
-                                                                  array1.append(employeeid)
-                                                                  array1.append(name)
-                                                                  array1.append(alternate_email)
-                                                                  array1.append(description)
-                                                                  array1.append(pk)
-                                                                  array1.append(Employer.objects.get(pk=pk).employerid)
-                                                                  array1.append(transmissionid)
-                                                                  array1.append(sendername)
-                                                                  array_bad.append(array1)
-
-                                                              if alternate_email_bad_ind == 0:
-                                                                array2.append(alternate_email)
+                                                                  else:
+                                                                       array2.append(alternate_email)
+                                                              else:
+                                                                      array2.append(alternate_email)
 
                                                               #validate phone
                                                               home_phone=row[25]
@@ -3344,44 +2784,10 @@ def NonStdRefresh(request):
                                                                        array1.append(transmissionid)
                                                                        array1.append(sendername)
                                                                        array_bad.append(array1)
-
-                                                              array1=[]
-                                                              p=[]
-                                                              p = home_phone
-                                                              if p.isnumeric() == False:
-                                                                  bad_ind=1
-                                                                  home_phone_bad_ind=1
-                                                                  description = "home_phone must be numbers "
-                                                                  array1.append(serial)
-                                                                  array1.append(employeeid)
-                                                                  array1.append(name)
-                                                                  array1.append(home_phone)
-                                                                  array1.append(description)
-                                                                  array1.append(pk)
-                                                                  array1.append(Employer.objects.get(pk=pk).employerid)
-                                                                  array1.append(transmissionid)
-                                                                  array1.append(sendername)
-                                                                  array_bad.append(array1)
-
-                                                              if len(p) != (10 and 11):
-                                                                  print(len(p))
-                                                                  bad_ind=1
-                                                                  home_phone_bad_ind=1
-                                                                  array1=[]
-                                                                  description = "Length of home_phone is not correct "
-                                                                  array1.append(serial)
-                                                                  array1.append(employeeid)
-                                                                  array1.append(name)
-                                                                  array1.append(home_phone)
-                                                                  array1.append(description)
-                                                                  array1.append(pk)
-                                                                  array1.append(Employer.objects.get(pk=pk).employerid)
-                                                                  array1.append(transmissionid)
-                                                                  array1.append(sendername)
-                                                                  array_bad.append(array1)
-
-                                                              if home_phone_bad_ind == 0:
-                                                                 array2.append(home_phone)
+                                                                  else:
+                                                                       array2.append(home_phone)
+                                                              else:
+                                                                      array2.append(home_phone)
 
 
                                                               work_phone=row[26]
@@ -3390,7 +2796,6 @@ def NonStdRefresh(request):
                                                                   if (var == "Yes" and work_phone ==""):
                                                                        array1=[]
                                                                        bad_ind = 1
-                                                                       work_phone_bad_ind=1
                                                                        description = "work_phone is mandatory"
                                                                        array1.append(serial)
                                                                        array1.append(employeeid)
@@ -3402,72 +2807,17 @@ def NonStdRefresh(request):
                                                                        array1.append(transmissionid)
                                                                        array1.append(sendername)
                                                                        array_bad.append(array1)
-
-
-                                                              array1=[]
-                                                              p=[]
-                                                              p = work_phone
-                                                              if p.isnumeric() == False:
-                                                                  bad_ind=1
-                                                                  work_phone_bad_ind=1
-                                                                  description = "work_phone must be numbers "
-                                                                  array1.append(serial)
-                                                                  array1.append(employeeid)
-                                                                  array1.append(name)
-                                                                  array1.append(work_phone)
-                                                                  array1.append(description)
-                                                                  array1.append(pk)
-                                                                  array1.append(Employer.objects.get(pk=pk).employerid)
-                                                                  array1.append(transmissionid)
-                                                                  array1.append(sendername)
-                                                                  array_bad.append(array1)
-
-                                                              if len(p) != (10 and 11):
-                                                                  print(len(p))
-                                                                  bad_ind=1
-                                                                  work_phone_bad_ind=1
-                                                                  array1=[]
-                                                                  description = "Length of work_phone is not correct "
-                                                                  array1.append(serial)
-                                                                  array1.append(employeeid)
-                                                                  array1.append(name)
-                                                                  array1.append(work_phone)
-                                                                  array1.append(description)
-                                                                  array1.append(pk)
-                                                                  array1.append(Employer.objects.get(pk=pk).employerid)
-                                                                  array1.append(transmissionid)
-                                                                  array1.append(sendername)
-                                                                  array_bad.append(array1)
-
-                                                              if work_phone_bad_ind == 0:
-                                                                 array2.append(work_phone)
+                                                                  else:
+                                                                       array2.append(work_phone)
+                                                              else:
+                                                                      array2.append(work_phone)
 
                                                               mobile_phone=row[27]
-                                                              if (Mandatory.objects.filter(attributes='employee_mobile_phone').exists()):
-                                                                  var=Mandatory.objects.filter(attributes='employee_mobile_phone')[0].required
-                                                                  if (var == "Yes" and home_phone ==""):
-                                                                       array1=[]
-                                                                       bad_ind = 1
-                                                                       mobile_phone_bad_ind=1
-                                                                       description = "mobile_phone is mandatory"
-                                                                       array1.append(serial)
-                                                                       array1.append(employeeid)
-                                                                       array1.append(name)
-                                                                       array1.append(mobile_phone)
-                                                                       array1.append(description)
-                                                                       array1.append(pk)
-                                                                       array1.append(Employer.objects.get(pk=pk).employerid)
-                                                                       array1.append(transmissionid)
-                                                                       array1.append(sendername)
-                                                                       array_bad.append(array1)
-
-
                                                               array1=[]
                                                               p=[]
                                                               p = mobile_phone
                                                               if p.isnumeric() == False:
                                                                   bad_ind=1
-                                                                  mobile_phone_bad_ind=1
                                                                   description = "Mobile phone must be numbers "
                                                                   array1.append(serial)
                                                                   array1.append(employeeid)
@@ -3479,12 +2829,9 @@ def NonStdRefresh(request):
                                                                   array1.append(transmissionid)
                                                                   array1.append(sendername)
                                                                   array_bad.append(array1)
-
-                                                              if len(p) != (10 and 11):
+                                                              elif len(p) != (10 and 11):
                                                                   print(len(p))
                                                                   bad_ind=1
-                                                                  mobile_phone_bad_ind=1
-                                                                  array1=[]
                                                                   description = "Length of mobile phone number is not correct "
                                                                   array1.append(serial)
                                                                   array1.append(employeeid)
@@ -3496,9 +2843,9 @@ def NonStdRefresh(request):
                                                                   array1.append(transmissionid)
                                                                   array1.append(sendername)
                                                                   array_bad.append(array1)
+                                                              else:
+                                                                   array2.append(mobile_phone)
 
-                                                              if mobile_phone_bad_ind == 0:
-                                                                 array2.append(mobile_phone)
 
                                                               enrollment_method=row[28]
                                                               if (Mandatory.objects.filter(attributes='employee_enrollment_method').exists()):
@@ -3506,7 +2853,6 @@ def NonStdRefresh(request):
                                                                   if (var == "Yes" and enrollment_method ==""):
                                                                        array1=[]
                                                                        bad_ind = 1
-                                                                       enrollment_method_bad_ind = 1
                                                                        description = "enrollment_method is mandatory"
                                                                        array1.append(serial)
                                                                        array1.append(employeeid)
@@ -3518,27 +2864,10 @@ def NonStdRefresh(request):
                                                                        array1.append(transmissionid)
                                                                        array1.append(sendername)
                                                                        array_bad.append(array1)
-
-                                                              if (Numcheck.objects.filter(attributes='employee_enrollment_method').exists()):
-                                                                 var=Numcheck.objects.filter(attributes='employee_enrollment_method')[0].numberfield
-                                                                 if (var == "Yes" and not enrollment_method.isdigit()):
-                                                                      array1=[]
-                                                                      bad_ind = 1
-                                                                      enrollment_method_bad_ind = 1
-                                                                      description = "enrollment_method must be numeric"
-                                                                      array1.append(serial)
-                                                                      array1.append(employeeid)
-                                                                      array1.append(name)
-                                                                      array1.append(enrollment_method)
-                                                                      array1.append(description)
-                                                                      array1.append(pk)
-                                                                      array1.append(Employer.objects.get(pk=pk).employerid)
-                                                                      array1.append(transmissionid)
-                                                                      array1.append(sendername)
-                                                                      array_bad.append(array1)
-
-                                                              if enrollment_method_bad_ind == 0:
-                                                                  array2.append(enrollment_method)
+                                                                  else:
+                                                                       array2.append(enrollment_method)
+                                                              else:
+                                                                      array2.append(enrollment_method)
 
                                                               employment_information=row[29]
                                                               if (Mandatory.objects.filter(attributes='employee_employment_information').exists()):
@@ -3546,7 +2875,6 @@ def NonStdRefresh(request):
                                                                   if (var == "Yes" and employment_information ==""):
                                                                        array1=[]
                                                                        bad_ind = 1
-                                                                       employment_information_bad_ind = 1
                                                                        description = "employment_information is mandatory"
                                                                        array1.append(serial)
                                                                        array1.append(employeeid)
@@ -3558,27 +2886,10 @@ def NonStdRefresh(request):
                                                                        array1.append(transmissionid)
                                                                        array1.append(sendername)
                                                                        array_bad.append(array1)
-
-                                                              if (Numcheck.objects.filter(attributes='employee_employment_information').exists()):
-                                                                 var=Numcheck.objects.filter(attributes='employee_employment_information')[0].numberfield
-                                                                 if (var == "Yes" and not employment_information.isdigit()):
-                                                                      array1=[]
-                                                                      bad_ind = 1
-                                                                      employment_information_bad_ind = 1
-                                                                      description = "employment_information must be numeric"
-                                                                      array1.append(serial)
-                                                                      array1.append(employeeid)
-                                                                      array1.append(name)
-                                                                      array1.append(employment_information)
-                                                                      array1.append(description)
-                                                                      array1.append(pk)
-                                                                      array1.append(Employer.objects.get(pk=pk).employerid)
-                                                                      array1.append(transmissionid)
-                                                                      array1.append(sendername)
-                                                                      array_bad.append(array1)
-
-                                                              if employment_information_bad_ind == 0:
-                                                                  array2.append(employment_information)
+                                                                  else:
+                                                                       array2.append(employment_information)
+                                                              else:
+                                                                      array2.append(employment_information)
 
 
                                                               if bad_ind == 0:
