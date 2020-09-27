@@ -55,6 +55,8 @@ from django.db.models import Count
 
 from django.forms.models import model_to_dict
 from django.utils.encoding import smart_str
+from mandatories.models import Mandatory
+from numchecks.models import Numcheck
 
 
 # For Rest rest_framework
@@ -776,7 +778,7 @@ def BulkUploadTransmission(request):
                                                                 array1.append(description)
                                                                 array_bad.append(array1)
 
-                                                      if not re.match(r"^[A-Za-z0-9\.\+_-]+@[A-Za-z0-9\._-]+\.[a-zA-Z]*$", planadmin_email):
+                                                      if (planadmin_email !="") and (not re.match(r"^[A-Za-z0-9\.\+_-]+@[A-Za-z0-9\._-]+\.[a-zA-Z]*$", planadmin_email)):
                                                            bad_ind = 1
                                                            planadmin_email_bad_ind = 1
                                                            array1=[]
@@ -1021,11 +1023,15 @@ def TransmissionList(request):
 
     elif request.method == 'POST':
 
+        bad_ind=0
+        array1=[]
+        array_bad=[]
         serializer = TransmissionSerializer(data=request.data)
          # Raises a ValidatinException which will be sent as a 400 response.
         serializer.is_valid(raise_exception=True)
         transmission = Transmission()
         event = Event()
+        s3 = boto3.client('s3')
 
         if serializer.data["transmissionid"] == '':
             transmission.transmissionid = str(uuid.uuid4())[26:36]
@@ -1194,6 +1200,22 @@ def TransmissionList(request):
                 array1.append(transmission.SystemVersionIdentifier)
                 array1.append(description)
                 array_bad.append(array1)
+
+        #transmission.planadmin_email = serializer.data["planadmin_email"]
+        #transmission.planadmin_email = serializer.data.get("planadmin_email")
+        if (Mandatory.objects.filter(attributes='transmission_planadmin_email').exists()):
+             var=Mandatory.objects.filter(attributes='transmission_planadmin_email')[0].required
+             if (var == "Yes" and transmission.planadmin_email ==""):
+                  array1=[]
+                  bad_ind = 1
+                  description = "planadmin_email is mandatory"
+                  array1.append(transmission.transmissionid)
+                  array1.append(transmission.SenderName)
+                  array1.append(transmission.planadmin_email)
+                  array1.append(description)
+                  array_bad.append(array1)
+
+
 
         transmission.source = "Post API"
 

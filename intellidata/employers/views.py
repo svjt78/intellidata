@@ -618,6 +618,7 @@ def BulkUploadEmployer(request):
                                                       zipcode_bad_ind=0
                                                       purpose_bad_ind=0
                                                       planadmin_email_bad_ind=0
+                                                      error_description=""
                                                       array1=[]
                                                       array2=[]
 
@@ -1059,11 +1060,11 @@ def BulkUploadEmployer(request):
                                                                 array1.append(sendername)
                                                                 array_bad.append(array1)
 
-                                                      if not re.match(r"^[A-Za-z0-9\.\+_-]+@[A-Za-z0-9\._-]+\.[a-zA-Z]*$", planadmin_email):
+                                                      if (planadmin_email != "") and (not re.match(r"^[A-Za-z0-9\.\+_-]+@[A-Za-z0-9\._-]+\.[a-zA-Z]*$", planadmin_email)):
                                                            bad_ind = 1
                                                            planadmin_email_bad_ind = 1
                                                            array1=[]
-                                                           description = "Invalid email format"
+                                                           error_description = "Invalid email format"
                                                            array1.append(serial)
                                                            array1.append(employerid)
                                                            array1.append(name)
@@ -1548,7 +1549,7 @@ def NonStdRefresh(request):
                                                                        array_bad.append(array1)
 
                                                               if (Numcheck.objects.filter(attributes='employer_CarrierMasterAgreementNumber').exists()):
-                                                                  var=Numcheck.objects.filter(attributes='CarrierMasterAgreementNumber')[0].numberfield
+                                                                  var=Numcheck.objects.filter(attributes='employer_CarrierMasterAgreementNumber')[0].numberfield
                                                                   if (var == "Yes" and not CarrierMasterAgreementNumber.isdigit()):
                                                                        array1=[]
                                                                        bad_ind = 1
@@ -1814,11 +1815,11 @@ def NonStdRefresh(request):
                                                                         array1.append(sendername)
                                                                         array_bad.append(array1)
 
-                                                              if not re.match(r"^[A-Za-z0-9\.\+_-]+@[A-Za-z0-9\._-]+\.[a-zA-Z]*$", planadmin_email):
+                                                              if (planadmin_email != "") and (not re.match(r"^[A-Za-z0-9\.\+_-]+@[A-Za-z0-9\._-]+\.[a-zA-Z]*$", planadmin_email)):
                                                                    bad_ind = 1
                                                                    planadmin_email_bad_ind = 1
                                                                    array1=[]
-                                                                   description = "Invalid email format"
+                                                                   error_description = "Invalid email format"
                                                                    array1.append(serial)
                                                                    array1.append(employerid)
                                                                    array1.append(name)
@@ -2153,7 +2154,7 @@ def EmployerList(request):
 
         if (Numcheck.objects.filter(attributes='employer_description').exists()):
            var=Numcheck.objects.filter(attributes='employer_description')[0].numberfield
-           if (var == "Yes" and not employer.description.isdigit()):
+           if (var == "Yes" and employer.description==None):
                 array1=[]
                 bad_ind = 1
                 description_bad_ind = 1
@@ -2163,6 +2164,16 @@ def EmployerList(request):
                 array1.append(employer.description)
                 array1.append(error_description)
                 array_bad.append(array1)
+           elif (var == "Yes" and not employer.description.isdigit()):
+               array1=[]
+               bad_ind = 1
+               description_bad_ind = 1
+               error_description = "Description must be numeric"
+               array1.append(employer.employerid)
+               array1.append(employer.name)
+               array1.append(employer.description)
+               array1.append(error_description)
+               array_bad.append(array1)
 
 
         employer.description_html = misaka.html(employer.description)
@@ -2183,7 +2194,17 @@ def EmployerList(request):
 
         if (Numcheck.objects.filter(attributes='employer_FederalEmployerIdentificationNumber').exists()):
             var=Numcheck.objects.filter(attributes='employer_FederalEmployerIdentificationNumber')[0].numberfield
-            if (var == "Yes" and not employer.FederalEmployerIdentificationNumber.isdigit()):
+            if (var == "Yes" and employer.FederalEmployerIdentificationNumber == None):
+                 array1=[]
+                 bad_ind = 1
+                 FederalEmployerIdentificationNumber_bad_ind=1
+                 error_description = "FederalEmployerIdentificationNumber must be numeric"
+                 array1.append(employer.employerid)
+                 array1.append(employer.name)
+                 array1.append(employer.FederalEmployerIdentificationNumber)
+                 array1.append(error_description)
+                 array_bad.append(array1)
+            elif (var == "Yes" and not employer.FederalEmployerIdentificationNumber.isdigit()):
                  array1=[]
                  bad_ind = 1
                  FederalEmployerIdentificationNumber_bad_ind=1
@@ -2209,8 +2230,18 @@ def EmployerList(request):
 
 
         if (Numcheck.objects.filter(attributes='employer_CarrierMasterAgreementNumber').exists()):
-            var=Numcheck.objects.filter(attributes='CarrierMasterAgreementNumber')[0].numberfield
-            if (var == "Yes" and not employer.CarrierMasterAgreementNumber.isdigit()):
+            var=Numcheck.objects.filter(attributes='employer_CarrierMasterAgreementNumber')[0].numberfield
+            if (var == "Yes" and employer.CarrierMasterAgreementNumber==None):
+                 array1=[]
+                 bad_ind = 1
+                 CarrierMasterAgreementNumber_bad_ind=1
+                 error_description = "CarrierMasterAgreementNumber must be numeric"
+                 array1.append(employer.employerid)
+                 array1.append(employer.name)
+                 array1.append(employer.CarrierMasterAgreementNumber)
+                 array1.append(error_description)
+                 array_bad.append(array1)
+            elif (var == "Yes" and not employer.CarrierMasterAgreementNumber.isdigit()):
                  array1=[]
                  bad_ind = 1
                  CarrierMasterAgreementNumber_bad_ind=1
@@ -2234,7 +2265,17 @@ def EmployerList(request):
 
         if (Numcheck.objects.filter(attributes='employer_address_line_1').exists()):
             var=Numcheck.objects.filter(attributes='employer_address_line_1')[0].numberfield
-            if (var == "Yes" and not employer.address_line_1.isdigit()):
+            if (var == "Yes" and employer.address_line_1==None):
+                 array1=[]
+                 bad_ind = 1
+                 address_line_1_bad_ind=1
+                 error_description = "address_line_1 must be numeric"
+                 array1.append(employer.employerid)
+                 array1.append(employer.name)
+                 array1.append(employer.address_line_1)
+                 array1.append(error_description)
+                 array_bad.append(array1)
+            elif (var == "Yes" and not employer.address_line_1.isdigit()):
                  array1=[]
                  bad_ind = 1
                  address_line_1_bad_ind=1
@@ -2260,7 +2301,17 @@ def EmployerList(request):
 
         if (Numcheck.objects.filter(attributes='employer_address_line_2').exists()):
             var=Numcheck.objects.filter(attributes='employer_address_line_2')[0].numberfield
-            if (var == "Yes" and not employer.address_line_2.isdigit()):
+            if (var == "Yes" and employer.address_line_2==None):
+                 array1=[]
+                 bad_ind = 1
+                 address_line_2_bad_ind=1
+                 error_description = "address_line_2 must be numeric"
+                 array1.append(employer.employerid)
+                 array1.append(employer.name)
+                 array1.append(employer.address_line_2)
+                 array1.append(error_description)
+                 array_bad.append(array1)
+            elif (var == "Yes" and not employer.address_line_2.isdigit()):
                  array1=[]
                  bad_ind = 1
                  address_line_2_bad_ind=1
@@ -2284,7 +2335,17 @@ def EmployerList(request):
 
         if (Numcheck.objects.filter(attributes='employer_city').exists()):
             var=Numcheck.objects.filter(attributes='employer_city')[0].numberfield
-            if (var == "Yes" and not employer.city.isdigit()):
+            if (var == "Yes" and employer.city==None):
+                 array1=[]
+                 bad_ind = 1
+                 city_bad_ind=1
+                 error_description = "city must be numeric"
+                 array1.append(employer.employerid)
+                 array1.append(employer.name)
+                 array1.append(employer.city)
+                 array1.append(error_description)
+                 array_bad.append(array1)
+            elif (var == "Yes" and not employer.city.isdigit()):
                  array1=[]
                  bad_ind = 1
                  city_bad_ind=1
@@ -2308,7 +2369,17 @@ def EmployerList(request):
 
         if (Numcheck.objects.filter(attributes='employer_state').exists()):
             var=Numcheck.objects.filter(attributes='employer_state')[0].numberfield
-            if (var == "Yes" and not employer.state.isdigit()):
+            if (var == "Yes" and employer.state==None):
+                 array1=[]
+                 bad_ind = 1
+                 state_bad_ind=1
+                 error_description = "state must be numeric"
+                 array1.append(employer.employerid)
+                 array1.append(employer.name)
+                 array1.append(employer.state)
+                 array1.append(error_description)
+                 array_bad.append(array1)
+            elif (var == "Yes" and not employer.state.isdigit()):
                  array1=[]
                  bad_ind = 1
                  state_bad_ind=1
@@ -2333,7 +2404,17 @@ def EmployerList(request):
 
         if (Numcheck.objects.filter(attributes='employer_zipcode').exists()):
             var=Numcheck.objects.filter(attributes='employer_zipcode')[0].numberfield
-            if (var == "Yes" and not employer.zipcode.isdigit()):
+            if (var == "Yes" and employer.zipcode==None):
+                 array1=[]
+                 bad_ind = 1
+                 zipcode_bad_ind=1
+                 error_description = "zipcode must be numeric"
+                 array1.append(employer.employerid)
+                 array1.append(employer.name)
+                 array1.append(employer.zipcode)
+                 array1.append(error_description)
+                 array_bad.append(array1)
+            elif (var == "Yes" and not employer.zipcode.isdigit()):
                  array1=[]
                  bad_ind = 1
                  zipcode_bad_ind=1
@@ -2359,7 +2440,17 @@ def EmployerList(request):
 
         if (Numcheck.objects.filter(attributes='employer_purpose').exists()):
             var=Numcheck.objects.filter(attributes='employer_purpose')[0].numberfield
-            if (var == "Yes" and not employer.purpose.isdigit()):
+            if (var == "Yes" and employer.purpose==None):
+                 array1=[]
+                 bad_ind = 1
+                 purpose_bad_ind=1
+                 error_description = "purpose must be numeric"
+                 array1.append(employer.employerid)
+                 array1.append(employer.name)
+                 array1.append(employer.purpose)
+                 array1.append(error_description)
+                 array_bad.append(array1)
+            elif (var == "Yes" and not employer.purpose.isdigit()):
                  array1=[]
                  bad_ind = 1
                  purpose_bad_ind=1
@@ -2386,7 +2477,17 @@ def EmployerList(request):
 
         if (Numcheck.objects.filter(attributes='employer_planadmin_email').exists()):
             var=Numcheck.objects.filter(attributes='employer_planadmin_email')[0].numberfield
-            if (var == "Yes" and not employer.planadmin_email.isdigit()):
+            if (var == "Yes" and employer.planadmin_email==None):
+                 array1=[]
+                 bad_ind = 1
+                 planadmin_email_bad_ind=1
+                 error_description = "planadmin_email must be numeric"
+                 array1.append(employer.employerid)
+                 array1.append(employer.name)
+                 array1.append(employer.planadmin_email)
+                 array1.append(error_description)
+                 array_bad.append(array1)
+            elif (var == "Yes" and not employer.planadmin_email.isdigit()):
                  array1=[]
                  bad_ind = 1
                  planadmin_email_bad_ind=1

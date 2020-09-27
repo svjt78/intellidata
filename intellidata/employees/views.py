@@ -4902,25 +4902,30 @@ def EmployeeList(request):
                 array_bad.append(array1)
 
         employee.email = serializer.data["email"]
-        array1=[]
-        if employee.email == "":
-            bad_ind=1
-            description = "Email is mandatory "
-            array1.append(employee.employeeid)
-            array1.append(employee.name)
-            array1.append(employee.email)
-            array1.append(description)
-            array1.append(pk)
-            array_bad.append(array1)
-        elif not re.match(r"^[A-Za-z0-9\.\+_-]+@[A-Za-z0-9\._-]+\.[a-zA-Z]*$", employee.email):
-            bad_ind = 1
-            description = "Invalid email"
-            array1.append(employee.employeeid)
-            array1.append(employee.name)
-            array1.append(employee.email)
-            array1.append(description)
-            array1.append(pk)
-            array_bad.append(array1)
+        if (Mandatory.objects.filter(attributes='employee_email').exists()):
+            var=Mandatory.objects.filter(attributes='employee_email')[0].required
+            if (var == "Yes" and employee.email ==""):
+                 array1=[]
+                 bad_ind = 1
+                 email_bad_ind = 1
+                 description = "Email is mandatory"
+                 array1.append(employee.employeeid)
+                 array1.append(employee.name)
+                 array1.append(employee.email)
+                 array1.append(description)
+                 array1.append(pk)
+                 array_bad.append(array1)
+
+        if not re.match(r"^[A-Za-z0-9\.\+_-]+@[A-Za-z0-9\._-]+\.[a-zA-Z]*$", employee.email):
+                array1=[]
+                bad_ind = 1
+                description = "Invalid email format"
+                array1.append(employee.employeeid)
+                array1.append(employee.name)
+                array1.append(employee.email)
+                array1.append(description)
+                array1.append(pk)
+                array_bad.append(array1)
 
         employee.alternate_email = serializer.data["alternate_email"]
         if (Mandatory.objects.filter(attributes='employee_alternate_email').exists()):
@@ -4935,6 +4940,18 @@ def EmployeeList(request):
                  array1.append(description)
                  array1.append(pk)
                  array_bad.append(array1)
+
+
+        if not re.match(r"^[A-Za-z0-9\.\+_-]+@[A-Za-z0-9\._-]+\.[a-zA-Z]*$", employee.alternate_email):
+                array1=[]
+                bad_ind = 1
+                description = "Invalid email format"
+                array1.append(employee.employeeid)
+                array1.append(employee.name)
+                array1.append(employee.alternate_email)
+                array1.append(description)
+                array1.append(pk)
+                array_bad.append(array1)
 
         employee.home_phone = serializer.data["home_phone"]
         if (Mandatory.objects.filter(attributes='employee_home_phone').exists()):

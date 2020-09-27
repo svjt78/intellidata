@@ -1,5 +1,5 @@
 serial,employerid,name,description,"federalemployeridentificationnumber","carriermasteragreementnumber",address_line_1,address_line_2,city,state,zipcode,purpose,transmission,planadmin_email
 1,,Walmart,"We are a tech company",XYZ,,"1 Amphitheater Road",,"San Jose",CA,12345,Technology,c72ed27c3b,suvojit.dt@gmail.com
 2,,Target,,,,"2, Sussex Blvd.",,Boston,MA,12345,Technology,ed813e636e,svjt78@gmail.com
-3,,Ralph’s,,,,"3, Canyon Rd.",,"Saltlake City",UT,12345,Technology,c72ed27c3b,
+3,,Ralph’s,,,,"3, Canyon Rd.",,"Saltlake City",UT,12345,Technology,c72ed27c3b,VV
 4,,"Sam’s Club",,,,,,,TX,12345,Technology,ed813e636e,
