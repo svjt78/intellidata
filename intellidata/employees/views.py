@@ -740,6 +740,7 @@ def BulkUploadEmployee(request, pk, *args, **kwargs):
                                                       work_city_bad_ind=0
                                                       work_state_bad_ind=0
                                                       work_zipcode_bad_ind=0
+                                                      email_bad_ind=0
                                                       alternate_email_bad_ind=0
                                                       home_phone_bad_ind=0
                                                       work_phone_bad_ind=0
@@ -1641,9 +1642,10 @@ def BulkUploadEmployee(request, pk, *args, **kwargs):
                                                                array_bad.append(array1)
 
 
-                                                      if not re.match(r"^[A-Za-z0-9\.\+_-]+@[A-Za-z0-9\._-]+\.[a-zA-Z]*$", email):
+                                                      if (email != "") and (not re.match(r"^[A-Za-z0-9\.\+_-]+@[A-Za-z0-9\._-]+\.[a-zA-Z]*$", email)):
                                                           bad_ind = 1
                                                           email_bad_ind = 1
+                                                          array1=[]
                                                           description = "Invalid email format"
                                                           array1.append(serial)
                                                           array1.append(employeeid)
@@ -1678,11 +1680,11 @@ def BulkUploadEmployee(request, pk, *args, **kwargs):
                                                                array1.append(sendername)
                                                                array_bad.append(array1)
 
-                                                      if not re.match(r"^[A-Za-z0-9\.\+_-]+@[A-Za-z0-9\._-]+\.[a-zA-Z]*$", alternate_email):
+                                                      if (alternate_email != "") and (not re.match(r"^[A-Za-z0-9\.\+_-]+@[A-Za-z0-9\._-]+\.[a-zA-Z]*$", alternate_email)):
                                                           bad_ind = 1
                                                           alternate_email_bad_ind = 1
                                                           array1=[]
-                                                          description = "Invalid email format"
+                                                          description = "Invalid alternate email format"
                                                           array1.append(serial)
                                                           array1.append(employeeid)
                                                           array1.append(name)
@@ -1717,40 +1719,39 @@ def BulkUploadEmployee(request, pk, *args, **kwargs):
                                                                array1.append(sendername)
                                                                array_bad.append(array1)
 
-                                                      array1=[]
-                                                      p=[]
-                                                      p = home_phone
-                                                      if p.isnumeric() == False:
-                                                          bad_ind=1
-                                                          home_phone_bad_ind=1
-                                                          description = "home_phone must be numbers "
-                                                          array1.append(serial)
-                                                          array1.append(employeeid)
-                                                          array1.append(name)
-                                                          array1.append(home_phone)
-                                                          array1.append(description)
-                                                          array1.append(pk)
-                                                          array1.append(Employer.objects.get(pk=pk).employerid)
-                                                          array1.append(transmissionid)
-                                                          array1.append(sendername)
-                                                          array_bad.append(array1)
-
-                                                      if len(p) != (10 and 11):
-                                                          print(len(p))
-                                                          bad_ind=1
-                                                          home_phone_bad_ind=1
+                                                      if (home_phone != "" and home_phone != None):
                                                           array1=[]
-                                                          description = "Length of home_phone is not correct "
-                                                          array1.append(serial)
-                                                          array1.append(employeeid)
-                                                          array1.append(name)
-                                                          array1.append(home_phone)
-                                                          array1.append(description)
-                                                          array1.append(pk)
-                                                          array1.append(Employer.objects.get(pk=pk).employerid)
-                                                          array1.append(transmissionid)
-                                                          array1.append(sendername)
-                                                          array_bad.append(array1)
+                                                          p=[]
+                                                          p = home_phone
+                                                          if (not home_phone.isdigit()):
+                                                              bad_ind=1
+                                                              home_phone_bad_ind=1
+                                                              description = "home_phone must be numbers "
+                                                              array1.append(serial)
+                                                              array1.append(employeeid)
+                                                              array1.append(name)
+                                                              array1.append(home_phone)
+                                                              array1.append(description)
+                                                              array1.append(pk)
+                                                              array1.append(Employer.objects.get(pk=pk).employerid)
+                                                              array1.append(transmissionid)
+                                                              array1.append(sendername)
+                                                              array_bad.append(array1)
+                                                          elif len(p) != (10 and 11):
+                                                              print(len(p))
+                                                              bad_ind=1
+                                                              home_phone_bad_ind=1
+                                                              description = "Length of home_phone is not correct "
+                                                              array1.append(serial)
+                                                              array1.append(employeeid)
+                                                              array1.append(name)
+                                                              array1.append(home_phone)
+                                                              array1.append(description)
+                                                              array1.append(pk)
+                                                              array1.append(Employer.objects.get(pk=pk).employerid)
+                                                              array1.append(transmissionid)
+                                                              array1.append(sendername)
+                                                              array_bad.append(array1)
 
                                                       if home_phone_bad_ind == 0:
                                                             array2.append(home_phone)
@@ -1775,40 +1776,39 @@ def BulkUploadEmployee(request, pk, *args, **kwargs):
                                                                array1.append(sendername)
                                                                array_bad.append(array1)
 
-                                                      array1=[]
-                                                      p=[]
-                                                      p = work_phone
-                                                      if p.isnumeric() == False:
-                                                          bad_ind=1
-                                                          work_phone_bad_ind=1
-                                                          description = "work_phone must be numbers "
-                                                          array1.append(serial)
-                                                          array1.append(employeeid)
-                                                          array1.append(name)
-                                                          array1.append(work_phone)
-                                                          array1.append(description)
-                                                          array1.append(pk)
-                                                          array1.append(Employer.objects.get(pk=pk).employerid)
-                                                          array1.append(transmissionid)
-                                                          array1.append(sendername)
-                                                          array_bad.append(array1)
-
-                                                      if len(p) != (10 and 11):
-                                                          print(len(p))
-                                                          bad_ind=1
-                                                          work_phone_bad_ind=1
+                                                      if (work_phone != "" and work_phone != None):
                                                           array1=[]
-                                                          description = "Length of work_phone is not correct "
-                                                          array1.append(serial)
-                                                          array1.append(employeeid)
-                                                          array1.append(name)
-                                                          array1.append(work_phone)
-                                                          array1.append(description)
-                                                          array1.append(pk)
-                                                          array1.append(Employer.objects.get(pk=pk).employerid)
-                                                          array1.append(transmissionid)
-                                                          array1.append(sendername)
-                                                          array_bad.append(array1)
+                                                          p=[]
+                                                          p = work_phone
+                                                          if (not work_phone.isdigit()):
+                                                              bad_ind=1
+                                                              work_phone_bad_ind=1
+                                                              description = "work_phone must be numbers "
+                                                              array1.append(serial)
+                                                              array1.append(employeeid)
+                                                              array1.append(name)
+                                                              array1.append(work_phone)
+                                                              array1.append(description)
+                                                              array1.append(pk)
+                                                              array1.append(Employer.objects.get(pk=pk).employerid)
+                                                              array1.append(transmissionid)
+                                                              array1.append(sendername)
+                                                              array_bad.append(array1)
+                                                          elif len(p) != (10 and 11):
+                                                              print(len(p))
+                                                              bad_ind=1
+                                                              work_phone_bad_ind=1
+                                                              description = "Length of work_phone is not correct "
+                                                              array1.append(serial)
+                                                              array1.append(employeeid)
+                                                              array1.append(name)
+                                                              array1.append(work_phone)
+                                                              array1.append(description)
+                                                              array1.append(pk)
+                                                              array1.append(Employer.objects.get(pk=pk).employerid)
+                                                              array1.append(transmissionid)
+                                                              array1.append(sendername)
+                                                              array_bad.append(array1)
 
                                                       if work_phone_bad_ind == 0:
                                                          array2.append(work_phone)
@@ -1833,38 +1833,39 @@ def BulkUploadEmployee(request, pk, *args, **kwargs):
                                                                array_bad.append(array1)
 
 
-                                                      array1=[]
-                                                      p=[]
-                                                      p = mobile_phone
-                                                      if p.isnumeric() == False:
-                                                          bad_ind=1
-                                                          description = "Mobile phone must be numbers "
-                                                          array1.append(serial)
-                                                          array1.append(employeeid)
-                                                          array1.append(name)
-                                                          array1.append(mobile_phone)
-                                                          array1.append(description)
-                                                          array1.append(pk)
-                                                          array1.append(Employer.objects.get(pk=pk).employerid)
-                                                          array1.append(transmissionid)
-                                                          array1.append(sendername)
-                                                          array_bad.append(array1)
-
-                                                      if len(p) != (10 and 11):
-                                                          print(len(p))
-                                                          bad_ind=1
-                                                          mobile_phone_bad_ind=1
-                                                          description = "Length of mobile phone number is not correct "
-                                                          array1.append(serial)
-                                                          array1.append(employeeid)
-                                                          array1.append(name)
-                                                          array1.append(mobile_phone)
-                                                          array1.append(description)
-                                                          array1.append(pk)
-                                                          array1.append(Employer.objects.get(pk=pk).employerid)
-                                                          array1.append(transmissionid)
-                                                          array1.append(sendername)
-                                                          array_bad.append(array1)
+                                                      if (mobile_phone != "" and mobile_phone != None):
+                                                          array1=[]
+                                                          p=[]
+                                                          p = mobile_phone
+                                                          if (not mobile_phone.isdigit()):
+                                                              bad_ind=1
+                                                              mobile_phone_bad_ind=1
+                                                              description = "mobile_phone must be numbers "
+                                                              array1.append(serial)
+                                                              array1.append(employeeid)
+                                                              array1.append(name)
+                                                              array1.append(mobile_phone)
+                                                              array1.append(description)
+                                                              array1.append(pk)
+                                                              array1.append(Employer.objects.get(pk=pk).employerid)
+                                                              array1.append(transmissionid)
+                                                              array1.append(sendername)
+                                                              array_bad.append(array1)
+                                                          elif len(p) != (10 and 11):
+                                                              print(len(p))
+                                                              bad_ind=1
+                                                              mobile_phone_bad_ind=1
+                                                              description = "Length of mobile_phone is not correct "
+                                                              array1.append(serial)
+                                                              array1.append(employeeid)
+                                                              array1.append(name)
+                                                              array1.append(mobile_phone)
+                                                              array1.append(description)
+                                                              array1.append(pk)
+                                                              array1.append(Employer.objects.get(pk=pk).employerid)
+                                                              array1.append(transmissionid)
+                                                              array1.append(sendername)
+                                                              array_bad.append(array1)
 
                                                       if mobile_phone_bad_ind == 0:
                                                          array2.append(mobile_phone)
@@ -2350,6 +2351,7 @@ def NonStdRefresh(request):
                                                               work_city_bad_ind=0
                                                               work_state_bad_ind=0
                                                               work_zipcode_bad_ind=0
+                                                              email_bad_ind=0
                                                               alternate_email_bad_ind=0
                                                               home_phone_bad_ind=0
                                                               work_phone_bad_ind=0
@@ -3270,9 +3272,10 @@ def NonStdRefresh(request):
                                                                        array_bad.append(array1)
 
 
-                                                              if not re.match(r"^[A-Za-z0-9\.\+_-]+@[A-Za-z0-9\._-]+\.[a-zA-Z]*$", email):
+                                                              if (email != "") and (not re.match(r"^[A-Za-z0-9\.\+_-]+@[A-Za-z0-9\._-]+\.[a-zA-Z]*$", email)):
                                                                   bad_ind = 1
                                                                   email_bad_ind = 1
+                                                                  array1=[]
                                                                   description = "Invalid email format"
                                                                   array1.append(serial)
                                                                   array1.append(employeeid)
@@ -3307,11 +3310,11 @@ def NonStdRefresh(request):
                                                                        array1.append(sendername)
                                                                        array_bad.append(array1)
 
-                                                              if not re.match(r"^[A-Za-z0-9\.\+_-]+@[A-Za-z0-9\._-]+\.[a-zA-Z]*$", alternate_email):
+                                                              if (alternate_email != "") and (not re.match(r"^[A-Za-z0-9\.\+_-]+@[A-Za-z0-9\._-]+\.[a-zA-Z]*$", alternate_email)):
                                                                   bad_ind = 1
                                                                   alternate_email_bad_ind = 1
                                                                   array1=[]
-                                                                  description = "Invalid email format"
+                                                                  description = "Invalid alternate email format"
                                                                   array1.append(serial)
                                                                   array1.append(employeeid)
                                                                   array1.append(name)
@@ -3345,40 +3348,39 @@ def NonStdRefresh(request):
                                                                        array1.append(sendername)
                                                                        array_bad.append(array1)
 
-                                                              array1=[]
-                                                              p=[]
-                                                              p = home_phone
-                                                              if p.isnumeric() == False:
-                                                                  bad_ind=1
-                                                                  home_phone_bad_ind=1
-                                                                  description = "home_phone must be numbers "
-                                                                  array1.append(serial)
-                                                                  array1.append(employeeid)
-                                                                  array1.append(name)
-                                                                  array1.append(home_phone)
-                                                                  array1.append(description)
-                                                                  array1.append(pk)
-                                                                  array1.append(Employer.objects.get(pk=pk).employerid)
-                                                                  array1.append(transmissionid)
-                                                                  array1.append(sendername)
-                                                                  array_bad.append(array1)
-
-                                                              if len(p) != (10 and 11):
-                                                                  print(len(p))
-                                                                  bad_ind=1
-                                                                  home_phone_bad_ind=1
+                                                              if (home_phone != "" and home_phone != None):
                                                                   array1=[]
-                                                                  description = "Length of home_phone is not correct "
-                                                                  array1.append(serial)
-                                                                  array1.append(employeeid)
-                                                                  array1.append(name)
-                                                                  array1.append(home_phone)
-                                                                  array1.append(description)
-                                                                  array1.append(pk)
-                                                                  array1.append(Employer.objects.get(pk=pk).employerid)
-                                                                  array1.append(transmissionid)
-                                                                  array1.append(sendername)
-                                                                  array_bad.append(array1)
+                                                                  p=[]
+                                                                  p = home_phone
+                                                                  if (not home_phone.isdigit()):
+                                                                      bad_ind=1
+                                                                      home_phone_bad_ind=1
+                                                                      description = "home_phone must be numbers "
+                                                                      array1.append(serial)
+                                                                      array1.append(employeeid)
+                                                                      array1.append(name)
+                                                                      array1.append(home_phone)
+                                                                      array1.append(description)
+                                                                      array1.append(pk)
+                                                                      array1.append(Employer.objects.get(pk=pk).employerid)
+                                                                      array1.append(transmissionid)
+                                                                      array1.append(sendername)
+                                                                      array_bad.append(array1)
+                                                                  elif len(p) != (10 and 11):
+                                                                      print(len(p))
+                                                                      bad_ind=1
+                                                                      home_phone_bad_ind=1
+                                                                      description = "Length of home_phone is not correct "
+                                                                      array1.append(serial)
+                                                                      array1.append(employeeid)
+                                                                      array1.append(name)
+                                                                      array1.append(home_phone)
+                                                                      array1.append(description)
+                                                                      array1.append(pk)
+                                                                      array1.append(Employer.objects.get(pk=pk).employerid)
+                                                                      array1.append(transmissionid)
+                                                                      array1.append(sendername)
+                                                                      array_bad.append(array1)
 
                                                               if home_phone_bad_ind == 0:
                                                                  array2.append(home_phone)
@@ -3404,40 +3406,39 @@ def NonStdRefresh(request):
                                                                        array_bad.append(array1)
 
 
-                                                              array1=[]
-                                                              p=[]
-                                                              p = work_phone
-                                                              if p.isnumeric() == False:
-                                                                  bad_ind=1
-                                                                  work_phone_bad_ind=1
-                                                                  description = "work_phone must be numbers "
-                                                                  array1.append(serial)
-                                                                  array1.append(employeeid)
-                                                                  array1.append(name)
-                                                                  array1.append(work_phone)
-                                                                  array1.append(description)
-                                                                  array1.append(pk)
-                                                                  array1.append(Employer.objects.get(pk=pk).employerid)
-                                                                  array1.append(transmissionid)
-                                                                  array1.append(sendername)
-                                                                  array_bad.append(array1)
-
-                                                              if len(p) != (10 and 11):
-                                                                  print(len(p))
-                                                                  bad_ind=1
-                                                                  work_phone_bad_ind=1
+                                                              if (work_phone != "" and work_phone != None):
                                                                   array1=[]
-                                                                  description = "Length of work_phone is not correct "
-                                                                  array1.append(serial)
-                                                                  array1.append(employeeid)
-                                                                  array1.append(name)
-                                                                  array1.append(work_phone)
-                                                                  array1.append(description)
-                                                                  array1.append(pk)
-                                                                  array1.append(Employer.objects.get(pk=pk).employerid)
-                                                                  array1.append(transmissionid)
-                                                                  array1.append(sendername)
-                                                                  array_bad.append(array1)
+                                                                  p=[]
+                                                                  p = work_phone
+                                                                  if (not work_phone.isdigit()):
+                                                                      bad_ind=1
+                                                                      work_phone_bad_ind=1
+                                                                      description = "work_phone must be numbers "
+                                                                      array1.append(serial)
+                                                                      array1.append(employeeid)
+                                                                      array1.append(name)
+                                                                      array1.append(work_phone)
+                                                                      array1.append(description)
+                                                                      array1.append(pk)
+                                                                      array1.append(Employer.objects.get(pk=pk).employerid)
+                                                                      array1.append(transmissionid)
+                                                                      array1.append(sendername)
+                                                                      array_bad.append(array1)
+                                                                  elif len(p) != (10 and 11):
+                                                                      print(len(p))
+                                                                      bad_ind=1
+                                                                      work_phone_bad_ind=1
+                                                                      description = "Length of work_phone is not correct "
+                                                                      array1.append(serial)
+                                                                      array1.append(employeeid)
+                                                                      array1.append(name)
+                                                                      array1.append(work_phone)
+                                                                      array1.append(description)
+                                                                      array1.append(pk)
+                                                                      array1.append(Employer.objects.get(pk=pk).employerid)
+                                                                      array1.append(transmissionid)
+                                                                      array1.append(sendername)
+                                                                      array_bad.append(array1)
 
                                                               if work_phone_bad_ind == 0:
                                                                  array2.append(work_phone)
@@ -3462,40 +3463,39 @@ def NonStdRefresh(request):
                                                                        array_bad.append(array1)
 
 
-                                                              array1=[]
-                                                              p=[]
-                                                              p = mobile_phone
-                                                              if p.isnumeric() == False:
-                                                                  bad_ind=1
-                                                                  mobile_phone_bad_ind=1
-                                                                  description = "Mobile phone must be numbers "
-                                                                  array1.append(serial)
-                                                                  array1.append(employeeid)
-                                                                  array1.append(name)
-                                                                  array1.append(mobile_phone)
-                                                                  array1.append(description)
-                                                                  array1.append(pk)
-                                                                  array1.append(Employer.objects.get(pk=pk).employerid)
-                                                                  array1.append(transmissionid)
-                                                                  array1.append(sendername)
-                                                                  array_bad.append(array1)
-
-                                                              if len(p) != (10 and 11):
-                                                                  print(len(p))
-                                                                  bad_ind=1
-                                                                  mobile_phone_bad_ind=1
+                                                              if (mobile_phone != "" and mobile_phone != None):
                                                                   array1=[]
-                                                                  description = "Length of mobile phone number is not correct "
-                                                                  array1.append(serial)
-                                                                  array1.append(employeeid)
-                                                                  array1.append(name)
-                                                                  array1.append(mobile_phone)
-                                                                  array1.append(description)
-                                                                  array1.append(pk)
-                                                                  array1.append(Employer.objects.get(pk=pk).employerid)
-                                                                  array1.append(transmissionid)
-                                                                  array1.append(sendername)
-                                                                  array_bad.append(array1)
+                                                                  p=[]
+                                                                  p = mobile_phone
+                                                                  if (not mobile_phone.isdigit()):
+                                                                      bad_ind=1
+                                                                      mobile_phone_bad_ind=1
+                                                                      description = "mobile_phone must be numbers "
+                                                                      array1.append(serial)
+                                                                      array1.append(employeeid)
+                                                                      array1.append(name)
+                                                                      array1.append(mobile_phone)
+                                                                      array1.append(description)
+                                                                      array1.append(pk)
+                                                                      array1.append(Employer.objects.get(pk=pk).employerid)
+                                                                      array1.append(transmissionid)
+                                                                      array1.append(sendername)
+                                                                      array_bad.append(array1)
+                                                                  elif len(p) != (10 and 11):
+                                                                      print(len(p))
+                                                                      bad_ind=1
+                                                                      mobile_phone_bad_ind=1
+                                                                      description = "Length of mobile_phone is not correct "
+                                                                      array1.append(serial)
+                                                                      array1.append(employeeid)
+                                                                      array1.append(name)
+                                                                      array1.append(mobile_phone)
+                                                                      array1.append(description)
+                                                                      array1.append(pk)
+                                                                      array1.append(Employer.objects.get(pk=pk).employerid)
+                                                                      array1.append(transmissionid)
+                                                                      array1.append(sendername)
+                                                                      array_bad.append(array1)
 
                                                               if mobile_phone_bad_ind == 0:
                                                                  array2.append(mobile_phone)
@@ -3859,7 +3859,7 @@ def NonStdRefresh(request):
                             event.creator=request.user
                             event.save()
                             #end here
-                        response = s3.delete_object(Bucket='intellidatastatic1', Key='media/employees_nonstd.csv')
+                        #response = s3.delete_object(Bucket='intellidatastatic1', Key='media/employees_nonstd.csv')
 
                     except ClientError:
                         # Not found
@@ -4288,7 +4288,18 @@ def EmployeeList(request):
 
         if (Numcheck.objects.filter(attributes='employee_name').exists()):
            var=Numcheck.objects.filter(attributes='employee_name')[0].numberfield
-           if (var == "Yes" and not employee.name.isdigit()):
+           if (var == "Yes" and employee.name==None):
+                array1=[]
+                bad_ind = 1
+                name_bad_ind = 1
+                description = "name must be numeric"
+                array1.append(employee.employeeid)
+                array1.append(employee.name)
+                array1.append(employee.name)
+                array1.append(description)
+                array1.append(pk)
+                array_bad.append(array1)
+           elif (var == "Yes" and not employee.name.isdigit()):
                 array1=[]
                 bad_ind = 1
                 name_bad_ind = 1
@@ -4317,8 +4328,8 @@ def EmployeeList(request):
                  array_bad.append(array1)
 
         if (Numcheck.objects.filter(attributes='employee_ssn').exists()):
-           var=Numcheck.objects.filter(attributes='employee_ssn')[0].numberfield
-           if (var == "Yes" and not employee.ssn.isdigit()):
+            var=Numcheck.objects.filter(attributes='employee_ssn')[0].numberfield
+            if (var == "Yes" and employee.ssn==None):
                 array1=[]
                 bad_ind = 1
                 ssn_bad_ind = 1
@@ -4329,6 +4340,17 @@ def EmployeeList(request):
                 array1.append(description)
                 array1.append(pk)
                 array_bad.append(array1)
+            elif (var == "Yes" and not employee.ssn.isdigit()):
+                 array1=[]
+                 bad_ind = 1
+                 ssn_bad_ind = 1
+                 description = "SSN must be numeric"
+                 array1.append(employee.employeeid)
+                 array1.append(employee.name)
+                 array1.append(employee.ssn)
+                 array1.append(description)
+                 array1.append(pk)
+                 array_bad.append(array1)
 
         employee.gendercode = serializer.data["gendercode"]
         if (Mandatory.objects.filter(attributes='employee_gendercode').exists()):
@@ -4346,7 +4368,18 @@ def EmployeeList(request):
 
         if (Numcheck.objects.filter(attributes='employee_gendercode').exists()):
            var=Numcheck.objects.filter(attributes='employee_gendercode')[0].numberfield
-           if (var == "Yes" and not employee.gendercode.isdigit()):
+           if (var == "Yes" and employee.gendercode==None):
+                array1=[]
+                bad_ind = 1
+                gendercode_bad_ind = 1
+                description = "gendercode must be numeric"
+                array1.append(employee.employeeid)
+                array1.append(employee.name)
+                array1.append(employee.gendercode)
+                array1.append(description)
+                array1.append(pk)
+                array_bad.append(array1)
+           elif (var == "Yes" and not employee.gendercode.isdigit()):
                 array1=[]
                 bad_ind = 1
                 gendercode_bad_ind = 1
@@ -4381,7 +4414,7 @@ def EmployeeList(request):
 
         if (Numcheck.objects.filter(attributes='employee_age').exists()):
            var=Numcheck.objects.filter(attributes='employee_age')[0].numberfield
-           if (var == "Yes" and not employee.age.isdigit()):
+           if (var == "Yes" and employee.age==None):
                 array1=[]
                 bad_ind = 1
                 age_bad_ind = 1
@@ -4392,6 +4425,17 @@ def EmployeeList(request):
                 array1.append(description)
                 array1.append(pk)
                 array_bad.append(array1)
+           elif (var == "Yes" and not employee.age.isdigit()):
+                 array1=[]
+                 bad_ind = 1
+                 age_bad_ind = 1
+                 description = "age must be numeric"
+                 array1.append(employee.employeeid)
+                 array1.append(employee.name)
+                 array1.append(employee.age)
+                 array1.append(description)
+                 array1.append(pk)
+                 array_bad.append(array1)
 
         employee.birthdate = serializer.data["birthdate"]
         if (Mandatory.objects.filter(attributes='employee_birthdate').exists()):
@@ -4439,7 +4483,7 @@ def EmployeeList(request):
 
         if (Numcheck.objects.filter(attributes='employee_maritalstatus').exists()):
            var=Numcheck.objects.filter(attributes='employee_maritalstatus')[0].numberfield
-           if (var == "Yes" and not employee.maritalstatus.isdigit()):
+           if (var == "Yes" and employee.maritalstatus==None):
                 array1=[]
                 bad_ind = 1
                 maritalstatus_bad_ind = 1
@@ -4450,6 +4494,17 @@ def EmployeeList(request):
                 array1.append(description)
                 array1.append(pk)
                 array_bad.append(array1)
+           elif (var == "Yes" and not employee.maritalstatus.isdigit()):
+               array1=[]
+               bad_ind = 1
+               maritalstatus_bad_ind = 1
+               description = "maritalstatus must be numeric"
+               array1.append(employee.employeeid)
+               array1.append(employee.name)
+               array1.append(employee.maritalstatus)
+               array1.append(description)
+               array1.append(pk)
+               array_bad.append(array1)
 
         employee.home_address_line_1 = serializer.data["home_address_line_1"]
         array1=[]
@@ -4466,7 +4521,7 @@ def EmployeeList(request):
 
         if (Numcheck.objects.filter(attributes='employee_home_address_line_1').exists()):
            var=Numcheck.objects.filter(attributes='employee_home_address_line_1')[0].numberfield
-           if (var == "Yes" and not employee.home_address_line_1.isdigit()):
+           if (var == "Yes" and employee.home_address_line_1==None):
                 array1=[]
                 bad_ind = 1
                 home_address_line_1_bad_ind = 1
@@ -4477,6 +4532,17 @@ def EmployeeList(request):
                 array1.append(description)
                 array1.append(pk)
                 array_bad.append(array1)
+           elif (var == "Yes" and not employee.home_address_line_1.isdigit()):
+               array1=[]
+               bad_ind = 1
+               home_address_line_1_bad_ind = 1
+               description = "home_address_line_1 must be numeric"
+               array1.append(employee.employeeid)
+               array1.append(employee.name)
+               array1.append(employee.home_address_line_1)
+               array1.append(description)
+               array1.append(pk)
+               array_bad.append(array1)
 
         employee.home_address_line_2 = serializer.data["home_address_line_2"]
         if (Mandatory.objects.filter(attributes='employee_home_address_line_2').exists()):
@@ -4495,7 +4561,7 @@ def EmployeeList(request):
 
         if (Numcheck.objects.filter(attributes='employee_home_address_line_2').exists()):
            var=Numcheck.objects.filter(attributes='employee_home_address_line_2')[0].numberfield
-           if (var == "Yes" and not employee.home_address_line_2.isdigit()):
+           if (var == "Yes" and employee.home_address_line_2==None):
                 array1=[]
                 bad_ind = 1
                 home_address_line_2_bad_ind = 1
@@ -4506,6 +4572,17 @@ def EmployeeList(request):
                 array1.append(description)
                 array1.append(pk)
                 array_bad.append(array1)
+           elif (var == "Yes" and not employee.home_address_line_2.isdigit()):
+               array1=[]
+               bad_ind = 1
+               home_address_line_2_bad_ind = 1
+               description = "home_address_line_2 must be numeric"
+               array1.append(employee.employeeid)
+               array1.append(employee.name)
+               array1.append(employee.home_address_line_2)
+               array1.append(description)
+               array1.append(pk)
+               array_bad.append(array1)
 
         employee.home_city = serializer.data["home_city"]
         if (Mandatory.objects.filter(attributes='employee_home_city').exists()):
@@ -4524,7 +4601,7 @@ def EmployeeList(request):
 
         if (Numcheck.objects.filter(attributes='employee_home_city').exists()):
            var=Numcheck.objects.filter(attributes='employee_home_city')[0].numberfield
-           if (var == "Yes" and not employee.home_city.isdigit()):
+           if (var == "Yes" and employee.home_city==None):
                 array1=[]
                 bad_ind = 1
                 home_city_bad_ind = 1
@@ -4535,6 +4612,17 @@ def EmployeeList(request):
                 array1.append(description)
                 array1.append(pk)
                 array_bad.append(array1)
+           elif (var == "Yes" and not employee.home_city.isdigit()):
+               array1=[]
+               bad_ind = 1
+               home_city_bad_ind = 1
+               description = "home_city must be numeric"
+               array1.append(employee.employeeid)
+               array1.append(employee.name)
+               array1.append(employee.home_city)
+               array1.append(description)
+               array1.append(pk)
+               array_bad.append(array1)
 
 
         employee.home_state = serializer.data["home_state"]
@@ -4555,7 +4643,18 @@ def EmployeeList(request):
 
         if (Numcheck.objects.filter(attributes='employee_home_state').exists()):
            var=Numcheck.objects.filter(attributes='employee_home_state')[0].numberfield
-           if (var == "Yes" and not employee.home_state.isdigit()):
+           if (var == "Yes" and employee.home_state==None):
+                array1=[]
+                bad_ind = 1
+                home_state_bad_ind = 1
+                description = "home_state must be numeric"
+                array1.append(employee.employeeid)
+                array1.append(employee.name)
+                array1.append(employee.home_state)
+                array1.append(description)
+                array1.append(pk)
+                array_bad.append(array1)
+           elif (var == "Yes" and not employee.home_state.isdigit()):
                 array1=[]
                 bad_ind = 1
                 home_state_bad_ind = 1
@@ -4567,17 +4666,6 @@ def EmployeeList(request):
                 array1.append(pk)
                 array_bad.append(array1)
 
-        employee.home_zipcode = serializer.data["home_zipcode"]
-        array1=[]
-        if employee.home_zipcode == "":
-            bad_ind = 1
-            description = "Zipcode is mandatory"
-            array1.append(employee.employeeid)
-            array1.append(employee.name)
-            array1.append(employee.zipcode)
-            array1.append(description)
-            array1.append(pk)
-            array_bad.append(array1)
 
         if (Mandatory.objects.filter(attributes='employee_home_zipcode').exists()):
             var=Mandatory.objects.filter(attributes='employee_home_zipcode')[0].required
@@ -4595,7 +4683,18 @@ def EmployeeList(request):
 
         if (Numcheck.objects.filter(attributes='employee_home_zipcode').exists()):
            var=Numcheck.objects.filter(attributes='employee_home_zipcode')[0].numberfield
-           if (var == "Yes" and not employee.home_zipcode.isdigit()):
+           if (var == "Yes" and employee.home_zipcode==None):
+                array1=[]
+                bad_ind = 1
+                home_zipcode_bad_ind = 1
+                description = "home_zipcode must be numeric"
+                array1.append(employee.employeeid)
+                array1.append(employee.name)
+                array1.append(employee.zipcode)
+                array1.append(description)
+                array1.append(pk)
+                array_bad.append(array1)
+           elif (var == "Yes" and not employee.home_zipcode.isdigit()):
                 array1=[]
                 bad_ind = 1
                 home_zipcode_bad_ind = 1
@@ -4625,7 +4724,18 @@ def EmployeeList(request):
 
         if (Numcheck.objects.filter(attributes='employee_mail_address_line_1').exists()):
            var=Numcheck.objects.filter(attributes='employee_mail_address_line_1')[0].numberfield
-           if (var == "Yes" and not employee.mail_address_line_1.isdigit()):
+           if (var == "Yes" and employee.mail_address_line_1==None):
+                array1=[]
+                bad_ind = 1
+                mail_address_line_1_bad_ind = 1
+                description = "mail_address_line_1 must be numeric"
+                array1.append(employee.employeeid)
+                array1.append(employee.name)
+                array1.append(employee.mail_address_line_1)
+                array1.append(description)
+                array1.append(pk)
+                array_bad.append(array1)
+           elif (var == "Yes" and not employee.mail_address_line_1.isdigit()):
                 array1=[]
                 bad_ind = 1
                 mail_address_line_1_bad_ind = 1
@@ -4654,7 +4764,7 @@ def EmployeeList(request):
 
         if (Numcheck.objects.filter(attributes='employee_mail_address_line_2').exists()):
            var=Numcheck.objects.filter(attributes='employee_mail_address_line_2')[0].numberfield
-           if (var == "Yes" and not employee.home_address_line_2.isdigit()):
+           if (var == "Yes" and employee.home_address_line_2==None):
                 array1=[]
                 bad_ind = 1
                 mail_address_line_2_bad_ind = 1
@@ -4665,6 +4775,17 @@ def EmployeeList(request):
                 array1.append(description)
                 array1.append(pk)
                 array_bad.append(array1)
+           elif (var == "Yes" and not employee.home_address_line_2.isdigit()):
+                   array1=[]
+                   bad_ind = 1
+                   mail_address_line_2_bad_ind = 1
+                   description = "mail_address_line_2 must be numeric"
+                   array1.append(employee.employeeid)
+                   array1.append(employee.name)
+                   array1.append(employee.mail_address_line_2)
+                   array1.append(description)
+                   array1.append(pk)
+                   array_bad.append(array1)
 
         employee.mail_city = serializer.data["mail_city"]
         if (Mandatory.objects.filter(attributes='employee_mail_city').exists()):
@@ -4683,7 +4804,18 @@ def EmployeeList(request):
 
         if (Numcheck.objects.filter(attributes='employee_mail_city').exists()):
            var=Numcheck.objects.filter(attributes='employee_mail_city')[0].numberfield
-           if (var == "Yes" and not employee.mail_city.isdigit()):
+           if (var == "Yes" and employee.mail_city==None):
+                array1=[]
+                bad_ind = 1
+                mail_city_bad_ind = 1
+                description = "mail_city must be numeric"
+                array1.append(employee.employeeid)
+                array1.append(employee.name)
+                array1.append(employee.mail_city)
+                array1.append(description)
+                array1.append(pk)
+                array_bad.append(array1)
+           elif (var == "Yes" and not employee.mail_city.isdigit()):
                 array1=[]
                 bad_ind = 1
                 mail_city_bad_ind = 1
@@ -4713,7 +4845,18 @@ def EmployeeList(request):
 
         if (Numcheck.objects.filter(attributes='employee_mail_state').exists()):
            var=Numcheck.objects.filter(attributes='employee_mail_state')[0].numberfield
-           if (var == "Yes" and not employee.mail_state.isdigit()):
+           if (var == "Yes" and employee.mail_state==None):
+                array1=[]
+                bad_ind = 1
+                mail_state_bad_ind = 1
+                description = "mail_state must be numeric"
+                array1.append(employee.employeeid)
+                array1.append(employee.name)
+                array1.append(employee.mail_state)
+                array1.append(description)
+                array1.append(pk)
+                array_bad.append(array1)
+           elif (var == "Yes" and not employee.mail_state.isdigit()):
                 array1=[]
                 bad_ind = 1
                 mail_state_bad_ind = 1
@@ -4743,7 +4886,18 @@ def EmployeeList(request):
 
         if (Numcheck.objects.filter(attributes='employee_mail_zipcode').exists()):
            var=Numcheck.objects.filter(attributes='employee_mail_zipcode')[0].numberfield
-           if (var == "Yes" and not employee.mail_zipcode.isdigit()):
+           if (var == "Yes" and employee.mail_zipcode==None):
+                array1=[]
+                bad_ind = 1
+                mail_zipcode_bad_ind = 1
+                description = "mail_zipcode must be numeric"
+                array1.append(employee.employeeid)
+                array1.append(employee.name)
+                array1.append(employee.mail_zipcode)
+                array1.append(description)
+                array1.append(pk)
+                array_bad.append(array1)
+           elif (var == "Yes" and not employee.mail_zipcode.isdigit()):
                 array1=[]
                 bad_ind = 1
                 mail_zipcode_bad_ind = 1
@@ -4772,7 +4926,18 @@ def EmployeeList(request):
 
         if (Numcheck.objects.filter(attributes='employee_work_address_line_1').exists()):
            var=Numcheck.objects.filter(attributes='employee_work_address_line_1')[0].numberfield
-           if (var == "Yes" and not employee.work_address_line_1.isdigit()):
+           if (var == "Yes" and employee.work_address_line_1==None):
+                array1=[]
+                bad_ind = 1
+                work_address_line_1_bad_ind = 1
+                description = "work_address_line_1 must be numeric"
+                array1.append(employee.employeeid)
+                array1.append(employee.name)
+                array1.append(employee.work_address_line_1)
+                array1.append(description)
+                array1.append(pk)
+                array_bad.append(array1)
+           elif (var == "Yes" and not employee.work_address_line_1.isdigit()):
                 array1=[]
                 bad_ind = 1
                 work_address_line_1_bad_ind = 1
@@ -4801,7 +4966,18 @@ def EmployeeList(request):
 
         if (Numcheck.objects.filter(attributes='employee_work_address_line_2').exists()):
            var=Numcheck.objects.filter(attributes='employee_work_address_line_2')[0].numberfield
-           if (var == "Yes" and not employee.work_address_line_2.isdigit()):
+           if (var == "Yes" and employee.work_address_line_2==None):
+                array1=[]
+                bad_ind = 1
+                work_address_line_2_bad_ind = 1
+                description = "work_address_line_2 must be numeric"
+                array1.append(employee.employeeid)
+                array1.append(employee.name)
+                array1.append(employee.work_address_line_2)
+                array1.append(description)
+                array1.append(pk)
+                array_bad.append(array1)
+           elif (var == "Yes" and not employee.work_address_line_2.isdigit()):
                 array1=[]
                 bad_ind = 1
                 work_address_line_2_bad_ind = 1
@@ -4830,7 +5006,18 @@ def EmployeeList(request):
 
         if (Numcheck.objects.filter(attributes='employee_work_city').exists()):
            var=Numcheck.objects.filter(attributes='employee_work_city')[0].numberfield
-           if (var == "Yes" and not employee.work_city.isdigit()):
+           if (var == "Yes" and employee.work_city==None):
+                array1=[]
+                bad_ind = 1
+                work_city_bad_ind = 1
+                description = "work_city must be numeric"
+                array1.append(employee.employeeid)
+                array1.append(employee.name)
+                array1.append(employee.work_city)
+                array1.append(description)
+                array1.append(pk)
+                array_bad.append(array1)
+           elif (var == "Yes" and not employee.work_city.isdigit()):
                 array1=[]
                 bad_ind = 1
                 work_city_bad_ind = 1
@@ -4860,7 +5047,18 @@ def EmployeeList(request):
 
         if (Numcheck.objects.filter(attributes='employee_work_state').exists()):
            var=Numcheck.objects.filter(attributes='employee_work_state')[0].numberfield
-           if (var == "Yes" and not employee.work_state.isdigit()):
+           if (var == "Yes" and employee.work_state==None):
+                array1=[]
+                bad_ind = 1
+                work_state_bad_ind = 1
+                description = "work_state must be numeric"
+                array1.append(employee.employeeid)
+                array1.append(employee.name)
+                array1.append(employee.work_state)
+                array1.append(description)
+                array1.append(pk)
+                array_bad.append(array1)
+           elif (var == "Yes" and not employee.work_state.isdigit()):
                 array1=[]
                 bad_ind = 1
                 work_state_bad_ind = 1
@@ -4889,7 +5087,7 @@ def EmployeeList(request):
 
         if (Numcheck.objects.filter(attributes='employee_work_zipcode').exists()):
            var=Numcheck.objects.filter(attributes='employee_work_zipcode')[0].numberfield
-           if (var == "Yes" and not employee.work_zipcode.isdigit()):
+           if (var == "Yes" and employee.work_zipcode==None):
                 array1=[]
                 bad_ind = 1
                 work_zipcode_bad_ind = 1
@@ -4900,6 +5098,17 @@ def EmployeeList(request):
                 array1.append(description)
                 array1.append(pk)
                 array_bad.append(array1)
+           elif (var == "Yes" and not employee.work_zipcode.isdigit()):
+               array1=[]
+               bad_ind = 1
+               work_zipcode_bad_ind = 1
+               description = "work_zipcode must be numeric"
+               array1.append(employee.employeeid)
+               array1.append(employee.name)
+               array1.append(employee.work_zipcode)
+               array1.append(description)
+               array1.append(pk)
+               array_bad.append(array1)
 
         employee.email = serializer.data["email"]
         if (Mandatory.objects.filter(attributes='employee_email').exists()):
@@ -4916,17 +5125,6 @@ def EmployeeList(request):
                  array1.append(pk)
                  array_bad.append(array1)
 
-        if not re.match(r"^[A-Za-z0-9\.\+_-]+@[A-Za-z0-9\._-]+\.[a-zA-Z]*$", employee.email):
-                array1=[]
-                bad_ind = 1
-                description = "Invalid email format"
-                array1.append(employee.employeeid)
-                array1.append(employee.name)
-                array1.append(employee.email)
-                array1.append(description)
-                array1.append(pk)
-                array_bad.append(array1)
-
         employee.alternate_email = serializer.data["alternate_email"]
         if (Mandatory.objects.filter(attributes='employee_alternate_email').exists()):
             var=Mandatory.objects.filter(attributes='employee_alternate_email')[0].required
@@ -4940,18 +5138,6 @@ def EmployeeList(request):
                  array1.append(description)
                  array1.append(pk)
                  array_bad.append(array1)
-
-
-        if not re.match(r"^[A-Za-z0-9\.\+_-]+@[A-Za-z0-9\._-]+\.[a-zA-Z]*$", employee.alternate_email):
-                array1=[]
-                bad_ind = 1
-                description = "Invalid email format"
-                array1.append(employee.employeeid)
-                array1.append(employee.name)
-                array1.append(employee.alternate_email)
-                array1.append(description)
-                array1.append(pk)
-                array_bad.append(array1)
 
         employee.home_phone = serializer.data["home_phone"]
         if (Mandatory.objects.filter(attributes='employee_home_phone').exists()):
@@ -5012,7 +5198,18 @@ def EmployeeList(request):
 
         if (Numcheck.objects.filter(attributes='employee_enrollment_method').exists()):
            var=Numcheck.objects.filter(attributes='employee_enrollment_method')[0].numberfield
-           if (var == "Yes" and not employee.enrollment_method.isdigit()):
+           if (var == "Yes" and employee.enrollment_method==None):
+                array1=[]
+                bad_ind = 1
+                enrollment_method_bad_ind = 1
+                description = "enrollment_method must be numeric"
+                array1.append(employee.employeeid)
+                array1.append(employee.name)
+                array1.append(employee.enrollment_method)
+                array1.append(description)
+                array1.append(pk)
+                array_bad.append(array1)
+           elif (var == "Yes" and not employee.enrollment_method.isdigit()):
                 array1=[]
                 bad_ind = 1
                 enrollment_method_bad_ind = 1
@@ -5040,7 +5237,18 @@ def EmployeeList(request):
 
         if (Numcheck.objects.filter(attributes='employee_employment_information').exists()):
            var=Numcheck.objects.filter(attributes='employee_employment_information')[0].numberfield
-           if (var == "Yes" and not employee.employment_information.isdigit()):
+           if (var == "Yes" and employee.employment_information==None):
+                array1=[]
+                bad_ind = 1
+                employment_information_bad_ind = 1
+                description = "employment_information must be numeric"
+                array1.append(employee.employeeid)
+                array1.append(employee.name)
+                array1.append(employee.employment_information)
+                array1.append(description)
+                array1.append(pk)
+                array_bad.append(array1)
+           elif (var == "Yes" and not employee.employment_information.isdigit()):
                 array1=[]
                 bad_ind = 1
                 employment_information_bad_ind = 1

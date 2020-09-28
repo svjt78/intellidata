@@ -1,2 +1,5 @@
-6,,Annis Rampert,,Home address line 1 is mandatory,1600963680470,1957f4209e,f297e85514,GOCO
-6,,Annis Rampert,Hellogmail,Invalid email,1600963680470,1957f4209e,f297e85514,GOCO
+4,01e3ec5a50,Alice Hilderberg,55b66,home_phone must be numbers ,1598399243202,14a62416cb,c72ed27c3b,Microsoft Azure
+6,,Sally Guha,,Home address line 1 is mandatory,1598905048935,a4c2c9278b,c72ed27c3b,Microsoft Azure
+6,,Sally Guha,Hellogmail,Invalid email format,1598905048935,a4c2c9278b,c72ed27c3b,Microsoft Azure
+6,,Sally Guha,Vv,Invalid alternate email format,1598905048935,a4c2c9278b,c72ed27c3b,Microsoft Azure
+6,,Sally Guha,8888,Length of home_phone is not correct ,1598905048935,a4c2c9278b,c72ed27c3b,Microsoft Azure

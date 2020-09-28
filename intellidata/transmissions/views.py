@@ -1056,7 +1056,16 @@ def TransmissionList(request):
 
         if (Numcheck.objects.filter(attributes='transmission_SenderName').exists()):
            var=Numcheck.objects.filter(attributes='transmission_SenderName')[0].numberfield
-           if (var == "Yes" and not transmission.SenderName.isdigit()):
+           if (var == "Yes" and transmission.SenderName==None):
+                array1=[]
+                bad_ind = 1
+                description = "Sender_Name must be numeric"
+                array1.append(transmission.transmissionid)
+                array1.append(transmission.SenderName)
+                array1.append(transmission.SenderName)
+                array1.append(description)
+                array_bad.append(array1)
+           elif (var == "Yes" and not transmission.SenderName.isdigit()):
                 array1=[]
                 bad_ind = 1
                 description = "Sender_Name must be numeric"
@@ -1083,7 +1092,7 @@ def TransmissionList(request):
 
         if (Numcheck.objects.filter(attributes='transmission_BenefitAdministratorPlatform').exists()):
            var=Numcheck.objects.filter(attributes='transmission_BenefitAdministratorPlatform')[0].numberfield
-           if (var == "Yes" and not transmission.BenefitAdministratorPlatform.isdigit()):
+           if (var == "Yes" and transmission.BenefitAdministratorPlatform==None):
                 array1=[]
                 bad_ind = 1
                 description = "BenefitAdministratorPlatform must be numeric"
@@ -1092,6 +1101,15 @@ def TransmissionList(request):
                 array1.append(transmission.BenefitAdministratorPlatform)
                 array1.append(description)
                 array_bad.append(array1)
+           elif (var == "Yes" and not transmission.BenefitAdministratorPlatform.isdigit()):
+                 array1=[]
+                 bad_ind = 1
+                 description = "BenefitAdministratorPlatform must be numeric"
+                 array1.append(transmission.transmissionid)
+                 array1.append(transmission.SenderName)
+                 array1.append(transmission.BenefitAdministratorPlatform)
+                 array1.append(description)
+                 array_bad.append(array1)
 
 
         transmission.ReceiverName = serializer.data["ReceiverName"]
@@ -1110,7 +1128,7 @@ def TransmissionList(request):
 
         if (Numcheck.objects.filter(attributes='transmission_ReceiverName').exists()):
            var=Numcheck.objects.filter(attributes='transmission_ReceiverName')[0].numberfield
-           if (var == "Yes" and not transmission.ReceiverName.isdigit()):
+           if (var == "Yes" and transmission.ReceiverName==None):
                 array1=[]
                 bad_ind = 1
                 description = "ReceiverName must be numeric"
@@ -1119,6 +1137,15 @@ def TransmissionList(request):
                 array1.append(transmission.ReceiverName)
                 array1.append(description)
                 array_bad.append(array1)
+           elif (var == "Yes" and not transmission.ReceiverName.isdigit()):
+                 array1=[]
+                 bad_ind = 1
+                 description = "ReceiverName must be numeric"
+                 array1.append(transmission.transmissionid)
+                 array1.append(transmission.SenderName)
+                 array1.append(transmission.ReceiverName)
+                 array1.append(description)
+                 array_bad.append(array1)
 
 
         transmission.TestProductionCode = serializer.data["TestProductionCode"]
@@ -1136,8 +1163,8 @@ def TransmissionList(request):
 
 
         if (Numcheck.objects.filter(attributes='transmission_TestProductionCode').exists()):
-           var=Numcheck.objects.filter(attributes='transmission_TestProductionCode')[0].numberfield
-           if (var == "Yes" and not transmission.TestProductionCode.isdigit()):
+            var=Numcheck.objects.filter(attributes='transmission_TestProductionCode')[0].numberfield
+            if (var == "Yes" and transmission.TestProductionCode==None):
                 array1=[]
                 bad_ind = 1
                 description = "TestProductionCode must be numeric"
@@ -1146,6 +1173,15 @@ def TransmissionList(request):
                 array1.append(transmission.TestProductionCode)
                 array1.append(description)
                 array_bad.append(array1)
+            elif (var == "Yes" and not transmission.TestProductionCode.isdigit()):
+                 array1=[]
+                 bad_ind = 1
+                 description = "TestProductionCode must be numeric"
+                 array1.append(transmission.transmissionid)
+                 array1.append(transmission.SenderName)
+                 array1.append(transmission.TestProductionCode)
+                 array1.append(description)
+                 array_bad.append(array1)
 
 
         transmission.TransmissionTypeCode = serializer.data["TransmissionTypeCode"]
@@ -1164,7 +1200,7 @@ def TransmissionList(request):
 
         if (Numcheck.objects.filter(attributes='transmission_TransmissionTypeCode').exists()):
            var=Numcheck.objects.filter(attributes='transmission_TransmissionTypeCode')[0].numberfield
-           if (var == "Yes" and not transmission.TransmissionTypeCode.isdigit()):
+           if (var == "Yes" and transmission.TransmissionTypeCode==None):
                 array1=[]
                 bad_ind = 1
                 description = "TransmissionTypeCode must be numeric"
@@ -1173,6 +1209,15 @@ def TransmissionList(request):
                 array1.append(transmission.TransmissionTypeCode)
                 array1.append(description)
                 array_bad.append(array1)
+           elif (var == "Yes" and not transmission.TransmissionTypeCode.isdigit()):
+               array1=[]
+               bad_ind = 1
+               description = "TransmissionTypeCode must be numeric"
+               array1.append(transmission.transmissionid)
+               array1.append(transmission.SenderName)
+               array1.append(transmission.TransmissionTypeCode)
+               array1.append(description)
+               array_bad.append(array1)
 
 
         transmission.SystemVersionIdentifier = serializer.data["SystemVersionIdentifier"]
@@ -1191,7 +1236,7 @@ def TransmissionList(request):
 
         if (Numcheck.objects.filter(attributes='transmission_SystemVersionIdentifier').exists()):
            var=Numcheck.objects.filter(attributes='transmission_SystemVersionIdentifier')[0].numberfield
-           if (var == "Yes" and not transmission.SystemVersionIdentifier.isdigit()):
+           if (var == "Yes" and transmission.SystemVersionIdentifier==None):
                 array1=[]
                 bad_ind = 1
                 description = "SystemVersionIdentifier must be numeric"
@@ -1200,6 +1245,15 @@ def TransmissionList(request):
                 array1.append(transmission.SystemVersionIdentifier)
                 array1.append(description)
                 array_bad.append(array1)
+           elif (var == "Yes" and not transmission.SystemVersionIdentifier.isdigit()):
+                   array1=[]
+                   bad_ind = 1
+                   description = "SystemVersionIdentifier must be numeric"
+                   array1.append(transmission.transmissionid)
+                   array1.append(transmission.SenderName)
+                   array1.append(transmission.SystemVersionIdentifier)
+                   array1.append(description)
+                   array_bad.append(array1)
 
         #transmission.planadmin_email = serializer.data["planadmin_email"]
         #transmission.planadmin_email = serializer.data.get("planadmin_email")
