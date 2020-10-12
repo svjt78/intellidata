@@ -15,7 +15,7 @@ The IntelliDataSmart platform bridges that gap by enabling a flexible and automa
     - API based data ingestion and retrieval
     - Online transaction and data stewardship
 2. Data Standardization into an Industry-Standard schema
-3. Data Storage, with an mutable Transactional Data Store and an immutable Historical Data Store
+3. Data Storage, with a mutable Transactional Data Store and an immutable Historical Data Store
 4. Data quality management
     - Flexible business rule management with the ability for Business to configure data validation rules without the need for IT involvement
     - Early detection of data issues and notification for correction
@@ -28,11 +28,11 @@ The IntelliDataSmart platform bridges that gap by enabling a flexible and automa
 7. System administration
 8. Event logging
 9. Powerful Search facility
-10. Well-architected framework and Development best practices of the AWS platform for best-in-class Security, Performance, Availability, and Cost effectiveness
+10. Well-architected framework and Development best practices of the AWS platform for best-in-class Security, Performance, Reliability, and Cost effectiveness
  
 In near future more avenues for data ingestion and engagement will be added leveraging AI-based and NLP-based capabilities like Chatbot, OCR, and Speech-To-Text technologies. 
 
-The platform is based upon a scalable framework that is also extensible to other business processes.   
+The platform is based upon a scalable framework that is extensible to other business processes too.   
 
 The major technology stack in the current stage of the platform:
  - Django==3.0.8
@@ -45,6 +45,7 @@ The major technology stack in the current stage of the platform:
  - AWS SAM and CloudFormation 
  - AWS DevOps Stack
  
+ ## Sample Screenshots
  ![Alt text](https://github.com/svjt78/intellidata/blob/master/intellidata/Screen%20Shot%202020-10-12%20at%202.19.08%20PM.png "Index page")
  ![Alt text](https://github.com/svjt78/intellidata/blob/master/intellidata/Screen%20Shot%202020-10-12%20at%202.19.33%20PM.png "Home page")
  ![Alt text](https://github.com/svjt78/intellidata/blob/master/intellidata/Screen%20Shot%202020-10-12%20at%202.20.09%20PM.png "Dashboard")
