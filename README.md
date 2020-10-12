@@ -47,3 +47,7 @@ The major technology stack in the current stage of the platform:
  
  ![Alt text](https://github.com/svjt78/intellidata/blob/master/intellidata/Screen%20Shot%202020-10-12%20at%202.19.08%20PM.png "Index page")
  ![Alt text](https://github.com/svjt78/intellidata/blob/master/intellidata/Screen%20Shot%202020-10-12%20at%202.19.33%20PM.png "Home page")
+ ![Alt text](https://github.com/svjt78/intellidata/blob/master/intellidata/Screen%20Shot%202020-10-12%20at%202.20.09%20PM.png "Dashboard")
+ ![Alt text](https://github.com/svjt78/intellidata/blob/master/intellidata/Screen%20Shot%202020-10-12%20at%202.20.16%20PM.png "Dashboard")
+ ![Alt text](https://github.com/svjt78/intellidata/blob/master/intellidata/Screen%20Shot%202020-10-12%20at%202.21.30%20PM.png "Admin page")
+ 
