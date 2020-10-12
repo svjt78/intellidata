@@ -6,7 +6,7 @@ IntelliDataSmart is an AWS cloud-native and web-based/ API-enabled modern data e
 2. High Cost of Enrollment and Reduced Sales Growth for Insurance and Healthcare providers
 3. Low Productivity for Brokers
  
-Such issues are caused by the lack of a straight-through processing (or lack of a systemic “bridge” ) between the myriad of Benefit Administration Platforms (which are self-serviced front-end enrollment platforms for employers, employees and brokers) and the Insurer’s or the Healthcare Provider’s own backend Systems Of Record (SORs).
+Such issues are caused by the lack of a straight-through processing (or lack of a systemic “bridge” ) between the myriad of Benefit Administration Platforms (which are often deployed as self-serviced front-end enrollment platforms for employers, employees and brokers) on one end, and the Insurer’s or the Healthcare Provider’s own backend Systems Of Record (SORs) on the other end.
 
 The IntelliDataSmart platform bridges that gap by enabling a flexible and automated process with the below set of capabilities that the industry is longing for in this space–
 
