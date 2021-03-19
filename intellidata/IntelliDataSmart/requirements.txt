@@ -12,7 +12,7 @@ django-controlcenter==0.3.0
 django-phonenumber-field==4.0.0
 django-pkgconf==0.4.0
 django-storages==1.9.1
-djangorestframework==3.11.0
+djangorestframework==3.11.2
 docutils==0.15.2
 idna==2.9
 jmespath==0.10.0
