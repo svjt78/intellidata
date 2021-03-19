@@ -32,7 +32,7 @@ django-controlcenter==0.3.0
 django-phonenumber-field==4.0.0
 django-pkgconf==0.4.0
 django-storages==1.9.1
-djangorestframework==3.11.0
+djangorestframework==3.11.2
 docker==4.2.2
 docker-compose==1.25.5
 dockerpty==0.4.1
