@@ -26,7 +26,7 @@ cookiecutter==1.6.0
 cryptography==3.0
 dateparser==0.7.6
 distlib==0.3.1
-Django==3.0.8
+Django==3.0.12
 django-bootstrap3==12.1.0
 django-controlcenter==0.3.0
 django-phonenumber-field==4.0.0
