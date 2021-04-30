@@ -65,7 +65,7 @@ pytz==2020.1
 PyYAML==5.3.1
 regex==2020.7.14
 requests==2.23.0
-rsa==4.5
+rsa==4.7
 s3transfer==0.3.3
 semantic-version==2.5.0
 serverlessrepo==0.1.9
