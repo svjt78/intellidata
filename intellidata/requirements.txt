@@ -54,7 +54,7 @@ paramiko==2.7.1
 pathspec==0.5.9
 phonenumbers==8.12.6
 Pillow==7.2.0
-pipenv==2020.6.2
+pipenv==2022.1.8
 poyo==0.5.0
 pyasn1==0.4.8
 pycparser==2.20
