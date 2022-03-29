@@ -50,7 +50,7 @@ jmespath==0.9.5
 jsonschema==3.2.0
 MarkupSafe==1.1.1
 misaka==2.1.1
-paramiko==2.7.1
+paramiko==2.10.1
 pathspec==0.5.9
 phonenumbers==8.12.6
 Pillow==7.2.0
