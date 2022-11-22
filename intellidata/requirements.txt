@@ -53,7 +53,7 @@ misaka==2.1.1
 paramiko==2.7.1
 pathspec==0.5.9
 phonenumbers==8.12.6
-Pillow==7.2.0
+Pillow==9.3.0
 pipenv==2020.6.2
 poyo==0.5.0
 pyasn1==0.4.8
